@@ -141,7 +141,7 @@
             > \
         > \
     > \
-    /**/
+*/    /**/
     
 //  This include is needed for the flex_string class used in the 
 //  BOOST_WAVE_STRINGTYPE above.

@@ -2323,7 +2323,7 @@ getline(
 
 template <typename E1, class T, class A, class S>
 const typename flex_string<E1, T, A, S>::size_type
-flex_string<E1, T, A, S>::npos = (flex_string<E1, T, A, S>::size_type)(-1);
+flex_string<E1, T, A, S>::npos = (typename flex_string<E1, T, A, S>::size_type)(-1);
 
 ///////////////////////////////////////////////////////////////////////////////
 }   // namespace util
