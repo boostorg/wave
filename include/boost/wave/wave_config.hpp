@@ -132,15 +132,15 @@
     > \
     /**/
     
-//#define BOOST_WAVE_STRINGTYPE boost::wave::util::flex_string< \
-//        char, std::char_traits<char>, boost::fast_pool_allocator<char>, \
-//        boost::wave::util::CowString<char, \
-//            boost::wave::util::AllocatorStringStorage<char, \
-//              boost::fast_pool_allocator<char> \
-//            > \
-//        > \
-//    > \
-//    /**/
+/* #define BOOST_WAVE_STRINGTYPE boost::wave::util::flex_string< \
+        char, std::char_traits<char>, boost::fast_pool_allocator<char>, \
+        boost::wave::util::CowString<char, \
+            boost::wave::util::AllocatorStringStorage<char, \
+              boost::fast_pool_allocator<char> \
+            > \
+        > \
+    > \
+    /**/
     
 //  This include is needed for the flex_string class used in the 
 //  BOOST_WAVE_STRINGTYPE above.
