@@ -12,8 +12,8 @@
 #if !defined(CPP_DEFINED_GRAMMAR_HPP_F48287B2_DC67_40A8_B4A1_800EFBD67869_INCLUDED)
 #define CPP_DEFINED_GRAMMAR_HPP_F48287B2_DC67_40A8_B4A1_800EFBD67869_INCLUDED
 
+#include <boost/assert.hpp>
 #include <boost/spirit/core.hpp>
-#include <boost/spirit/core/assert.hpp>
 #include <boost/spirit/attribute/closure.hpp>
 #if SPIRIT_VERSION >= 0x1700
 #include <boost/spirit/actor/assign_actor.hpp>

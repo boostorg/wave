@@ -12,8 +12,8 @@
 #if !defined(CPP_EXPRESSION_GRAMMAR_HPP_099CD1A4_A6C0_44BE_8F24_0B00F5BE5674_INCLUDED)
 #define CPP_EXPRESSION_GRAMMAR_HPP_099CD1A4_A6C0_44BE_8F24_0B00F5BE5674_INCLUDED
 
+#include <boost/assert.hpp>
 #include <boost/spirit/core.hpp>
-#include <boost/spirit/core/assert.hpp>
 #include <boost/spirit/attribute/closure.hpp>
 #include <boost/spirit/dynamic/if.hpp>
 #if SPIRIT_VERSION >= 0x1700
@@ -91,7 +91,8 @@ namespace impl {
         };
 
         template <typename TokenT>
-        boost::wave::grammars::closures::closure_value operator()(TokenT const &token) const
+        boost::wave::grammars::closures::closure_value 
+        operator()(TokenT const &token) const
         { 
             typedef boost::wave::grammars::closures::closure_value return_t;
             bool is_unsigned = false;
@@ -117,7 +118,8 @@ namespace impl {
         };
 
         template <typename TokenT>
-        boost::wave::grammars::closures::closure_value operator()(TokenT const &token) const
+        boost::wave::grammars::closures::closure_value 
+        operator()(TokenT const &token) const
         { 
             typedef boost::wave::grammars::closures::closure_value return_t;
             return return_t(chlit_grammar_gen<TokenT>::evaluate(token));
@@ -139,8 +141,8 @@ namespace impl {
         };
 
         template <typename CondT, typename Arg1T, typename Arg2T>
-        boost::wave::grammars::closures::closure_value operator()(
-            CondT const &cond, Arg1T &val1, Arg2T const &val2) const
+        boost::wave::grammars::closures::closure_value 
+        operator()(CondT const &cond, Arg1T &val1, Arg2T const &val2) const
         { 
             typedef boost::wave::grammars::closures::closure_value return_t;
             return return_t(val1.handle_questionmark(cond, val2));
@@ -176,6 +178,7 @@ struct expression_grammar :
         typedef boost::spirit::rule<ScannerT> simple_rule_t;
 
         simple_rule_t pp_expression;
+        
         rule_t const_exp;
         rule_t logical_or_exp, logical_and_exp;
         rule_t inclusive_or_exp, exclusive_or_exp, and_exp;
@@ -291,8 +294,8 @@ struct expression_grammar :
                             >>  and_exp
                                 [
                                     exclusive_or_exp.val = 
-                                        static_cast_<unsigned int>(exclusive_or_exp.val)
-                                      ^ static_cast_<unsigned int>(arg1)
+                                          static_cast_<unsigned int>(exclusive_or_exp.val)
+                                      ^   static_cast_<unsigned int>(arg1)
                                 ]
                         )
                 ;
@@ -303,8 +306,8 @@ struct expression_grammar :
                             >>  cmp_equality
                                 [
                                     and_exp.val = 
-                                        static_cast_<unsigned int>(and_exp.val)
-                                      & static_cast_<unsigned int>(arg1)
+                                          static_cast_<unsigned int>(and_exp.val)
+                                      &   static_cast_<unsigned int>(arg1)
                                 ]
                         )
                 ;
@@ -401,8 +404,8 @@ struct expression_grammar :
                             >>  unary_exp
                                 [
                                     multiply_exp.val = 
-                                        static_cast_<int>(multiply_exp.val)
-                                      % static_cast_<int>(arg1)
+                                          static_cast_<int>(multiply_exp.val)
+                                      %   static_cast_<int>(arg1)
                                 ]
                         )
                 ;
@@ -579,7 +582,7 @@ struct expression_grammar :
             BOOST_SPIRIT_DEBUG_TRACE_RULE(constant, TRACE_CPP_EXPR_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(const_exp_subrule, TRACE_CPP_EXPR_GRAMMAR);
 
-            BOOST_SPIRIT_DEBUG_TRACE_RULE(const_exp, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(const_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(logical_or_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(logical_and_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(inclusive_or_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);

@@ -123,7 +123,7 @@ namespace cmd_line_util {
             return pair<string, string>();
     }
 
-    // class, which keeps include file information from the command line
+    // class, which keeps include file information read from the command line
     class include_paths {
     public:
         include_paths() : seen_separator(false) {}
@@ -158,14 +158,6 @@ namespace cmd_line_util {
             }            
         }
     };
-
-    // Workaround for a problem in the program_options library: all options 
-    // stored in a variables_map, which have an assigned validator function
-    // need an extraction operator.
-    std::istream& operator>>(std::istream& is, include_paths& p)
-    {
-        return is;
-    }
 
     // Read all options from a given config file, parse and add them to the
     // given variables_map
@@ -205,20 +197,40 @@ namespace cmd_line_util {
         }
     }
 
+    // predicate to extract all positional arguments from the command line
+    struct is_argument {
+        bool operator()(po::option const &opt)
+        {
+          return (opt.position_key == -1) ? true : false;
+        }
+    };
+
 ///////////////////////////////////////////////////////////////////////////////
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+//
+//  Special validator overload, which allows to handle the -I- syntax for
+//  switching the semantics of an -I option.
+//
+///////////////////////////////////////////////////////////////////////////////
+void 
+po::validator<cmd_line_util::include_paths>::operator()(
+    boost::any &v, std::vector<std::string> const &s) 
+{
+    cmd_line_util::include_paths::validate(v, s);
+}
+
+///////////////////////////////////////////////////////////////////////////////
 //  do the actual preprocessing
-int do_actual_work (po::options_and_arguments const opts, 
-    po::variables_map const &vm)
+int 
+do_actual_work (std::string file_name, po::variables_map const &vm)
 {
 // current file position is saved for exception handling
 boost::wave::util::file_position_t current_position;
 
     try {
     // process the given file
-    string file_name(opts.arguments().front());
     ifstream instream(file_name.c_str());
     string instring;
 
@@ -256,8 +268,8 @@ boost::wave::util::file_position_t current_position;
 
     // add include directories to the system include search paths
         if (vm.count("sysinclude")) {
-        vector<string> syspaths = vm["sysinclude"].as<vector<string> >();
-        
+            vector<string> const &syspaths = 
+                vm["sysinclude"].as<vector<string> >();
             vector<string>::const_iterator end = syspaths.end();
             for (vector<string>::const_iterator cit = syspaths.begin(); 
                  cit != end; ++cit)
@@ -293,7 +305,7 @@ boost::wave::util::file_position_t current_position;
     
     // add additional defined macros 
         if (vm.count("define")) {
-            vector<string> macros = vm["define"].as<vector<string> >();
+            vector<string> const &macros = vm["define"].as<vector<string> >();
             vector<string>::const_iterator end = macros.end();
             for (vector<string>::const_iterator cit = macros.begin(); 
                  cit != end; ++cit)
@@ -304,7 +316,8 @@ boost::wave::util::file_position_t current_position;
 
     // add additional predefined macros 
         if (vm.count("predefine")) {
-            vector<string> predefmacros = vm["predefine"].as<vector<string> >();
+            vector<string> const &predefmacros = 
+                vm["predefine"].as<vector<string> >();
             vector<string>::const_iterator end = predefmacros.end();
             for (vector<string>::const_iterator cit = predefmacros.begin(); 
                  cit != end; ++cit)
@@ -315,7 +328,8 @@ boost::wave::util::file_position_t current_position;
 
     // undefine specified macros
         if (vm.count("undefine")) {
-            vector<string> undefmacros = vm["undefine"].as<vector<string> >();
+            vector<string> const &undefmacros = 
+                vm["undefine"].as<vector<string> >();
             vector<string>::const_iterator end = undefmacros.end();
             for (vector<string>::const_iterator cit = undefmacros.begin(); 
                  cit != end; ++cit)
@@ -411,16 +425,15 @@ main (int argc, char const *argv[])
 {
     try {
     // analyze the command line options and arguments
-    vector<string> cfg_files;
     
     // declare the options allowed from the command line only
     po::options_description desc_cmdline ("Options allowed on the command line only");
         
         desc_cmdline.add_options()
-            ("help,h", "", "print out program usage (this message)")
-            ("version,v", "", "print the version number")
-            ("copyright,c", "", "print out the copyright statement")
-            ("config-file", po::parameter("filepath", &cfg_files),
+            ("help,h", "print out program usage (this message)")
+            ("version,v", "print the version number")
+            ("copyright,c", "print out the copyright statement")
+            ("config-file", po::value<vector<string> >(), 
                 "specify a config file (alternatively: @filepath)")
         ;
 
@@ -428,36 +441,34 @@ main (int argc, char const *argv[])
     po::options_description desc_generic ("Options allowed additionally in a config file");
 
         desc_generic.add_options()
-            ("output,o", "path", "specify a file to use for output instead of stdout")
-            ("include,I", "path", "specify an additional include directory").
-                validator(&cmd_line_util::include_paths::validate)
-            ("sysinclude,S", po::parameter<vector<string> >("syspath"), 
+            ("output,o", "specify a file to use for output instead of stdout")
+            ("include,I", po::value<cmd_line_util::include_paths>()->composing(), 
+                "specify an additional include directory")
+            ("sysinclude,S", po::value<vector<string> >()->composing(), 
                 "specify an additional system include directory")
-            ("define,D", po::parameter<vector<string> >("macro[=[value]]"), 
-                "specify a macro to define")
-            ("predefine,P", po::parameter<vector<string> >("macro[=[value]]"), 
-                "specify a macro to predefine")
-            ("undefine,U", po::parameter<vector<string> >("macro"), 
+            ("define,D", po::value<vector<string> >()->composing(), 
+                "specify a macro to define (as macro[=[value]])")
+            ("predefine,P", po::value<vector<string> >()->composing(), 
+                "specify a macro to predefine (as macro[=[value]])")
+            ("undefine,U", po::value<vector<string> >()->composing(), 
                 "specify a macro to undefine")
         ;
         
     // combine the options for the different usage schemes
     po::options_description desc_overall_cmdline;
-
-        desc_overall_cmdline.add(desc_cmdline);    
-        desc_overall_cmdline.add(desc_generic);
-
     po::options_description desc_overall_cfgfile;
 
+        desc_overall_cmdline.add(desc_cmdline).add(desc_generic);
         desc_overall_cfgfile.add(desc_generic);
         
     // parse command line and store results
-    po::options_and_arguments opts = po::parse_command_line(argc, argv, 
+    po::parsed_options opts = po::parse_command_line(argc, argv, 
         desc_overall_cmdline, 0, cmd_line_util::at_option_parser);
     po::variables_map vm;
     
-        po::store(opts, vm, desc_overall_cmdline);
-
+        po::store(opts, vm);
+        po::notify(vm);
+        
     // Try to find a waveidl.cfg in the same directory as the executable was 
     // started from. If this exists, treat it as a wave config file
     fs::path filename(argv[0], fs::native);
@@ -469,6 +480,8 @@ main (int argc, char const *argv[])
     // if there is specified at least one config file, parse it and add the 
     // options to the main variables_map
         if (vm.count("config-file")) {
+            vector<string> const &cfg_files = 
+                vm["config-file"].as<vector<string> >();
             vector<string>::const_iterator end = cfg_files.end();
             for (vector<string>::const_iterator cit = cfg_files.begin(); 
                  cit != end; ++cit)
@@ -484,8 +497,7 @@ main (int argc, char const *argv[])
         po::options_description desc_help (
             "Usage: waveidl [options] [@config-file(s)] file");
 
-            desc_help.add(desc_cmdline);    
-            desc_help.add(desc_generic);
+            desc_help.add(desc_cmdline).add(desc_generic);
             cout << desc_help << endl;
             return 1;
         }
@@ -498,15 +510,21 @@ main (int argc, char const *argv[])
             return print_copyright();
         }
         
+    // extract the arguments from the parsed command line
+    vector<po::option> arguments;
+    
+        std::remove_copy_if(opts.options.begin(), opts.options.end(), 
+            inserter(arguments, arguments.end()), cmd_line_util::is_argument());
+            
     // if there is no input file given, then exit
-        if (0 == opts.arguments().size()) {
+        if (0 == arguments.size() || 0 == arguments[0].value.size()) {
             cerr << "waveidl: no input file given, "
                  << "use --help to get a hint." << endl;
             return 5;
         }
 
     // preprocess the given input file
-        return do_actual_work(opts, vm);
+        return do_actual_work(arguments[0].value[0], vm);
     }
     catch (std::exception &e) {
         cout << "waveidl: exception caught: " << e.what() << endl;

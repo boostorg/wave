@@ -36,6 +36,7 @@ int main(int argc, char *argv[])
 boost::wave::util::file_position_t current_position;
 
     try {
+    //  Open and read in the specified input file.
     std::ifstream instream(argv[1]);
     std::string instring;
 
@@ -55,19 +56,22 @@ boost::wave::util::file_position_t current_position;
     //  be used by the Wave library.
         typedef boost::wave::cpplexer::lex_iterator<token_t> lex_iterator_t;
         
-    //  This is the resulting context type to use.
+    //  This is the resulting context type to use. The first template parameter
+    //  should match the iterator type to be used during construction of the
+    //  corresponding context object (see below).
         typedef boost::wave::context<std::string::iterator, lex_iterator_t>
             context_t;
 
     // The preprocessor iterator shouldn't be constructed directly. It is 
     // to be generated through a wave::context<> object. This wave:context<> 
-    // object is additionally to be used to initialize and define different 
-    // parameters of the actual preprocessing.
+    // object is to be used additionally to initialize and define different 
+    // parameters of the actual preprocessing (not done here).
+    //
     // The preprocessing of the input stream is done on the fly behind the 
     // scenes during iteration over the context_t::iterator_t stream.
     context_t ctx (instring.begin(), instring.end(), argv[1]);
 
-    // analyze the actual file
+    // analyze the input file
     context_t::iterator_t first = ctx.begin();
     context_t::iterator_t last = ctx.end();
         

@@ -16,6 +16,7 @@
 
 #include <boost/config.hpp>
 #include <boost/version.hpp>
+#include <boost/spirit/version.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Decide, whether to implement macro scopes (#scope/#endscope), variadics,
@@ -153,16 +154,36 @@
 //  names inside a file_position template class
 //
 #if !defined(BOOST_WAVE_STRINGTYPE)
-#define BOOST_WAVE_STRINGTYPE boost::wave::util::flex_string<                 \
-        char, std::char_traits<char>, std::allocator<char>,                   \
-            boost::wave::util::CowString<                                     \
-                boost::wave::util::AllocatorStringStorage<char> >             \
-    >                                                                         \
-    /**/
 
+// use the following, if you have a fast std::allocator<char>
+#define BOOST_WAVE_STRINGTYPE boost::wave::util::flex_string< \
+        char, std::char_traits<char>, std::allocator<char>, \
+        boost::wave::util::CowString</*char, */\
+            boost::wave::util::AllocatorStringStorage<char> \
+        > \
+    > \
+    /**/
+    
+//#define BOOST_WAVE_STRINGTYPE boost::wave::util::flex_string< \
+//        char, std::char_traits<char>, boost::fast_pool_allocator<char>, \
+//        boost::wave::util::CowString<char, \
+//            boost::wave::util::AllocatorStringStorage<char, \
+//              boost::fast_pool_allocator<char> \
+//            > \
+//        > \
+//    > \
+//    /**/
+    
 //  This include is needed for the flex_string class used in the 
 //  BOOST_WAVE_STRINGTYPE above.
 #include <boost/wave/util/flex_string.hpp>
+
+//  This include is needed for the boost::fast_allocator class used in the 
+//  BOOST_WAVE_STRINGTYPE above.
+//  Configure Boost.Pool thread support (for now: no thread support at all)
+#define BOOST_NO_MT
+#include <boost/pool/pool_alloc.hpp>
+
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -172,7 +193,7 @@
 //#define BOOST_SPIRIT_DEBUG
 
 ///////////////////////////////////////////////////////////////////////////////
-//  debug flags for the pp-iterator library, possible flags:
+//  debug flags for the Wave library, possible flags:
 #define BOOST_SPIRIT_DEBUG_FLAGS_CPP_GRAMMAR            0x0001
 #define BOOST_SPIRIT_DEBUG_FLAGS_TIME_CONVERSION        0x0002
 #define BOOST_SPIRIT_DEBUG_FLAGS_CPP_EXPR_GRAMMAR       0x0004
@@ -252,9 +273,10 @@
 #endif 
 
 ///////////////////////////////////////////////////////////////////////////////
-//  configure Boost.Pool thread support
-//  (for now: no thread support at all)
+//  configure Boost.Pool thread support (for now: no thread support at all)
+#if !defined(BOOST_NO_MT)
 #define BOOST_NO_MT
+#endif // !defined(BOOST_NO_MT)
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Auto library naming

@@ -65,13 +65,13 @@ class StoragePolicy
 */
 
 #include <boost/config.hpp>
+#include <boost/assert.hpp>
 
 #include <memory>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <functional>
-#include <cassert>
 #include <limits>
 #include <stdexcept>
 #include <cstddef>
@@ -284,7 +284,7 @@ private:
 
     void Init(size_type size, size_type capacity)
     {
-        assert(size <= capacity);
+        BOOST_ASSERT(size <= capacity);
         if (capacity == 0) 
         {
             pData_ = const_cast<Data*>(&emptyString_);
@@ -353,7 +353,7 @@ public:
 
     ~SimpleStringStorage()
     {
-        assert(begin() <= end());
+        BOOST_ASSERT(begin() <= end());
         if (pData_ != &emptyString_) free(pData_);
     }
 
@@ -520,7 +520,7 @@ class AllocatorStringStorage : public A
 
     void Init(size_type size, size_type cap)
     {
-        assert(size <= cap);
+        BOOST_ASSERT(size <= cap);
 
         if (cap == 0)
         {
@@ -763,7 +763,7 @@ public: // protected:
 
     void reserve(size_type res_arg)
     { 
-        assert(res_arg < max_size());
+        BOOST_ASSERT(res_arg < max_size());
         base::reserve(res_arg + 1); 
     }
     
@@ -850,14 +850,14 @@ private:
     
     Storage& GetStorage()
     {
-        assert(buf_[maxSmallString] == magic);
+        BOOST_ASSERT(buf_[maxSmallString] == magic);
         Storage* p = reinterpret_cast<Storage*>(&buf_[0]);
         return *p;
     }
     
     const Storage& GetStorage() const
     {
-        assert(buf_[maxSmallString] == magic);
+        BOOST_ASSERT(buf_[maxSmallString] == magic);
         const Storage *p = reinterpret_cast<const Storage*>(&buf_[0]);
         return *p;
     }
@@ -919,12 +919,9 @@ public:
     
     SmallStringOpt& operator=(const SmallStringOpt& rhs)
     {
-        if (&rhs != this)
-        {
-            reserve(rhs.size());
-            resize(0, 0);
-            append(rhs.data(), rhs.size());
-        }
+        reserve(rhs.size());
+        resize(0, 0);
+        append(rhs.data(), rhs.size());
         return *this;
     }
 
@@ -959,7 +956,7 @@ public:
     
     size_type size() const
     {
-        assert(!Small() || maxSmallString >= buf_[maxSmallString]);
+        BOOST_ASSERT(!Small() || maxSmallString >= buf_[maxSmallString]);
         return Small() 
             ? maxSmallString - buf_[maxSmallString] 
             : GetStorage().size();
@@ -987,7 +984,7 @@ public:
         {
             GetStorage().reserve(res_arg);
         }
-        assert(capacity() >= res_arg);
+        BOOST_ASSERT(capacity() >= res_arg);
     }
     
     void append(const value_type* s, size_type sz)
@@ -1005,7 +1002,7 @@ public:
             if (maxSmallString < neededCapacity)
             {
                 // need to change storage strategy
-				allocator_type alloc;
+                allocator_type alloc;
                 Storage temp(alloc);
                 temp.reserve(neededCapacity);
                 temp.append(buf_, maxSmallString - buf_[maxSmallString]);
@@ -1071,8 +1068,8 @@ public:
             else
             {
                 // Big string resized to small string
-                // 11-17=2001: bug fix in the assertion below
-                assert(capacity() > n);
+                // 11-17=2001: bug fix in the BOOST_ASSERTion below
+                BOOST_ASSERT(capacity() > n);
                 SmallStringOpt newObj(data(), n, get_allocator());
                 newObj.swap(*this);
             }
@@ -1168,21 +1165,21 @@ private:
     RefCountType GetRefs() const
     {
         const Storage& d = Data();
-        assert(d.size() > 0);
-        assert(static_cast<RefCountType>(*d.begin()) != 0);
+        BOOST_ASSERT(d.size() > 0);
+        BOOST_ASSERT(static_cast<RefCountType>(*d.begin()) != 0);
         return *d.begin();
     }
     
     RefCountType& Refs()
     {
         Storage& d = Data();
-        assert(d.size() > 0);
+        BOOST_ASSERT(d.size() > 0);
         return reinterpret_cast<RefCountType&>(*d.begin());
     }
     
     void MakeUnique() const
     {
-        assert(GetRefs() >= 1);
+        BOOST_ASSERT(GetRefs() >= 1);
         if (GetRefs() == 1) return;
 
         union
@@ -1211,7 +1208,7 @@ public:
             new(buf_) Storage(s.Data(), flex_string_details::Shallow());
             ++Refs();
         }
-        assert(Data().size() > 0);
+        BOOST_ASSERT(Data().size() > 0);
     }
     
     CowString(const allocator_type& a)
@@ -1238,26 +1235,39 @@ public:
     
     CowString& operator=(const CowString& rhs)
     {
-        CowString(rhs).swap(*this);
+//        CowString(rhs).swap(*this);
+        if (--Refs() == 0) Data().~Storage();
+        if (rhs.GetRefs() == std::numeric_limits<RefCountType>::max())
+        {
+            // must make a brand new copy
+            new(buf_) Storage(rhs.Data()); // non shallow
+            Refs() = 1;
+        }
+        else
+        {
+            new(buf_) Storage(rhs.Data(), flex_string_details::Shallow());
+            ++Refs();
+        }
+        BOOST_ASSERT(Data().size() > 0);
         return *this;
     }
 
     ~CowString()
     {
-        assert(Data().size() > 0);
+        BOOST_ASSERT(Data().size() > 0);
         if (--Refs() == 0) Data().~Storage();
     }
 
     iterator begin()
     {
-        assert(Data().size() > 0);
+        BOOST_ASSERT(Data().size() > 0);
         MakeUnique();
         return Data().begin() + 1; 
     }
     
     const_iterator begin() const
     {
-        assert(Data().size() > 0);
+        BOOST_ASSERT(Data().size() > 0);
         return Data().begin() + 1; 
     }
     
@@ -1274,25 +1284,25 @@ public:
     
     size_type size() const
     {
-        assert(Data().size() > 0);
+        BOOST_ASSERT(Data().size() > 0);
         return Data().size() - 1;
     }
 
     size_type max_size() const
     { 
-        assert(Data().max_size() > 0);
+        BOOST_ASSERT(Data().max_size() > 0);
         return Data().max_size() - 1;
     }
 
     size_type capacity() const
     { 
-        assert(Data().capacity() > 0);
+        BOOST_ASSERT(Data().capacity() > 0);
         return Data().capacity() - 1;
     }
 
     void resize(size_type n, E c)
     {
-        assert(Data().size() > 0);
+        BOOST_ASSERT(Data().size() > 0);
         MakeUnique();
         Data().resize(n + 1, c);
     }
@@ -1328,13 +1338,13 @@ public:
     
     const E* c_str() const
     { 
-        assert(Data().size() > 0);
+        BOOST_ASSERT(Data().size() > 0);
         return Data().c_str() + 1;
     }
 
     const E* data() const
     { 
-        assert(Data().size() > 0);
+        BOOST_ASSERT(Data().size() > 0);
         return Data().data() + 1;
     }
     
@@ -1363,7 +1373,7 @@ class flex_string : private Storage
 #else
     template <typename Exception>
     static inline void Enforce(bool condition, Exception*, const char* msg)
-    { assert(condition && msg); }
+    { BOOST_ASSERT(condition && msg); }
 #endif // defined(THROW_ON_ENFORCE)
 
     bool Sane() const
@@ -1383,11 +1393,11 @@ class flex_string : private Storage
     {
         Invariant(const flex_string& s) : s_(s)
         {
-            assert(s_.Sane());
+            BOOST_ASSERT(s_.Sane());
         }
         ~Invariant()
         {
-            assert(s_.Sane());
+            BOOST_ASSERT(s_.Sane());
         }
     private:
         const flex_string& s_;
@@ -1777,7 +1787,7 @@ public:
                     // d2 > s1
                     if (le(d2, s2))
                     {
-                        assert(aliased);
+                        BOOST_ASSERT(aliased);
                         pod_move(s1, d2, d1);
                         pod_move(d2 + delta, s2 + delta, d1 + (d2 - s1));
                     }
@@ -1881,7 +1891,7 @@ private:
     flex_string& ReplaceImpl(iterator i1, iterator i2,
         InputIterator b, InputIterator e, Selector<0>)
     { 
-        assert(false);
+        BOOST_ASSERT(false);
         return *this;
     }    
 

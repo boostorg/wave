@@ -14,14 +14,14 @@
 #if !defined(WAVE_VERSION_H_9D79ABDB_AC54_4C0A_89B1_F70A2DCFE21E_INCLUDED)
 #define WAVE_VERSION_H_9D79ABDB_AC54_4C0A_89B1_F70A2DCFE21E_INCLUDED
 
-//  BOOST_WAVE_VERSION & 0x00FF is the sub-minor version
-//  BOOST_WAVE_VERSION & 0x0F00 is the minor version
-//  BOOST_WAVE_VERSION & 0xF000 is the major version
-#define BOOST_WAVE_VERSION                 0x1102
+//  BOOST_WAVE_VERSION & 0x0000FF is the sub-minor version
+//  BOOST_WAVE_VERSION & 0x00FF00 is the minor version
+//  BOOST_WAVE_VERSION & 0xFF0000 is the major version
+#define BOOST_WAVE_VERSION                 0x010104
 
 //  The following defines contain the same information as above
 #define BOOST_WAVE_VERSION_MAJOR           1
 #define BOOST_WAVE_VERSION_MINOR           1
-#define BOOST_WAVE_VERSION_SUBMINOR        2
+#define BOOST_WAVE_VERSION_SUBMINOR        4
 
 #endif // !defined(WAVE_VERSION_H_9D79ABDB_AC54_4C0A_89B1_F70A2DCFE21E_INCLUDED)

@@ -27,8 +27,7 @@ namespace trace_policies {
 enum trace_flags {
     trace_nothing = 0,      // disable tracing
     trace_macros = 1,       // enable macro tracing
-    trace_includes = 2,     // enable include file tracing
-    trace_timer = 3         // enable timer tracing
+    trace_includes = 2      // enable include file tracing
 };
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -18,6 +18,7 @@
 //  It is available here: http://boost-sandbox.sourceforge.net/program_options.
 //
 #include <boost/program_options.hpp>
+#include <boost/program_options/value_semantic.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/timer.hpp>
 
@@ -97,7 +98,7 @@ int print_version()
 // print the copyright statement
 int print_copyright()
 {
-char const *copyright[] = {
+ char const *copyright[] = {
         "",
         "Wave: A Standard conformant C++ preprocessor",
         "Copyright (c) 2001-2004 Hartmut Kaiser",
@@ -128,7 +129,7 @@ namespace cmd_line_util {
             return pair<string, string>();
     }
 
-    // class, which keeps include file information from the command line
+    // class, which keeps include file information read from the command line
     class include_paths {
     public:
         include_paths() : seen_separator(false) {}
@@ -164,14 +165,6 @@ namespace cmd_line_util {
         }
     };
 
-    // Workaround for a problem in the program_options library: all options 
-    // stored in a variables_map, which have an assigned validator function
-    // need an extraction operator.
-    std::istream& operator>>(std::istream& is, include_paths& p)
-    {
-        return is;
-    }
-
     // Read all options from a given config file, parse and add them to the
     // given variables_map
     void read_config_file_options(string const &filename, 
@@ -204,13 +197,33 @@ namespace cmd_line_util {
         }
 
         if (options.size() > 0) {
-        po::options_and_arguments oa = po::parse_command_line(options, desc);
-
-            po::store(oa, vm, desc);
+            po::store(po::command_line_parser(options).options(desc).run(), vm);
+            po::notify(vm);
         }
     }
 
+    // predicate to extract all positional arguments from the command line
+    struct is_argument {
+        bool operator()(po::option const &opt)
+        {
+          return (opt.position_key == -1) ? true : false;
+        }
+    };
+
 ///////////////////////////////////////////////////////////////////////////////
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Special validator overload, which allows to handle the -I- syntax for
+//  switching the semantics of an -I option.
+//
+///////////////////////////////////////////////////////////////////////////////
+void 
+po::validator<cmd_line_util::include_paths>::operator()(
+    boost::any &v, std::vector<std::string> const &s) 
+{
+    cmd_line_util::include_paths::validate(v, s);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -243,15 +256,14 @@ namespace {
 
 ///////////////////////////////////////////////////////////////////////////////
 //  do the actual preprocessing
-int do_actual_work (po::options_and_arguments const opts, 
-    po::variables_map const &vm)
+int 
+do_actual_work (std::string file_name, po::variables_map const &vm)
 {
 // current file position is saved for exception handling
 boost::wave::util::file_position_t current_position;
 
     try {
     // process the given file
-    string file_name(opts.arguments().front());
     ifstream instream(file_name.c_str());
     string instring;
 
@@ -381,7 +393,7 @@ boost::wave::util::file_position_t current_position;
     
     // add additional defined macros 
         if (vm.count("define")) {
-            vector<string> macros = vm["define"].as<vector<string> >();
+            vector<string> const &macros = vm["define"].as<vector<string> >();
             vector<string>::const_iterator end = macros.end();
             for (vector<string>::const_iterator cit = macros.begin(); 
                  cit != end; ++cit)
@@ -392,7 +404,8 @@ boost::wave::util::file_position_t current_position;
 
     // add additional predefined macros 
         if (vm.count("predefine")) {
-            vector<string> predefmacros = vm["predefine"].as<vector<string> >();
+            vector<string> const &predefmacros = 
+                vm["predefine"].as<vector<string> >();
             vector<string>::const_iterator end = predefmacros.end();
             for (vector<string>::const_iterator cit = predefmacros.begin(); 
                  cit != end; ++cit)
@@ -403,7 +416,8 @@ boost::wave::util::file_position_t current_position;
 
     // undefine specified macros
         if (vm.count("undefine")) {
-            vector<string> undefmacros = vm["undefine"].as<vector<string> >();
+            vector<string> const &undefmacros = 
+                vm["undefine"].as<vector<string> >();
             vector<string>::const_iterator end = undefmacros.end();
             for (vector<string>::const_iterator cit = undefmacros.begin(); 
                  cit != end; ++cit)
@@ -452,7 +466,8 @@ boost::wave::util::file_position_t current_position;
         // add the filenames to force as include files in _reverse_ order
         // the second parameter 'is_last' for the force_include function should
         // be set to true for the last (first given) file.
-            vector<string> force = vm["forceinclude"].as<vector<string> >();
+            vector<string> const &force = 
+                vm["forceinclude"].as<vector<string> >();
             vector<string>::const_reverse_iterator rend = force.rend();
             for (vector<string>::const_reverse_iterator cit = force.rbegin(); 
                  cit != rend; /**/)
@@ -526,16 +541,15 @@ main (int argc, char const *argv[])
 {
     try {
     // analyze the command line options and arguments
-    vector<string> cfg_files;
     
     // declare the options allowed from the command line only
     po::options_description desc_cmdline ("Options allowed on the command line only");
         
         desc_cmdline.add_options()
-            ("help,h", "", "print out program usage (this message)")
-            ("version,v", "", "print the version number")
-            ("copyright,c", "", "print out the copyright statement")
-            ("config-file", po::parameter("filepath", &cfg_files),
+            ("help,h", "print out program usage (this message)")
+            ("version,v", "print the version number")
+            ("copyright,c", "print out the copyright statement")
+            ("config-file", po::value<vector<string> >(), 
                 "specify a config file (alternatively: @filepath)")
         ;
 
@@ -543,55 +557,52 @@ main (int argc, char const *argv[])
     po::options_description desc_generic ("Options allowed additionally in a config file");
 
         desc_generic.add_options()
-            ("output,o", "path", "specify a file to use for output instead of stdout")
-            ("include,I", "path", "specify an additional include directory").
-                validator(&cmd_line_util::include_paths::validate)
-            ("sysinclude,S", po::parameter<vector<string> >("syspath"), 
+            ("output,o", "specify a file to use for output instead of stdout")
+            ("include,I", po::value<cmd_line_util::include_paths>()->composing(), 
+                "specify an additional include directory")
+            ("sysinclude,S", po::value<vector<string> >()->composing(), 
                 "specify an additional system include directory")
-            ("forceinclude,F", po::parameter<vector<string> >("file"),
+            ("forceinclude,F", po::value<vector<string> >()->composing(),
                 "force inclusion of the given file")
-            ("define,D", po::parameter<vector<string> >("macro[=[value]]"), 
-                "specify a macro to define")
-            ("predefine,P", po::parameter<vector<string> >("macro[=[value]]"), 
-                "specify a macro to predefine")
-            ("undefine,U", po::parameter<vector<string> >("macro"), 
+            ("define,D", po::value<vector<string> >()->composing(), 
+                "specify a macro to define (as macro[=[value]])")
+            ("predefine,P", po::value<vector<string> >()->composing(), 
+                "specify a macro to predefine (as macro[=[value]])")
+            ("undefine,U", po::value<vector<string> >()->composing(), 
                 "specify a macro to undefine")
-            ("nesting,n", po::parameter<int>("depth"), 
+            ("nesting,n", po::value<int>(), 
                 "specify a new maximal include nesting depth")
         ;
         
     po::options_description desc_ext ("Extended options (allowed everywhere)");
 
         desc_ext.add_options()
-            ("traceto,t", "path", "output trace info to a file [path] or to stderr [-]")
-            ("timer", "", "output overall elapsed computing time to stderr")
+            ("traceto,t", po::value<string>(), 
+                "output trace info to a file [path] or to stderr [-]")
+            ("timer", "output overall elapsed computing time to stderr")
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
-            ("variadics", "", "enable certain C99 extensions in C++ mode")
-            ("c99", "", "enable C99 mode (implies --variadics)")
+            ("variadics", "enable certain C99 extensions in C++ mode")
+            ("c99", "enable C99 mode (implies --variadics)")
 #endif 
 #if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-            ("c++0x", "", "enable C++0x support (implies --variadics)")
+            ("c++0x", "enable C++0x support (implies --variadics)")
 #endif 
         ;
     
     // combine the options for the different usage schemes
     po::options_description desc_overall_cmdline;
-
-        desc_overall_cmdline.add(desc_cmdline);    
-        desc_overall_cmdline.add(desc_generic);
-        desc_overall_cmdline.add(desc_ext);
-
     po::options_description desc_overall_cfgfile;
 
-        desc_overall_cfgfile.add(desc_generic);
-        desc_overall_cfgfile.add(desc_ext);
+        desc_overall_cmdline.add(desc_cmdline).add(desc_generic).add(desc_ext);
+        desc_overall_cfgfile.add(desc_generic).add(desc_ext);
         
     // parse command line and store results
-    po::options_and_arguments opts = po::parse_command_line(argc, argv, 
-        desc_overall_cmdline, 0, cmd_line_util::at_option_parser);
+    po::parsed_options opts(po::parse_command_line(argc, argv, 
+            desc_overall_cmdline, 0, cmd_line_util::at_option_parser));
     po::variables_map vm;
     
-        po::store(opts, vm, desc_overall_cmdline);
+        po::store(opts, vm);
+        po::notify(vm);
 
     // Try to find a wave.cfg in the same directory as the executable was 
     // started from. If this exists, treat it as a wave config file
@@ -604,6 +615,8 @@ main (int argc, char const *argv[])
     // if there is specified at least one config file, parse it and add the 
     // options to the main variables_map
         if (vm.count("config-file")) {
+            vector<string> const &cfg_files = 
+                vm["config-file"].as<vector<string> >();
             vector<string>::const_iterator end = cfg_files.end();
             for (vector<string>::const_iterator cit = cfg_files.begin(); 
                  cit != end; ++cit)
@@ -619,9 +632,7 @@ main (int argc, char const *argv[])
         po::options_description desc_help (
             "Usage: wave [options] [@config-file(s)] file");
 
-            desc_help.add(desc_cmdline);    
-            desc_help.add(desc_generic);
-            desc_help.add(desc_ext);
+            desc_help.add(desc_cmdline).add(desc_generic).add(desc_ext);
             cout << desc_help << endl;
             return 1;
         }
@@ -633,16 +644,22 @@ main (int argc, char const *argv[])
         if (vm.count("copyright")) {
             return print_copyright();
         }
-        
+
+    // extract the arguments from the parsed command line
+    vector<po::option> arguments;
+    
+        std::remove_copy_if(opts.options.begin(), opts.options.end(), 
+            inserter(arguments, arguments.end()), cmd_line_util::is_argument());
+            
     // if there is no input file given, then exit
-        if (0 == opts.arguments().size()) {
+        if (0 == arguments.size() || 0 == arguments[0].value.size()) {
             cerr << "wave: no input file given, "
                  << "use --help to get a hint." << endl;
             return 5;
         }
 
     // preprocess the given input file
-        return do_actual_work(opts, vm);
+        return do_actual_work(arguments[0].value[0], vm);
     }
     catch (std::exception &e) {
         cout << "wave: exception caught: " << e.what() << endl;

@@ -99,14 +99,16 @@
 //  Define the string type to be used to store the token values and the file 
 //  names inside a file_position template class
 //
-
-// use the following, if you have a fast std::allocator<char>
 #define BOOST_WAVE_STRINGTYPE boost::wave::util::flex_string<                 \
         char, std::char_traits<char>, std::allocator<char>,                   \
-            boost::wave::util::CowString<                                     \
-                boost::wave::util::AllocatorStringStorage<char> >             \
+        boost::wave::util::CowString<                                         \
+            boost::wave::util::AllocatorStringStorage<char>                   \
+        >                                                                     \
     >                                                                         \
     /**/
+
+//  This include is needed for the flex_string class used in the 
+//  BOOST_WAVE_STRINGTYPE above.
 #include <boost/wave/util/flex_string.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -190,6 +192,10 @@
 //  To use the grammar inclusion model, uncomment the following 
 //
 #define BOOST_WAVE_SEPARATE_GRAMMAR_INSTANTIATION 1
+
+///////////////////////////////////////////////////////////////////////////////
+//  configure Boost.Pool thread support (for now: no thread support at all)
+#define BOOST_NO_MT
 
 ///////////////////////////////////////////////////////////////////////////////
 //  MSVC specific #pragma's

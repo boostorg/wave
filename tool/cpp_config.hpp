@@ -122,13 +122,33 @@
 //
 
 // use the following, if you have a fast std::allocator<char>
-#define BOOST_WAVE_STRINGTYPE wave::util::flex_string< \
+#define BOOST_WAVE_STRINGTYPE boost::wave::util::flex_string< \
         char, std::char_traits<char>, std::allocator<char>, \
-            wave::util::CowString</*char,*/ \
-                wave::util::AllocatorStringStorage<char> > \
+        boost::wave::util::CowString</*char, */\
+            boost::wave::util::AllocatorStringStorage<char> \
+        > \
     > \
     /**/
+    
+//#define BOOST_WAVE_STRINGTYPE boost::wave::util::flex_string< \
+//        char, std::char_traits<char>, boost::fast_pool_allocator<char>, \
+//        boost::wave::util::CowString<char, \
+//            boost::wave::util::AllocatorStringStorage<char, \
+//              boost::fast_pool_allocator<char> \
+//            > \
+//        > \
+//    > \
+//    /**/
+    
+//  This include is needed for the flex_string class used in the 
+//  BOOST_WAVE_STRINGTYPE above.
 #include <boost/wave/util/flex_string.hpp>
+
+//  This include is needed for the boost::fast_allocator class used in the 
+//  BOOST_WAVE_STRINGTYPE above.
+//  Configure Boost.Pool thread support (for now: no thread support at all)
+#define BOOST_NO_MT
+#include <boost/pool/pool_alloc.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Uncomment the following, if you need debug output, the 
@@ -148,7 +168,7 @@
     /**/
 
 ///////////////////////////////////////////////////////////////////////////////
-//  debug flags for the pp-iterator library, possible flags (defined in 
+//  debug flags for the Wave library, possible flags (defined in 
 //  wave_config.hpp):
 //
 //  #define BOOST_SPIRIT_DEBUG_FLAGS_CPP_GRAMMAR            0x0001
@@ -159,7 +179,7 @@
 //  #define BOOST_SPIRIT_DEBUG_FLAGS_DEFINED_GRAMMAR        0x0020
 //  #define BOOST_SPIRIT_DEBUG_FLAGS_PREDEF_MACROS_GRAMMAR  0x0040
 
-#define BOOST_SPIRIT_DEBUG_FLAGS_CPP (\
+#define BOOST_SPIRIT_DEBUG_FLAGS_CPP ( 0 | \
         /* insert the required flags from above */ \
     ) \
     /**/

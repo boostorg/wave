@@ -106,6 +106,7 @@ struct functor_input {
         {
             BOOST_SPIRIT_ASSERT(0 != data);
             data->curtok = (data->ftor)();
+            data->was_initialized = true;
         }
 
         bool input_at_eof() const

@@ -66,6 +66,19 @@ using std::istreambuf_iterator;
 namespace po = boost::program_options;
 
 ///////////////////////////////////////////////////////////////////////////////
+namespace cmd_line_util {
+
+    // predicate to extract all positional arguments from the command line
+    struct is_argument {
+        bool operator()(po::option const &opt)
+        {
+          return (opt.position_key == -1) ? true : false;
+        }
+    };
+///////////////////////////////////////////////////////////////////////////////
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // print the current version
 
 int print_version()
@@ -120,17 +133,15 @@ struct trace_include_files
 
 ///////////////////////////////////////////////////////////////////////////////
 //  
-int do_actual_work (
-    po::options_and_arguments const opts, po::variables_map const &vm, 
-    vector<string> const &pathes, vector<string> const &syspathes)
+int 
+do_actual_work(vector<string> const &arguments, po::variables_map const &vm)
 {
 // current file position is saved for exception handling
 boost::wave::util::file_position_t current_position;
 
     try {
-    vector<string> const &arguments = opts.arguments();
-    vector<string>::const_iterator lastfile = arguments.end();
-
+    // list the included files for all arguments given
+        vector<string>::const_iterator lastfile = arguments.end();
         for (vector<string>::const_iterator file_it = arguments.begin(); 
              file_it != lastfile; ++file_it)
         {
@@ -168,9 +179,11 @@ boost::wave::util::file_position_t current_position;
         context_t ctx (instring.begin(), instring.end(), (*file_it).c_str(), trace);
 
         // add include directories to the include path
-            if (vm.count("path")) {
-                vector<string>::const_iterator end = pathes.end();
-                for (vector<string>::const_iterator cit = pathes.begin(); 
+            if (vm.count("include")) {
+                vector<string> const &paths = 
+                    vm["include"].as<vector<string> >();
+                vector<string>::const_iterator end = paths.end();
+                for (vector<string>::const_iterator cit = paths.begin(); 
                      cit != end; ++cit)
                 {
                     ctx.add_include_path((*cit).c_str());
@@ -178,9 +191,11 @@ boost::wave::util::file_position_t current_position;
             }
             
         // add system include directories to the include path
-            if (vm.count("syspath")) {
-                vector<string>::const_iterator end = syspathes.end();
-                for (vector<string>::const_iterator cit = syspathes.begin(); 
+            if (vm.count("sysinclude")) {
+                vector<string> const &syspaths = 
+                    vm["sysinclude"].as<vector<string> >();
+                vector<string>::const_iterator end = syspaths.end();
+                for (vector<string>::const_iterator cit = syspaths.begin(); 
                      cit != end; ++cit)
                 {
                     ctx.add_sysinclude_path((*cit).c_str());
@@ -237,23 +252,24 @@ main (int argc, char const *argv[])
 {
     try {
     // analyze the command line options and arguments
-    vector<string> pathes;
     vector<string> syspathes;
     po::options_description desc("Usage: list_includes [options] file ...");
         
         desc.add_options()
-            ("help,h", "", "print out program usage (this message)")
-            ("version,v", "", "print the version number")
-            ("path,I", po::parameter<vector<string> >("dir", &pathes), 
+            ("help,h", "print out program usage (this message)")
+            ("version,v", "print the version number")
+            ("include,I", po::value<vector<string> >(), 
                 "specify additional include directory")
-            ("syspath,S", po::parameter<vector<string> >("dir", &syspathes), 
+            ("sysinclude,S", po::value<vector<string> >(), 
                 "specify additional system include directory")
         ;
 
-    po::options_and_arguments opts = po::parse_command_line(argc, argv, desc);
+    po::parsed_options opts = po::parse_command_line(argc, argv, desc);
     po::variables_map vm;
     
-        po::store(opts, vm, desc);
+        po::store(opts, vm);
+        po::notify(vm);
+        
         if (vm.count("help")) {
             cout << desc << endl;
             return 1;
@@ -263,15 +279,21 @@ main (int argc, char const *argv[])
             return print_version();
         }
 
+    // extract the arguments from the parsed command line
+    vector<po::option> arguments;
+    
+        std::remove_copy_if(opts.options.begin(), opts.options.end(), 
+            inserter(arguments, arguments.end()), cmd_line_util::is_argument());
+
     // if there is no input file given, then exit
-        if (0 == opts.arguments().size()) {
+        if (0 == arguments.size() || 0 == arguments[0].value.size()) {
             cerr << "list_includes: No input file given. "
                  << "Use --help to get a hint." << endl;
             return 5;
         }
 
     // iterate over all given input files
-        return do_actual_work(opts, vm, pathes, syspathes);
+        return do_actual_work(arguments[0].value , vm);
     }
     catch (std::exception &e) {
         cout << "list_includes: exception caught: " << e.what() << endl;

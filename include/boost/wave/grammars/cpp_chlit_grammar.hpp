@@ -147,11 +147,8 @@ struct chlit_grammar :
                                     [
                                         self.value = impl::compose(self.value, val('\\'))
                                     ]
-                                |   ch_p('x') >> hex_p
-                                    [
-                                        self.value = impl::compose(self.value, arg1)
-                                    ]
-                                |   uint_parser<unsigned int, 8, 1, 3>()
+                                |   ch_p('x') 
+                                    >>  uint_parser<unsigned int, 16, 2, 2>()
                                     [
                                         self.value = impl::compose(self.value, arg1)
                                     ]
@@ -165,9 +162,13 @@ struct chlit_grammar :
                                         [
                                             self.value = impl::compose(self.value, arg1)
                                         ]
+                                |   uint_parser<unsigned int, 8, 1, 3>()
+                                    [
+                                        self.value = impl::compose(self.value, arg1)
+                                    ]
                                 )
                             )
-                        |   eps_p(anychar_p - ch_p('\'')) >> anychar_p
+                        |   ~eps_p(ch_p('\'')) >> anychar_p
                             [
                                 self.value = impl::compose(self.value, arg1)
                             ]

@@ -17,6 +17,27 @@ TODO (known issues):
 - Fix the trigraph backslash problem in the re2c (C/C++ and IDL) scanners, if 
   there is the end of the (internal) buffer just in between a '??/' and a '\n'.
 
+Sun Mar 28 12:55:59 WEDT 2004
+Version 1.1.4
+- Fixed a problem, where the first returned token was lost, whenever a 
+  --forceinclude file was given.
+- Adjusted the Wave driver and the other samples to use the new program_options 
+  library syntax (V1.1.x only).
+  
+Mon Mar  1 19:14:21 WEST 2004
+Version 1.1.2
+Version 1.0.4
+- Fixed a problem, which does not report an error, if in a #define statement in 
+  between a macro name and its replacement list were no whitespace given.
+- Fixed a bug, which generated an unexpected exception of the $ character in the 
+  input.
+- Macro definitions, which differ by whitespace only (one definition contains 
+  whitespace at a certain position, the other definition does not) are correctly 
+  reported as a warning now.
+- Fixed a problem, where different formal argument names during macro 
+  redefinition were not flagged as a warning.
+- A wide character string used in a #line directive wasn't flagged as an error. 
+  
 Sun Feb 29 19:10:14 WEST 2004
 Used the test suite distributed with the mcpp V2.4 preprocessor to fix a bunch
 of mostly minor issues:
