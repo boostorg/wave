@@ -308,12 +308,13 @@ inline bool
 macromap<ContextT>::definition_equals(definition_container_type const &definition,
   definition_container_type const &new_definition)
 {
-    typedef definition_container_type::const_iterator const_iterator_type;
+    typedef typename definition_container_type::const_iterator 
+        const_iterator_type;
     
-typename const_iterator_type first1 = definition.begin();
-typename const_iterator_type last1 = definition.end();
-typename const_iterator_type first2 = new_definition.begin();
-typename const_iterator_type last2 = new_definition.end();
+const_iterator_type first1 = definition.begin();
+const_iterator_type last1 = definition.end();
+const_iterator_type first2 = new_definition.begin();
+const_iterator_type last2 = new_definition.end();
     
     while (first1 != last1 && token_equals(*first1, *first2)) {
     // skip whitespace, if both sequences have a whitespace next
@@ -350,11 +351,11 @@ macromap<ContextT>::parameters_equal(parameter_container_type const &parameters,
     if (parameters.size() != new_parameters.size())
         return false;   // different parameter count
         
-    typedef parameter_container_type::const_iterator const_iterator_type;
+    typedef typename parameter_container_type::const_iterator const_iterator_type;
     
-typename const_iterator_type first1 = parameters.begin();
-typename const_iterator_type last1 = parameters.end();
-typename const_iterator_type first2 = new_parameters.begin();
+const_iterator_type first1 = parameters.begin();
+const_iterator_type last1 = parameters.end();
+const_iterator_type first2 = new_parameters.begin();
 
     while (first1 != last1) {
     // parameters are different, if the corresponding tokens are different

@@ -18,6 +18,13 @@ TODO (known issues):
   
 - Do a sourceforge release.
 
+-------------------------------------------------------------------------------
+
+CHANGELOG
+
+- Fixed some typename errors in cpp_macromap.hpp (thanks to Vladimir Prus).
+
+Version 1.1.9
 - Moved all of the #pragma wave option(value) operators out of the wavelib into 
   the wave driver program. Removed enable_trace() and trace_flags() policy
   functions. Renamed trace_policy into context_policy.
