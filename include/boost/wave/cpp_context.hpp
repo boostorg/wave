@@ -278,8 +278,8 @@ public:
     
 private:
 // the main input stream
-    target_iterator_type const &first;  // underlying input stream
-    target_iterator_type const &last;
+    target_iterator_type first;         // underlying input stream
+    target_iterator_type last;
     std::string filename;               // associated main filename
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
     std::string current_filename;       // real name of current preprocessed file

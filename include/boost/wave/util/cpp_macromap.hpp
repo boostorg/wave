@@ -1501,18 +1501,21 @@ macromap<ContextT>::concat_tokensequence(ContainerT &expanded)
             if (boost::wave::need_variadics(ctx.get_language())) {
             // remove the prev, '##' and the next tokens from the sequence
                 expanded.erase(prev, ++next);       // remove not needed tokens   
-
+                
+            // some stl implementations clear() the container if we erased all
+            // the elements, which orphans all iterators. we re-initialise these 
+            // here
+                if (expanded.empty()) 
+                    end = next = expanded.end();
+                    
             // replace the old token (pointed to by *prev) with the retokenized
             // sequence
-//            typename ContainerT::reverse_iterator rit = rescanned.rbegin();
-//
-//                BOOST_ASSERT(rit != rescanned.rend());
-//                rescanned.erase((++rit).base());
                 expanded.splice(next, rescanned);
 
             // the last token of the inserted sequence is the new previous
                 prev = next;
-                --prev;
+                if (next != expanded.end())
+                    --prev;
             }
             else
 #endif // BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0

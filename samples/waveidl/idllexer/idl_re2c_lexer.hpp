@@ -102,7 +102,7 @@ lexer<IteratorT, PositionT>::lexer(IteratorT const &first,
     scanner.fd = -1;
     scanner.eol_offsets = aq_create();
     scanner.first = scanner.act = (uchar *)&(*first);
-    scanner.last = (uchar *)&(*last);
+    scanner.last = scanner.first + std::distance(first, last);
     scanner.line = 1;                   // start with line_no 1
     scanner.error_proc = report_error;
     scanner.file_name = filename.c_str();

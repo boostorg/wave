@@ -23,7 +23,15 @@ TODO (known issues):
 
 CHANGELOG
 
-Version 1.1.12
+Version 1.1.13
+- Fixed a problem, where the context<> template referenced temporary iterator
+  objects from the underlying stream (thanks to Michiel Salters for reporting
+  this).
+- Fixed a bug in the re2c lexer, which allowed to dereference the end iterator 
+  of the underlying input stream (thanks to Doug Gregor for pointing this out).
+- Fixed several assertions fired by the iterator checking code of the VC8 stl.
+
+Version 1.1.12 (Boost review candidate)
 - A rough performance analysis showed, that 30% of the time is spent parsing 
   the input for pp directives (cpp_grammar), 35% of the time is spent inside
   the flex_string code, mainly in the copy constructor and assignement 

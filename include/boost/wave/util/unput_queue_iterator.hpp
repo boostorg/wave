@@ -213,8 +213,11 @@ public:
     // objects are equal and the base iterators are equal as well
         OtherDerivedT const &rhs = static_cast<OtherDerivedT const &>(x);
         return 
-            (get_unput_queue().begin() == rhs.get_unput_queue().begin() ||
-              get_unput_queue().empty() && rhs.get_unput_queue().empty()) &&
+            (unput_queue.empty() && rhs.unput_queue.empty() ||
+              (&unput_queue == &rhs.unput_queue &&
+               unput_queue.begin() == rhs.unput_queue.begin()
+              )
+            ) &&
             get_base_iterator() == rhs.get_base_iterator(); 
     }
 

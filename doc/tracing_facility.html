@@ -57,7 +57,8 @@
 <span class="comment">    // this macro expansion is to be traced</span>
     CONCAT(X(1), Y())     <span class="comment">// should expand to 12</span>
 <span class="preprocessor">    #pragma</span> wave trace(disable)</pre>
-<p>When preprocessed with <tt>'wave -t test.trace test.cpp'</tt> the <tt>Wave</<!-- #BeginDate format:fcAm1m -->Wednesday, September 1, 2004  8:15<!-- #EndDate -->Date -->e 
+<p>When preprocessed with <tt>'wave -t test.trace test.cpp'</tt> the <tt>Wave</tt> 
+  driver generates a file <tt>test.trace</tt>, which contains (without the line 
   numbers in front of the lines):</p>
 <pre>  1: test.cpp(8): CONCAT(X(1), Y())
   2:   test.cpp(5): see macro definition: CONCAT(x, y)
@@ -153,10 +154,10 @@
 <font size="2">Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) </font> </p>
 <span class="updated"></span>
 <p class="copyright"><span class="updated">Last updated: 
-  <!-- #BeginDate format:fcAm1m -->Wednesday, September 1, 2004  8:15<!-- #EndDate -->
+  <!-- #BeginDate format:fcAm1m -->Wednesday, February 9, 2005  23:37<!-- #EndDate -->
   </span>
 </p>
 </body>
 </html>
 
-<!-- #BeginDate format:fcAm1m -->Monday, January 17, 2005  16:39<!-- #EndDate -->
+<!-- #BeginDate format:fcAm1m -->Wednesday, February 9, 2005  23:37<!-- #EndDate -->
