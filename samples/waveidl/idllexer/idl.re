@@ -39,10 +39,6 @@
 #if defined(_MSC_VER) && !defined(__COMO__)
 #pragma warning (disable: 4101)     // 'foo' : unreferenced local variable
 #pragma warning (disable: 4102)     // 'foo' : unreferenced label
-#if BOOST_WORKAROUND(_MSC_VER, BOOST_TESTED_AT(1310))
-// VC upto 7.1 is not able to optimize this file
-#pragma optimize("", off)
-#endif
 #endif
 
 #define BSIZE     196608
@@ -383,9 +379,9 @@ Backslash          = [\\]|"??/";
 EscapeSequence     = Backslash ([abfnrtv?'"] | Backslash | "x" HexDigit+ | OctalDigit OctalDigit? OctalDigit?);
 HexQuad            = HexDigit HexDigit HexDigit HexDigit;
 UniversalChar      = Backslash ("u" HexQuad | "U" HexQuad HexQuad);
-PPSpace            = ([ \t]|("/*"((any\[*\n\r])*|"*"+(any\[*/\n\r])*|"\n"|"\r"|"\r\n")*"*/"))*;
-Pound              = "#" | "??=" | "%:";
 Newline            = "\r\n" | "\n" | "\r";
+PPSpace            = ([ \t]|("/*"(any\[*]|Newline|("*"+(any\[*/]|Newline)))*"*"+"/"))*;
+Pound              = "#" | "??=" | "%:";
 */
 
 /*!re2c
