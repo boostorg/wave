@@ -16,6 +16,7 @@
 #include <boost/config.hpp>
 #include <boost/version.hpp>
 #include <boost/spirit/version.hpp>
+#include <boost/wave/wave_version.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Define the maximal include nesting depth allowed. If this value isn't 

@@ -71,8 +71,9 @@ main(int argc, char *argv[])
 //  which depends on the lexer type (provided by the second template 
 //  parameter). Our lexer type 'slex_iterator<>' depends on a custom token type
 //  'slex_token<>'. Our custom token type differs from the original one povided 
-//  by the Wave library only by defining an addition operator<<, which is used
-//  to dump the token information carried by a given token (see loop below).
+//  by the Wave library only by defining an additional operator<<(), which is 
+//  used to dump the token information carried by a given token (see loop 
+//  below).
     typedef boost::wave::cpp_token_sample::slex_token<> token_type;
     typedef boost::wave::cpp_token_sample::slex_iterator<token_type> 
         lex_iterator_type;

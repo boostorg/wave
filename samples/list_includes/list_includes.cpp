@@ -21,12 +21,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  include required boost libraries
 #include <boost/assert.hpp>
-
-///////////////////////////////////////////////////////////////////////////////
-//  This sample requires the program_options library written by Vladimir Prus,
-//  which is currently under Boost review. 
-//  It is available here: http://boost-sandbox.sourceforge.net/program_options
-//
 #include <boost/program_options.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -44,9 +38,9 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //  include lexer specifics, import lexer names
-#if !defined(BOOST_WAVE_SEPARATE_LEXER_INSTANTIATION)
+#if BOOST_WAVE_SEPARATE_LEXER_INSTANTIATION == 0
 #include <boost/wave/cpplexer/re2clex/cpp_re2c_lexer.hpp>
-#endif // !defined(BOOST_WAVE_SEPARATE_LEXER_INSTANTIATION)
+#endif 
 
 ///////////////////////////////////////////////////////////////////////////////
 //  import required names

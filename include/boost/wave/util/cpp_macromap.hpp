@@ -127,14 +127,6 @@ protected:
         unput_queue_iterator<IteratorT, token_type, ContainerT> const &last, 
         bool expand_operator_defined);
 
-// Expand all macros in the given replacement list and continue argument 
-// collection from the given input stream
-    template <typename IteratorT, typename ContainerT>
-    void expand_replacementlist_tokensequence(
-        ContainerT &expanded, ContainerT &replacement_list,
-        IteratorT &first, IteratorT const &last, 
-        bool expand_operator_defined);
-
 //  Collect all arguments supplied to a macro invocation
     template <typename IteratorT, typename ContainerT, typename SizeT>
     typename std::vector<ContainerT>::size_type collect_arguments (
@@ -561,8 +553,6 @@ macromap<ContextT>::collect_arguments (token_type const curr_token,
 {
     using namespace boost::wave;
 
-//on_exit::reset<bool> on_exit_next(next.get_allow_continuation(), true);
-
     arguments.push_back(ContainerT());
     
 // collect the actual arguments
@@ -726,51 +716,6 @@ ContainerT pending_queue;
 
 // should have returned all expanded tokens
     BOOST_ASSERT(pending_queue.empty()/* && unput_queue.empty()*/);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// 
-//  expand_replacementlist_tokensequence
-//
-//      fully expands a given replacement list and continues argument 
-//      collection from the given input stream if necessary
-//
-template <typename ContextT>
-template <typename IteratorT, typename ContainerT>
-inline void
-macromap<ContextT>::expand_replacementlist_tokensequence(ContainerT &expanded, 
-    ContainerT &replacement_list, IteratorT &first, IteratorT const &last, 
-    bool expand_operator_defined)
-{
-    typedef impl::gen_unput_queue_iterator<IteratorT, token_type, ContainerT> 
-        gen_type;
-    typedef typename gen_type::return_type iterator_type;
-
-iterator_type last_it = gen_type::generate(last, false);
-iterator_type first_it = gen_type::generate(replacement_list, first, false);
-
-on_exit::assign<IteratorT, iterator_type> on_exit(first, first_it);
-bool was_whitespace = false;
-ContainerT pending_queue;
-    
-    while (!pending_queue.empty() || !first_it.get_unput_queue().empty()) {
-    token_type t = expand_tokensequence_worker(pending_queue, first_it, 
-                    last_it, expand_operator_defined);
-    bool is_whitespace = IS_CATEGORY(t, WhiteSpaceTokenType) &&
-        T_PLACEHOLDER != token_id(t);
-
-        if (!was_whitespace || !is_whitespace) {
-            if (is_whitespace && T_SPACE != token_id(t)) {
-                t.set_token_id(T_SPACE);
-                t.set_value(" ");
-            }
-            expanded.push_back(t);
-        }
-        was_whitespace = is_whitespace;
-    }
-
-// should have returned all expanded tokens
-    BOOST_ASSERT(pending_queue.empty());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1005,8 +950,6 @@ macromap<ContextT>::rescan_replacement_list(token_type const &curr_token,
     // expansion isn't available as an expandable macro
     on_exit::reset<bool> on_exit(macro_def.is_available_for_replacement, false);
 
-//        expand_replacementlist_tokensequence(expanded, replacement_list, 
-//            nfirst, nlast, expand_operator_defined);     
         expand_whole_tokensequence(expanded, replacement_list.begin(), 
             replacement_list.end(), expand_operator_defined);     
         
@@ -1422,7 +1365,7 @@ macromap<ContextT>::is_valid_concat(string_type new_value,
     lexer_type it = lexer_type(value_to_test.begin(), value_to_test.end(), pos, 
         ctx.get_language());
     lexer_type end = lexer_type();
-    for (/**/; it != end; ++it) 
+    for (/**/; it != end && T_EOF != token_id(*it); ++it) 
         rescanned.push_back(*it);
 
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
@@ -1432,8 +1375,8 @@ macromap<ContextT>::is_valid_concat(string_type new_value,
         
 // test if the newly generated token sequence contains more than 1 token
 // the second one is the T_EOF token
-    BOOST_ASSERT(T_EOF == token_id(rescanned.back()));
-    return 2 == rescanned.size();
+//    BOOST_ASSERT(T_EOF == token_id(rescanned.back()));
+    return 1 == rescanned.size();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1549,10 +1492,10 @@ macromap<ContextT>::concat_tokensequence(ContainerT &expanded)
 
             // replace the old token (pointed to by *prev) with the retokenized
             // sequence
-            typename ContainerT::reverse_iterator rit = rescanned.rbegin();
-
-                BOOST_ASSERT(rit != rescanned.rend());
-                rescanned.erase((++rit).base());
+//            typename ContainerT::reverse_iterator rit = rescanned.rbegin();
+//
+//                BOOST_ASSERT(rit != rescanned.rend());
+//                rescanned.erase((++rit).base());
                 expanded.splice(next, rescanned);
 
             // the last token of the inserted sequence is the new previous

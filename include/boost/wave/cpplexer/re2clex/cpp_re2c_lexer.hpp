@@ -82,7 +82,7 @@ private:
     string_type value;
     bool at_eof;
     
-    token_cache<string_type> token_cache;
+    static token_cache<string_type> const cache;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -187,7 +187,7 @@ lexer<IteratorT, PositionT>::get()
             value = string_type((char const *)scanner.tok, scanner.cur-scanner.tok);
         }
         else {
-            value = token_cache.get_token_value(id);
+            value = cache.get_token_value(id);
         }
         break;
     }
@@ -245,6 +245,12 @@ private:
     lexer<IteratorT, PositionT> lexer;
 };
 
+///////////////////////////////////////////////////////////////////////////////
+template <typename IteratorT, typename PositionT>
+token_cache<typename lexer<IteratorT, PositionT>::string_type> const
+    lexer<IteratorT, PositionT>::cache = 
+        token_cache<typename lexer<IteratorT, PositionT>::string_type>();
+    
 }   // namespace re2clex
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -33,7 +33,7 @@ public:
         }
     }
 
-    StringT const &get_token_value(token_id id)
+    StringT const &get_token_value(token_id id) const
     {
         return cache[BASEID_FROM_TOKEN(id) - T_FIRST_TOKEN];
     }

@@ -12,12 +12,6 @@
 
 #include "idl.hpp"                  // global configuration
 
-///////////////////////////////////////////////////////////////////////////////
-//  This sample requires the program_options library written by Vladimir Prus,
-//  which is already accepted into Boost, but not included with the 
-//  distribution yet. 
-//  It is available here: http://boost-sandbox.sourceforge.net/program_options.
-//
 #include <boost/program_options.hpp>
 #include <boost/filesystem/path.hpp>
 
@@ -250,8 +244,8 @@ boost::wave::util::file_position_type current_position;
                           istreambuf_iterator<char>());
 #endif 
 
-    //  This sample uses the lex_iterator and lex_token types predefined with 
-    //  the Wave library, but it is possible to use your own types.
+    //  This sample uses the lex_token type predefined in the Wave library, but 
+    //  but uses a custom lexer type.
         typedef boost::wave::idllexer::lex_iterator<
                 boost::wave::cpplexer::lex_token<> >
             lex_iterator_type;

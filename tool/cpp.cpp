@@ -275,21 +275,25 @@ boost::wave::util::file_position_type current_position;
                           istreambuf_iterator<char>());
 #endif 
 
-    //  This sample uses the lex_iterator and lex_token types predefined with 
-    //  the Wave library, but it is possible to use your own types.
+    //  This application uses the lex_iterator and lex_token types predefined 
+    //  with the Wave library, but it is possible to use your own types.
+    //
+    //  You may want to have a look at the other samples to see how this is
+    //  possible to achieve.
         typedef boost::wave::cpplexer::lex_iterator<
                 boost::wave::cpplexer::lex_token<> >
             lex_iterator_type;
+
+    // The C++ preprocessor iterators shouldn't be constructed directly. They 
+    // are to be generated through a boost::wave::context<> object. This 
+    // boost::wave::context object is additionally to be used to initialize and 
+    // define different parameters of the actual preprocessing.
         typedef boost::wave::context<
                 std::string::iterator, lex_iterator_type,
                 boost::wave::iteration_context_policies::load_file_to_string,
                 trace_macro_expansion> 
             context_type;
 
-    // The C++ preprocessor iterators shouldn't be constructed directly. They 
-    // are to be generated through a boost::wave::context<> object. This 
-    // boost::wave::context object is additionally to be used to initialize and 
-    // define different parameters of the actual preprocessing.
     // The preprocessing of the input stream is done on the fly behind the 
     // scenes during iteration over the context_type::iterator_type stream.
     std::ofstream traceout;
@@ -316,7 +320,10 @@ boost::wave::util::file_position_type current_position;
             traceout.clear(cerr.rdstate());
             static_cast<std::basic_ios<char> &>(traceout).rdbuf(cerr.rdbuf());
         }
-        
+
+    // This this the central piece of the Wave library, it provides you with 
+    // the iterators to get the preprocessed tokens and allows to configure
+    // the preprocessing stage in advance.
     context_type ctx (instring.begin(), instring.end(), file_name.c_str(),
         trace_macro_expansion(traceout, enable_trace));
 
@@ -442,7 +449,7 @@ boost::wave::util::file_position_type current_position;
     // preprocess the required include files 
         if (vm.count("forceinclude")) {
         // add the filenames to force as include files in _reverse_ order
-        // the second parameter 'is_last' for the force_include function should
+        // the second parameter 'is_last' of the force_include function should
         // be set to true for the last (first given) file.
             vector<string> const &force = 
                 vm["forceinclude"].as<vector<string> >();
@@ -454,8 +461,9 @@ boost::wave::util::file_position_type current_position;
                 first.force_include(filename.c_str(), ++cit == rend);
             }
         }
-        
-    // loop over all generated tokens outputing the generated text 
+
+    // >>>>>>>>>>>>> Here the actual preprocessing happens. <<<<<<<<<<<<<<<<<<<
+    // loop over all generated tokens outputting the generated text 
         while (first != last) {
         // print out the string representation of this token (skip comments)
             using namespace boost::wave;
@@ -626,11 +634,10 @@ main (int argc, char *argv[])
             inserter(arguments, arguments.end()), cmd_line_util::is_argument());
             
     // if there is no input file given, then exit
-        if (0 == arguments.size() || 0 == arguments[0].value.size()) {
-//            cerr << "wave: no input file given, "
-//                 << "use --help to get a hint." << endl;
-//            return 5;
-        // preprocess the given input file
+        if (0 == arguments.size() || 0 == arguments[0].value.size() ||
+            arguments[0].value[0] == "-") 
+        {
+        // preprocess the given input from stdin
             return do_actual_work("stdin", std::cin, vm);
         }
         else {

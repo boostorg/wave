@@ -95,7 +95,9 @@ private:
 //            eof token equivalent
 //          - the lexer should implement a constructor taking two iterators
 //            pointing to the beginning and the end of the input stream and
-//            a third parameter containing the name of the parsed input file 
+//            a third parameter containing the name of the parsed input file,
+//            the 4th parameter contains the information about the mode the 
+//            preprocessor is used in (C99/C++ mode etc.)
 //
 ///////////////////////////////////////////////////////////////////////////////
 

@@ -23,6 +23,17 @@ TODO (known issues):
 
 CHANGELOG
 
+Version 1.1.12
+- A rough performance analysis showed, that 30% of the time is spent parsing 
+  the input for pp directives (cpp_grammar), 35% of the time is spent inside
+  the flex_string code, mainly in the copy constructor and assignement 
+  operator, 15% of the time is spent inside the list and vector member 
+  functions, 10% is spent for memory allocation but only 1% of the time is 
+  spent in the re2c lexer.
+- Identified a performance problem, where the token_cache was instantiated
+  for every created lexer object, but needed to be initialsed only once.
+- Added #include <wave_version.hpp> to wave_config.hpp
+
 Version 1.1.11
 - Updated copyrights.
 - Fixed some bugs introduced by the latest refactoring.
