@@ -254,7 +254,7 @@ typename defined_macros_type::iterator it = current_scope->find(name.get_value()
 // insert a new macro node
     std::pair<typename defined_macros_type::iterator, bool> p = 
         current_scope->insert(
-            defined_macros_type::value_type(
+            typename defined_macros_type::value_type(
                 name.get_value(), 
                 macro_ref_type(new macro_definition_type(name, 
                     has_parameters, is_predefined, ++macro_uid)
@@ -735,8 +735,14 @@ macromap<ContextT>::expand_argument (
 {
     if (!has_expanded_args[arg]) {
     // expand the argument only once
-        expand_whole_tokensequence(expanded_args[arg], arguments[arg].begin(), 
-            arguments[arg].end(), expand_operator_defined);
+        typedef typename std::vector<ContainerT>::value_type::iterator 
+            argument_iterator_type;
+            
+        argument_iterator_type begin_it = arguments[arg].begin();
+        argument_iterator_type end_it = arguments[arg].end();
+        
+        expand_whole_tokensequence(expanded_args[arg], begin_it, end_it,
+            expand_operator_defined);
         impl::remove_placeholders(expanded_args[arg]);
         has_expanded_args[arg] = true;
     }
@@ -949,9 +955,11 @@ macromap<ContextT>::rescan_replacement_list(token_type const &curr_token,
     // rescan the replacement list, during this rescan the current macro under
     // expansion isn't available as an expandable macro
     on_exit::reset<bool> on_exit(macro_def.is_available_for_replacement, false);
-
-        expand_whole_tokensequence(expanded, replacement_list.begin(), 
-            replacement_list.end(), expand_operator_defined);     
+    typename ContainerT::iterator begin_it = replacement_list.begin();
+    typename ContainerT::iterator end_it = replacement_list.end();
+    
+        expand_whole_tokensequence(expanded, begin_it, end_it, 
+            expand_operator_defined);     
         
     // trim replacement list, leave placeholder tokens untouched
         impl::trim_replacement_list(expanded);
@@ -1278,9 +1286,13 @@ macromap<ContextT>::resolve_operator_pragma(IteratorT &first,
     }
 
 // preprocess the pragma token body
+    typedef typename std::vector<ContainerT>::value_type::iterator
+        argument_iterator_type;
+        
     ContainerT expanded;
-    expand_whole_tokensequence(expanded, arguments[0].begin(), 
-        arguments[0].end(), false);
+    argument_iterator_type begin_it = arguments[0].begin();
+    argument_iterator_type end_it = arguments[0].end();
+    expand_whole_tokensequence(expanded, begin_it, end_it, false);
 
 // unescape the parameter of the operator _Pragma
     typedef typename token_type::string_type string_type;

@@ -1696,7 +1696,7 @@ public:
     
     void force_include(char const *path_, bool is_last)
     { 
-        get_functor().on_include_helper(path_, false, false); 
+        this->get_functor().on_include_helper(path_, false, false); 
         if (is_last) {
             this->functor_input_t::
                 template inner<input_policy_type>::advance_input();
