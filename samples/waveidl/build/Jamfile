@@ -23,7 +23,7 @@ exe waveidl
       <lib>../../../../../libs/filesystem/build/boost_filesystem
     :
       <sysinclude>$(BOOST_ROOT)
-      <vc7.1><*><rtti>off        # workaround for compiler bug
+      <vc-7_1><*><rtti>off        # workaround for compiler bug
     :
       <runtime-link>static
       <threading>single

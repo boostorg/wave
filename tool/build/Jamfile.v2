@@ -14,7 +14,7 @@ exe wave
       ../../../libs/program_options/build//boost_program_options
       ../../../libs/filesystem/build//boost_filesystem
     :
-      <vc7.1><*><rtti>off        # workaround for compiler bug
+      <toolset>vc-7_1:<rtti>off     # workaround for compiler bug
     :
       release
       <runtime-link>static
