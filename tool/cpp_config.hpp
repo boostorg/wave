@@ -76,7 +76,7 @@
 #define BOOST_WAVE_SUPPORT_INCLUDE_NEXT 1
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Undefine the following, to enable some MS specific language extensions:
+//  Uncomment the following, to enable some MS specific language extensions:
 //  __int8, __int16, __int32, __int64, __based, __declspec, __cdecl, 
 //  __fastcall, __stdcall, __try, __except, __finally, __leave, __inline,
 //  __asm
@@ -193,7 +193,7 @@
 //
 //  If this is defined, you should explicitly instantiate the C++ lexer
 //  template with the correct parameters in a separate compilation unit of
-//  your program (see the files instantiate_slex_lexer.cpp and
+//  your program (see the files instantiate_re2c_lexer_string.cpp and
 //  instantiate_re2c_lexer.cpp). 
 //
 //  To use the lexer inclusion model, uncomment the following 
@@ -206,7 +206,7 @@
 //
 //  If this is defined, you should explicitly instantiate the grammar
 //  templates with the correct parameters in a separate compilation unit of
-//  your program (see the files instantiate_cpp_grammar.cpp). 
+//  your program (see the files instantiate_cpp_grammar.cpp et.al.). 
 //
 //  To use the grammar inclusion model, uncomment the following 
 //

@@ -26,8 +26,8 @@
 
 #ifdef BOOST_NO_STRINGSTREAM
 #include <strstream>
-#define WAVE_OSSTREAM std::ostrstream
-std::string WAVE_GETSTRING(std::ostrstream& ss)
+#define BOOST_WAVE_OSSTREAM std::ostrstream
+std::string BOOST_WAVE_GETSTRING(std::ostrstream& ss)
 {
     ss << ends;
     std::string rval = ss.str();
@@ -36,8 +36,8 @@ std::string WAVE_GETSTRING(std::ostrstream& ss)
 }
 #else
 #include <sstream>
-#define WAVE_GETSTRING(ss) ss.str()
-#define WAVE_OSSTREAM std::ostringstream
+#define BOOST_WAVE_GETSTRING(ss) ss.str()
+#define BOOST_WAVE_OSSTREAM std::ostringstream
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -181,7 +181,7 @@ public:
         
         if (0 == get_level()) {
         // output header line
-        WAVE_OSSTREAM stream;
+        BOOST_WAVE_OSSTREAM stream;
 
             stream 
                 << macrocall.get_position() << ": "
@@ -194,13 +194,13 @@ public:
                     stream << ", ";
             }
             stream << ")" << std::endl; 
-            output(WAVE_GETSTRING(stream));
+            output(BOOST_WAVE_GETSTRING(stream));
             increment_level();
         }        
         
     // output definition reference
         {
-        WAVE_OSSTREAM stream;
+        BOOST_WAVE_OSSTREAM stream;
 
             stream 
                 << macrodef.get_position() << ": see macro definition: "
@@ -215,7 +215,7 @@ public:
                     stream << ", ";
             }
             stream << ")" << std::endl; 
-            output(WAVE_GETSTRING(stream));
+            output(BOOST_WAVE_GETSTRING(stream));
         }
 
         if (formal_args.size() > 0) {
@@ -226,9 +226,9 @@ public:
             {
                 using namespace boost::wave;
 
-                WAVE_OSSTREAM stream;
+                BOOST_WAVE_OSSTREAM stream;
                 stream << formal_args[j].get_value() << " = ";
-#if WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
+#if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
                 if (T_ELLIPSIS == token_id(formal_args[j])) {
                 // ellipsis
                     for (typename ContainerT::size_type k = j; 
@@ -245,7 +245,7 @@ public:
                     stream << boost::wave::util::impl::as_string(arguments[j]);
                 }
                 stream << std::endl;
-                output(WAVE_GETSTRING(stream));
+                output(BOOST_WAVE_GETSTRING(stream));
             }
             close_trace_body();
         }
@@ -273,23 +273,23 @@ public:
         
         if (0 == get_level()) {
         // output header line
-        WAVE_OSSTREAM stream;
+        BOOST_WAVE_OSSTREAM stream;
 
             stream 
                 << macrocall.get_position() << ": "
                 << macrocall.get_value() << std::endl;
-            output(WAVE_GETSTRING(stream));
+            output(BOOST_WAVE_GETSTRING(stream));
             increment_level();
         }
         
     // output definition reference
         {
-        WAVE_OSSTREAM stream;
+        BOOST_WAVE_OSSTREAM stream;
 
             stream 
                 << macrodef.get_position() << ": see macro definition: "
                 << macrodef.get_value() << std::endl;
-            output(WAVE_GETSTRING(stream));
+            output(BOOST_WAVE_GETSTRING(stream));
         }
         open_trace_body();
     }
@@ -308,9 +308,9 @@ public:
     {
         if (!enabled_macro_tracing()) return;
         
-        WAVE_OSSTREAM stream;
+        BOOST_WAVE_OSSTREAM stream;
         stream << boost::wave::util::impl::as_string(result) << std::endl;
-        output(WAVE_GETSTRING(stream));
+        output(BOOST_WAVE_GETSTRING(stream));
 
         open_trace_body("rescanning\n");
     }
@@ -330,9 +330,9 @@ public:
         if (!enabled_macro_tracing() || get_level() == 0) 
             return;
 
-        WAVE_OSSTREAM stream;
+        BOOST_WAVE_OSSTREAM stream;
         stream << boost::wave::util::impl::as_string(result) << std::endl;
-        output(WAVE_GETSTRING(stream));
+        output(BOOST_WAVE_GETSTRING(stream));
         close_trace_body();
         close_trace_body();
         
@@ -465,7 +465,7 @@ private:
     stop_watch elapsed_time;        // trace timings
 };
 
-#undef WAVE_GETSTRING
-#undef WAVE_OSSTREAM
+#undef BOOST_WAVE_GETSTRING
+#undef BOOST_WAVE_OSSTREAM
 
 #endif // !defined(TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)
