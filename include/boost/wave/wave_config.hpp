@@ -5,7 +5,7 @@
     
     http://spirit.sourceforge.net/
 
-    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2005 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -256,6 +256,12 @@
     !defined(BOOST_WAVE_NO_LIB)
 
 #define BOOST_LIB_NAME boost_wave
+
+// tell the auto-link code to select a dll when required:
+#if defined(BOOST_ALL_DYN_LINK) || defined(BOOST_WAVE_DYN_LINK)
+#define BOOST_DYN_LINK
+#endif
+
 #include <boost/config/auto_link.hpp>
 
 #endif  // auto-linking disabled

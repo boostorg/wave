@@ -5,7 +5,7 @@
     
     http://spirit.sourceforge.net/
 
-    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2005 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -13,6 +13,8 @@
 #define UNPUT_QUEUE_ITERATOR_HPP_76DA23D0_4893_4AD5_ABCC_6CED7CFB89BC_INCLUDED
 
 #include <list>
+
+#include <boost/assert.hpp>
 #include <boost/iterator_adaptors.hpp>
 
 #include <boost/wave/wave_config.hpp>
@@ -71,7 +73,7 @@ public:
     equal(const IteratorAdaptorT1 &x, const IteratorAdaptorT2 &y) const
     { 
     // two iterators are equal, if both begin() iterators of the queue objects
-    // are equal and the base iterators too
+    // are equal and the base iterators are equal as well
         return 
            (x.policies().unput_queue.begin() == y.policies().unput_queue.begin() ||
             (0 == x.policies().queuesize() && 0 == y.policies().queuesize())) &&
@@ -82,6 +84,7 @@ public:
     { return unput_queue.size(); }
 
     ContainerT &get_unput_queue() { return unput_queue; }
+    ContainerT const &get_unput_queue() const { return unput_queue; }
     
 private:
     ContainerT &unput_queue;
@@ -108,19 +111,25 @@ class unput_queue_iterator
             IteratorT, unput_queue_policies<TokenT, ContainerT>, TokenT, 
             TokenT const &, TokenT const *
         >
-        base_t;
-    typedef unput_queue_policies<TokenT, ContainerT> policies_t;
+        base_type;
+    typedef unput_queue_policies<TokenT, ContainerT> policies_type;
         
 public:
-    typedef ContainerT  container_t;
+    typedef ContainerT  container_type;
     typedef IteratorT   iterator_type;
     
     unput_queue_iterator(IteratorT const &it, ContainerT &queue)
-    :   base_t(it, policies_t(queue))
+    :   base_type(it, policies_type(queue))
     {}
     
-    ContainerT &get_unput_queue() { return policies().get_unput_queue(); }
-    IteratorT &get_base_iterator() { return base(); }
+    ContainerT &get_unput_queue() 
+        { return policies().get_unput_queue(); }
+    ContainerT const &get_unput_queue() const 
+        { return policies().get_unput_queue(); }
+    IteratorT &get_base_iterator() 
+        { return base(); }
+    IteratorT const &get_base_iterator() const 
+        { return base(); }
 };
 
 #else // BOOST_ITERATOR_ADAPTORS_VERSION < 0x0200
@@ -132,7 +141,7 @@ public:
 //      The unput_queue_iterator templates encapsulates an unput_queue together
 //      with the direct input to be read after the unput queue is emptied
 //
-//      This version is for the new iterator_adaptors (should be released with
+//      This version is for the new iterator_adaptors (was released with
 //      Boost V1.31.0)
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -145,46 +154,50 @@ class unput_queue_iterator
     typedef boost::iterator_adaptor<
                 unput_queue_iterator<IteratorT, TokenT, ContainerT>, 
                 IteratorT, TokenT const, std::forward_iterator_tag>
-        base_t;
+        base_type;
         
 public:
-    typedef ContainerT  container_t;
+    typedef ContainerT  container_type;
     typedef IteratorT   iterator_type;
-    
+
     unput_queue_iterator(IteratorT const &it, ContainerT &queue)
-    :   base_t(it), unput_queue(queue)
+    :   base_type(it), unput_queue(queue)
     {}
     
-    ContainerT &get_unput_queue() { return unput_queue; }
-    ContainerT const &get_unput_queue() const { return unput_queue; }
-    IteratorT &get_base_iterator() { return base_t::base_reference(); }
-    IteratorT const &get_base_iterator() const { return base_t::base_reference(); }
+    ContainerT &get_unput_queue() 
+        { return unput_queue; }
+    ContainerT const &get_unput_queue() const 
+        { return unput_queue; }
+    IteratorT &get_base_iterator() 
+        { return base_type::base_reference(); }
+    IteratorT const &get_base_iterator() const 
+        { return base_type::base_reference(); }
     
     unput_queue_iterator &operator= (unput_queue_iterator const &rhs)
     { 
         if (this != &rhs) {
             unput_queue = rhs.unput_queue; 
-            base_t::operator=(rhs);
+            base_type::operator=(rhs);
         }
         return *this; 
     }
 
-    typename base_t::reference dereference() const
+    typename base_type::reference dereference() const
     {
-        if (unput_queue.size() > 0)
+        if (!unput_queue.empty())
             return unput_queue.front();
-        return *base_t::base_reference(); 
+        return *base_type::base_reference(); 
     }
 
     void increment()
     { 
-        if (unput_queue.size() > 0) {
+        if (!unput_queue.empty()) {
         // there exist pending tokens in the unput queue
             unput_queue.pop_front();
         }
         else {
         // the unput_queue is empty, so advance the base iterator
-            ++base_t::base_reference(); 
+            ++base_type::base_reference(); 
         }
     }
 
@@ -196,12 +209,12 @@ public:
         boost::iterator_adaptor<OtherDerivedT, OtherIteratorT, V, C, R, D> 
         const &x) const
     {
-    // two iterators are equal, if both begin() iterators of the queue objects
-    // are equal and the base iterators too
+    // two iterators are equal, if both begin() iterators of the queue 
+    // objects are equal and the base iterators are equal as well
         OtherDerivedT const &rhs = static_cast<OtherDerivedT const &>(x);
         return 
-            (unput_queue.begin() == rhs.get_unput_queue().begin() ||
-                (0 == unput_queue.size() && 0 == rhs.get_unput_queue().size())) &&
+            (get_unput_queue().begin() == rhs.get_unput_queue().begin() ||
+              get_unput_queue().empty() && rhs.get_unput_queue().empty()) &&
             get_base_iterator() == rhs.get_base_iterator(); 
     }
 
@@ -215,26 +228,57 @@ namespace impl {
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename IteratorT, typename TokenT, typename ContainerT>
-    struct gen_unput_queue_iterator {
-    
-        typedef unput_queue_iterator<IteratorT, TokenT, ContainerT> return_t;
+    struct gen_unput_queue_iterator 
+    {
+        typedef ContainerT  container_type;
+        typedef IteratorT iterator_type;
+        typedef unput_queue_iterator<IteratorT, TokenT, ContainerT> 
+            return_type;
+                
+        static container_type last;
         
-        static return_t
-        generate(ContainerT &queue, IteratorT const &it)
+        static return_type
+        generate(iterator_type const &it)
         {
-            return return_t(it, queue);
+            return return_type(it, last);
+        }
+
+        static return_type
+        generate(ContainerT &queue, iterator_type const &it)
+        {
+            return return_type(it, queue);
         }
     };
     
+    template <typename IteratorT, typename TokenT, typename ContainerT>
+    typename gen_unput_queue_iterator<IteratorT, TokenT, ContainerT>::
+          container_type  
+        gen_unput_queue_iterator<IteratorT, TokenT, ContainerT>::last = 
+            typename gen_unput_queue_iterator<IteratorT, TokenT, ContainerT>::
+                  container_type();
+
+    ///////////////////////////////////////////////////////////////////////////
     template <typename IteratorT, typename TokenT, typename ContainerT>
     struct gen_unput_queue_iterator<
         unput_queue_iterator<IteratorT, TokenT, ContainerT>, 
             TokenT, ContainerT> 
     {
-        typedef unput_queue_iterator<IteratorT, TokenT, ContainerT> return_t;
+        typedef ContainerT  container_type;
+        typedef unput_queue_iterator<IteratorT, TokenT, ContainerT> 
+            iterator_type;
+        typedef unput_queue_iterator<IteratorT, TokenT, ContainerT> 
+            return_type;
         
-        static return_t 
-        generate(ContainerT &queue, return_t const &it)
+        static container_type last;
+        
+        static return_type 
+        generate(iterator_type &it)
+        {
+            return return_t(it.base(), last);
+        }
+
+        static return_type 
+        generate(ContainerT &queue, iterator_type &it)
         {
             return return_t(it.base(), queue);
         }
@@ -258,7 +302,8 @@ namespace impl {
     struct assign_iterator<
         unput_queue_iterator<IteratorT, TokenT, ContainerT> > 
     {
-        typedef unput_queue_iterator<IteratorT, TokenT, ContainerT> iterator_type;
+        typedef unput_queue_iterator<IteratorT, TokenT, ContainerT> 
+            iterator_type;
         
         static void 
         do_ (iterator_type &dest, iterator_type const &src)
@@ -311,12 +356,12 @@ namespace impl {
         {
             using namespace boost::wave;
             
-        typename iterator_type::container_t &queue = it.get_unput_queue();
+        typename iterator_type::container_type &queue = it.get_unput_queue();
         
         // first try to find it in the unput_queue
             if (0 != queue.size()) {
-            typename iterator_type::container_t::iterator cit = queue.begin();
-            typename iterator_type::container_t::iterator cend = queue.end();
+            typename iterator_type::container_type::iterator cit = queue.begin();
+            typename iterator_type::container_type::iterator cend = queue.end();
 
                 if (skip_whitespace) {            
                     for (++cit; cit != cend; ++cit) {

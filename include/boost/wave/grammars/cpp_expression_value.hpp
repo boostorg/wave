@@ -3,7 +3,7 @@
 
     http://spirit.sourceforge.net/
 
-    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2005 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -31,9 +31,6 @@ namespace closures {
 //
 ///////////////////////////////////////////////////////////////////////////////
 class closure_value {
-
-    typedef unsigned long ulong_t;
-
 public:
 
     enum value_type {
@@ -54,7 +51,7 @@ public:
     explicit closure_value(long i, bool valid_ = true) 
     : type(is_int), valid(valid_) 
     { value.i = i; }
-    explicit closure_value(ulong_t ui, bool valid_ = true) 
+    explicit closure_value(unsigned long ui, bool valid_ = true) 
     : type(is_uint), valid(valid_) 
     { value.ui = ui; }
     explicit closure_value(bool b, bool valid_ = true) 
@@ -92,7 +89,7 @@ public:
         }
         return value.i;
     }
-    operator ulong_t() const 
+    operator unsigned long() const 
     {
         switch (type) {
         case is_uint:   return value.ui;
@@ -121,7 +118,7 @@ public:
             break;
         
         case is_uint:   
-            value.ui = ulong_t(rhs); 
+            value.ui = unsigned long(rhs); 
             type = is_uint;
             break;
         
@@ -154,7 +151,7 @@ public:
         valid = true;
         return *this;
     }
-    closure_value &operator= (ulong_t rhs)
+    closure_value &operator= (unsigned long rhs)
     {
         type = is_uint;
         value.ui = rhs;
@@ -181,7 +178,7 @@ public:
             }
             break;
             
-        case is_uint:   value.ui += ulong_t(rhs); break;
+        case is_uint:   value.ui += unsigned long(rhs); break;
         case is_bool:   
             value.i = value.b + bool(rhs);
             type = is_int;
@@ -200,7 +197,7 @@ public:
             }
             break;
             
-        case is_uint:   value.ui -= ulong_t(rhs); break;
+        case is_uint:   value.ui -= unsigned long(rhs); break;
         case is_bool:   
             value.i = value.b - bool(rhs);
             type = is_int;
@@ -219,7 +216,7 @@ public:
             }
             break;
             
-        case is_uint:   value.ui *= ulong_t(rhs); break;
+        case is_uint:   value.ui *= unsigned long(rhs); break;
         case is_bool:
             switch (rhs.type) {
             case is_int:
@@ -266,8 +263,8 @@ public:
             break;
             
         case is_uint: 
-            if (valid && ulong_t(rhs) != 0) 
-                value.ui /= ulong_t(rhs); 
+            if (valid && unsigned long(rhs) != 0) 
+                value.ui /= unsigned long(rhs); 
             else
                 valid = false;      // division by zero
             break;
@@ -304,7 +301,7 @@ public:
         case is_bool:   return closure_value(!bool(rhs), rhs.valid); 
         case is_uint:   break;
         }
-        return closure_value(-(int)ulong_t(rhs), rhs.valid);
+        return closure_value(-(int)unsigned long(rhs), rhs.valid);
     }
     friend closure_value 
     operator! (closure_value const &rhs)
@@ -314,7 +311,7 @@ public:
         case is_bool:   return closure_value(!bool(rhs), rhs.valid); 
         case is_uint:   break;
         }
-        return closure_value(!ulong_t(rhs), rhs.valid);
+        return closure_value(!unsigned long(rhs), rhs.valid);
     }
     
 // comparison
@@ -331,7 +328,7 @@ public:
             }
             break;
             
-        case is_uint:   cmp = lhs.value.ui == ulong_t(rhs); break;
+        case is_uint:   cmp = lhs.value.ui == unsigned long(rhs); break;
         case is_bool:   cmp = lhs.value.b == bool(rhs); break;
         }
         return closure_value(cmp, lhs.valid && rhs.valid);
@@ -354,7 +351,7 @@ public:
             }
             break;
             
-        case is_uint:   cmp = lhs.value.ui > ulong_t(rhs); break;
+        case is_uint:   cmp = lhs.value.ui > unsigned long(rhs); break;
         case is_bool:   cmp = lhs.value.b > bool(rhs); break;
         }
         return closure_value(cmp, lhs.valid && rhs.valid);
@@ -372,7 +369,7 @@ public:
             }
             break;
             
-        case is_uint:   cmp = lhs.value.ui < ulong_t(rhs); break;
+        case is_uint:   cmp = lhs.value.ui < unsigned long(rhs); break;
         case is_bool:   cmp = bool(lhs) < bool(rhs); break;
         }
         return closure_value(cmp, lhs.valid && rhs.valid);
@@ -410,7 +407,7 @@ public:
                 
             case is_uint:
                 {
-                unsigned long shift_by = ulong_t(rhs);
+                unsigned long shift_by = unsigned long(rhs);
                     
                     if (shift_by > 64) 
                         shift_by = 64;
@@ -440,7 +437,7 @@ public:
                 
             case is_uint:
                 {
-                unsigned long shift_by = ulong_t(rhs);
+                unsigned long shift_by = unsigned long(rhs);
                     
                     if (shift_by > 64) 
                         shift_by = 64;
@@ -475,7 +472,7 @@ public:
                 
             case is_uint:
                 {
-                unsigned long shift_by = ulong_t(rhs);
+                unsigned long shift_by = unsigned long(rhs);
                     
                     if (shift_by > 64) 
                         shift_by = 64;
@@ -505,7 +502,7 @@ public:
                 
             case is_uint:
                 {
-                unsigned long shift_by = ulong_t(rhs);
+                unsigned long shift_by = unsigned long(rhs);
                     
                     if (shift_by > 64) 
                         shift_by = 64;
@@ -543,13 +540,13 @@ public:
             case is_bool: value.b = bool(cond) ? value.b : bool(val2); break;
             case is_int:  value.i = bool(cond) ? value.i : long(val2); break;
             case is_uint: 
-                value.ui = bool(cond) ? value.ui : ulong_t(val2); 
+                value.ui = bool(cond) ? value.ui : unsigned long(val2); 
                 type = is_uint;   // changing type!
                 break;
             }
             break;
             
-        case is_uint:   value.ui = bool(cond) ? value.ui : ulong_t(val2); break;
+        case is_uint:   value.ui = bool(cond) ? value.ui : unsigned long(val2); break;
         case is_bool:   value.b = bool(cond) ? value.b : bool(val2); break;
         }
         valid = bool(cond) ? valid : val2.valid;
@@ -562,7 +559,7 @@ public:
     {
         switch (val.type) {
         case is_int:    o << "int(" << long(val) << ")"; break;
-        case is_uint:   o << "unsigned int(" << ulong_t(val) << ")"; break;
+        case is_uint:   o << "unsigned int(" << unsigned long(val) << ")"; break;
         case is_bool:   o << "bool(" << bool(val) << ")"; break;
         }
         return o;
@@ -573,7 +570,7 @@ private:
     value_type type;
     union {
         long i;
-        ulong_t ui;
+        unsigned long ui;
         bool b;
     } value;
     bool valid;

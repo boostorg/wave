@@ -1,16 +1,17 @@
 Wave: A Standard compliant C++ preprocessor library
 http://spirit.sourceforge.net/
 
-Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+Copyright (c) 2001-2005 Hartmut Kaiser. Distributed under the Boost
 Software License, Version 1.0. (See accompanying file
 LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 -------------------------------------------------------------------------------
 
 TODO (known issues):
-- Fix expansion of macros, which replacement-list terminates in a partial macro 
-  expansion.
-- Fix the re2c lexer for iterators others then string::iterator
-- Enforce, that #if/#endif and #region/#endregion are balanced file wise
+- Fix expansion of macros, which replacement-list terminates in a partial 
+  macro expansion.
+- Fix the re2c lexer for iterators others then string::iterator (or more 
+  generally for iterators, which aren't random access iterators)
+- Enforce, that #if/#endif are balanced file wise
 - Try to remove the second parameter from the pp_iterator<>::force_include
   function.
 - Fix the trigraph backslash problem in the re2c (C/C++ and IDL) scanners, if 
@@ -22,6 +23,15 @@ TODO (known issues):
 
 CHANGELOG
 
+Version 1.1.11
+- Updated copyrights.
+- Fixed some bugs introduced by the latest refactoring.
+- Tried to fix the expansion of macros, which replacement-list terminates in a 
+  partial macro expansion. No success so far.
+
+Version 1.1.10
+- Refactored some of the macro map (macro namespace) code (added comments, 
+  splitted into separate files),
 - Fixed some typename errors in cpp_macromap.hpp (thanks to Vladimir Prus).
 - Fixed the BoostBuild V2 Jamfiles (thanks to Vladimir Prus).
 
