@@ -98,7 +98,7 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Uncomment the following, to enable some MS specific language extensions:
+//  Undefine the following, to enable some MS specific language extensions:
 //  __int8, __int16, __int32, __int64, __based, __declspec, __cdecl, 
 //  __fastcall, __stdcall, __try, __except, __finally, __leave, __inline,
 //  __asm

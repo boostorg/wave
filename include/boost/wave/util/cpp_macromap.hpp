@@ -51,7 +51,7 @@ namespace util {
 
 namespace on_exit {
 
-    // on destruction pop the first element of the argument list
+    // on destruction pop the first element of the list given as the argument 
     template <typename ContainerT>
     struct pop_front {
 
@@ -61,8 +61,8 @@ namespace on_exit {
         ContainerT &list;
     };
 
-    // append a given list to the argument list
-    // on destruction pop the first element of the argument list
+    // append a given list to the list given as argument 
+    // on destruction pop the first element of the list given as argument 
     template <typename ContainerT>
     struct splice_pop_front {
 
@@ -109,7 +109,8 @@ namespace on_exit {
 //
 //  macromap
 // 
-//      This class holds all currently defined macros
+//      This class holds all currently defined macros and on demand expands 
+//      those macrodefinitions 
 //
 ///////////////////////////////////////////////////////////////////////////////
 template <typename ContextT>
@@ -446,7 +447,7 @@ typename defined_macros_t::iterator it = current_scope->find(name.get_value());
 
 ///////////////////////////////////////////////////////////////////////////////
 // 
-//  is_defined(): returnes, whether a given macro is already defined
+//  is_defined(): returns, whether a given macro is already defined
 //
 ///////////////////////////////////////////////////////////////////////////////
 template <typename ContextT>
@@ -1429,14 +1430,6 @@ token_t startof_argument_list = *next;
 }        
 
 ///////////////////////////////////////////////////////////////////////////////
-// 
-//  expand_macro(): expands a defined macro
-//
-//      This functions tries to expand the macro, to which points the 'first'
-//      iterator. The functions eats up more tokens, if the macro to expand is
-//      a function-like macro.
-//
-///////////////////////////////////////////////////////////////////////////////
 namespace {
 
     using namespace boost::wave;
@@ -1773,6 +1766,15 @@ namespace impl {
     };
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// 
+//  expand_macro(): expands a defined macro
+//
+//      This functions tries to expand the macro, to which points the 'first'
+//      iterator. The functions eats up more tokens, if the macro to expand is
+//      a function-like macro.
+//
+///////////////////////////////////////////////////////////////////////////////
 template <typename ContextT>
 template <typename IteratorT, typename ContainerT>
 inline bool 
@@ -2094,16 +2096,16 @@ macromap<ContextT>::resolve_operator_pragma(IteratorT &first,
             
         if (T_STRINGLIT != token_id(*it_exp)) {
         // ill formed operator _Pragma
-            BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option, "_Pragma", 
-                pragma_token.get_position());
+            BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option, 
+                "_Pragma", pragma_token.get_position());
         }
 
         if (pragma_cmd.size() > 0) {
         // there should be exactly one string literal (string literals are to 
         // be concatenated at translation phase 6, but _Pragma operators are 
         // to be executed at translation phase 4)
-            BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option, "_Pragma", 
-                pragma_token.get_position());
+            BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option, 
+                "_Pragma", pragma_token.get_position());
         }
         
     // remove the '\"' and concat all given string literal-values
@@ -2381,7 +2383,7 @@ namespace {
 //
 //      #region [<identifier>]
 //
-//      Where <identifier> is a simple name (non-qualified name) defining the 
+//      Where <identifier> is a possibly qualified name defining the 
 //      name of the region to open. This name is optional. If the name is 
 //      omitted a nameless region is opened. Macros defined inside a nameless
 //      region may not be accessed from outside this region.

@@ -18,6 +18,7 @@
 #include <vector>
 #include <list>
 #include <cstdlib>
+#include <cctype>
 
 #include <boost/assert.hpp>
 #include <boost/shared_ptr.hpp>
@@ -140,12 +141,20 @@ bool add_macro_definition(ContextT &ctx, std::string macrostring,
         predef_macros_t;
 
     using namespace boost::wave;
+    using namespace std;    // isspace is in std namespace for some systems
     
+// skip leading whitespace
+std::string::iterator begin = macrostring.begin();
+std::string::iterator end = macrostring.end();
+
+    while(begin != end && isspace(*begin))
+        ++begin;
+        
+// parse the macr definition
 position_t act_pos("command line", 0);
 boost::spirit::tree_parse_info<lex_t> hit = 
     predef_macros_t::parse_predefined_macro(
-        lex_t(macrostring.begin(), macrostring.end(), position_t(), language), 
-        lex_t());
+        lex_t(begin, end, position_t(), language), lex_t());
 
     if (!hit.match || (!hit.full && T_EOF != token_id(*hit.stop))) {
         BOOST_WAVE_THROW(preprocess_exception, bad_macro_definition, macrostring, 
@@ -1300,6 +1309,7 @@ token_sequence_t toexpand;
     typename token_sequence_t::iterator begin2 = toexpand.begin();
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded);
 
+// replace all remaining (== undefined) identifiers with a integer lliteral '0'
     typename token_sequence_t::iterator exp_end = expanded.end();
     for (typename token_sequence_t::iterator exp_it = expanded.begin();
          exp_it != exp_end; ++exp_it)
@@ -1362,6 +1372,7 @@ token_sequence_t toexpand;
     typename token_sequence_t::iterator begin2 = toexpand.begin();
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded);
     
+// replace all remaining (== undefined) identifiers with a integer lliteral '0'
     typename token_sequence_t::iterator exp_end = expanded.end();
     for (typename token_sequence_t::iterator exp_it = expanded.begin();
          exp_it != exp_end; ++exp_it)
@@ -1539,7 +1550,7 @@ typename ref_transform_iterator_generator<
     >::type first = make_ref_transform_iterator(begin, get_value);
     
 #if BOOST_WAVE_PREPROCESS_ERROR_MESSAGE_BODY != 0
-// preprocess the body of this #warning message
+// preprocess the body of this #error message
 token_sequence_t toexpand;
 
     std::copy(first, make_ref_transform_iterator(end, get_value),
@@ -1549,13 +1560,13 @@ token_sequence_t toexpand;
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded, 
         false);
 #else
-// simply copy the body of this #warning message to the issued diagnostic
+// simply copy the body of this #error message to the issued diagnostic
 // message
     std::copy(first, make_ref_transform_iterator(end, get_value), 
         std::inserter(expanded, expanded.end()));
 #endif 
 
-// throw the corresponding exception
+// report the corresponding error
     BOOST_WAVE_THROW(preprocess_exception, error_directive, 
         boost::wave::util::impl::as_string(expanded), act_pos);
 }
@@ -1600,7 +1611,7 @@ token_sequence_t toexpand;
         std::inserter(expanded, expanded.end()));
 #endif 
 
-// throw the corresponding exception
+// report the corresponding error
     BOOST_WAVE_THROW(preprocess_exception, warning_directive, 
         boost::wave::util::impl::as_string(expanded), act_pos);
 }

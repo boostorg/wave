@@ -98,7 +98,7 @@ public:
                 this->top().set_status(true);
             } 
             else if (get_status()) {
-            // Entered (false) else block from true block
+            // Entered (false) #else block from true block
                 this->top().set_status(false);
             }
 
