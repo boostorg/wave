@@ -18,13 +18,13 @@
 <table border="0">
   <tr> 
     <td width="10"></td>
-    <td width="30"><a href="index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
     <td width="30"><a href="preface.html"><img src="theme/l_arr.gif" width="20" height="19" border="0"></a></td>
     <td width="30"><a href="quickstart.html"><img src="theme/r_arr.gif" border="0"></a></td>
   </tr>
 </table>
 <P dir="ltr">The <tt>Wave</tt> C++ preprocessor library is a Standards conformant 
-  implementation of the mandated C++ preprocessor functionality packed behind 
+  implementation of the mandated C99/C++ preprocessor functionality packed behind 
   a simple to use interface, which integrates well with the well known idioms 
   of the Standard Template Library (STL).</P>
 <P dir="ltr">The <tt>Wave</tt> C++ preprocessor is not a monolitic application, 
@@ -40,11 +40,11 @@
   preprocessor iterator at all. </P>
 <P dir="ltr">To make the C++ preprocessing library modular, the C++ lexer is held 
   completely separate and independend from the preprocessor. To proof this concept, 
-  there are two different C++ lexers and aIDL lexer implemented by now,&nbsp;which are functionally 
-  completely identical. The C++ lexers expose the mentioned unified interface, 
-  so that the C++ preprocessor iterator may be used with both of them. The abstraction 
-  of the C++ lexer from the C++ preprocessor iterator library was done to allow 
-  to plug in different C++ lexers without the need to reimplement the preprocessor. 
+  there are two different C++ lexers implemented by now,&nbsp;which are functionally 
+  completely identical. Additionally there is implemented a IDL lexer, which allows to use the preprocessor library as the lexing component of a IDL oriented tool. All these lexers expose the mentioned unified interface, 
+  so that the C++ preprocessor iterator may be used with all of them. The abstraction 
+  of the lexer from the preprocessor iterator library was done to allow 
+  to plug in different lexers without the need to reimplement the preprocessor. 
   This will allow for benchmarking and specific finetuning of the process of preprocessing 
   itself.</P>
 <P dir="ltr">The first of this C++ lexers is implemented with the help of the 
@@ -54,13 +54,13 @@
   token building logic is coded directly (very similar to hand coded lexers). 
 </P>
 <P dir="ltr">The second of this C++ lexers is build around a table driven lexer, 
-  where the DFA tables are generated from regular expressions with the help of 
+  where the DFA tables (discrete finite automaton tables) are generated from regular expressions with the help of 
   a Spirit based lexer generating framework named <tt>Slex</tt> <a href="references.html#slex">[5]</a>. 
   The <tt>Slex</tt> is feeded during runtime with the token definitions (regular 
   expressions) and generates the resulting DFA table. This table is used to combine 
   the input characters into corresponding lexems (tokens). The generated DFA table 
   can be saved to disc to avoid the generation process at program startup.</P>
-<P dir="ltr">Wave may be used for preprocessing IDL files too, since the token set needed for the IDL language is very similar to the C++ token set. That's the reason, why the <tt>Wave</tt> preprocessor library contains also an IDL lexer. The IDL lexer is based on the <tt>re2c</tt> tool too, but recognizes a different set of tokens. So this lexer does not recognize any keywords (except <tt>true</tt> and <tt>false</tt>, which are needed by the preprocessor itself). This is needed because there exist different IDL languages, where identifiers of one language may be keywords of others. Ok, this implies to postpone keyword identification after the preprocessing, but allows to use <tt>Wave</tt> for all of the IDL derivatives. </P>
+<P dir="ltr">Wave may be used for preprocessing IDL files too, since the token set needed for the IDL language is very similar to the C++ token set. That's the reason, why the <tt>Wave</tt> preprocessor library contains also an IDL lexer. The IDL lexer is also based on the <tt>Re2C</tt> tool, but recognizes a different set of tokens. So this lexer does not recognize any keywords (except <tt>true</tt> and <tt>false</tt>, which are needed by the preprocessor itself). This is needed because there exist different IDL language flavours, where identifiers of one flavour may be keywords of others - Ok, this implies to postpone keyword identification after the preprocessing, but allows to use <tt>Wave</tt> for all of the IDL derivatives. </P>
 <P dir="ltr">It is possible to build other C++ lexers if needed. Currently there 
   are plans to adapt the <tt>Spirit</tt> C++ lexer example <tt>cpplexer</tt> <a href="references.html#cpplexer">[6]</a>, 
   which is completely based on static <tt>Spirit<a href="references.html#spirit">[4]</a></tt> 
@@ -75,7 +75,7 @@
 <table border="0">
   <tr> 
     <td width="10"></td>
-    <td width="30"><a href="index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
     <td width="30"><a href="preface.html"><img src="theme/l_arr.gif" width="20" height="19" border="0"></a></td>
     <td width="30"><a href="quickstart.html"><img src="theme/r_arr.gif" border="0"></a></td>
   </tr>
@@ -83,10 +83,9 @@
 <hr size="1">
 <p class="copyright">Copyright &copy; 2003-2004 Hartmut Kaiser<br>
   <br>
-  <font size="2">Use, modification and distribution is subject to the Boost Software 
-  License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) 
+  <font size="2">Use, modification and distribution is subject to the Boost Software<!-- #BeginDate format:fcAm1m -->Wednesday, January 28, 2004  17:12<!-- #EndDate -->www.boost.org/LICENSE_1_0.txt) 
   </font> </p>
 <span class="updated">Last updated: 
-  <!-- #BeginDate format:fcAm1m -->Saturday, January 24, 2004  18:25<!-- #EndDate -->
+  <!-- #BeginDate format:fcAm1m -->Wednesday, January 28, 2004  17:12<!-- #EndDate -->
 </span>  </body>
 </html>

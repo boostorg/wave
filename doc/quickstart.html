@@ -19,12 +19,12 @@
 <table border="0">
   <tr> 
     <td width="10"></td>
-    <td width="30"><a href="index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
     <td width="30"><a href="introduction.html"><img src="theme/l_arr.gif" width="20" height="19" border="0"></a></td>
     <td width="30"><a href="class_reference_context.html"><img src="theme/r_arr.gif" border="0"></a></td>
   </tr>
 </table>
-<p>The actual preprocessing itself is a highly configurable process, so obviously 
+<p>The actual preprocessing itself is highly configurable, so obviously 
   you have to define a couple of parameters to&nbsp;control this process, such 
   as:</p>
 <BLOCKQUOTE dir="ltr" style="MARGIN-RIGHT: 0px"> 
@@ -42,33 +42,48 @@
   library. For more information about the context template class please refer 
   to the class reference <a href="class_reference_context.html">here</a>. To instantiate 
   the <tt>boost::wave::context</tt> object you have to supply at least two template parameters: 
-  the iterator type of the underlying input stream to use and the type of the 
-  token to be returned from the preprocessing engine.</p>
+  the iterator type of the underlying input stream to use and the type of the lexer iterator to be used as the token source for the preprocessing engine.</p>
 <P dir="ltr">The main preprocessing iterators are not to be instantiated directly, 
-  but should be generated through this context object too. </P>
+  but should be generated through this context object too. The following code snippet is taken from the <a href="../samples/quick_start/quick_start.cpp">quick_start</a> sample, which shows a minimal usage scenario for <tt>Wave</tt>. </P>
 <pre><span class="comment">    // The following preprocesses a given input file.
     // Open the file and read it into a string variable</span>
-    <span class="keyword">std::ifstream</span> instream(<span class="string">&quot;input.cpp&quot;</span>);<br>    <span class="keyword">std::string </span>input<span class="keyword">(
+    <span class="keyword">std::ifstream</span> instream(<span class="string">&quot;input.cpp&quot;</span>);
+    <span class="keyword">std::string </span>input<span class="keyword">(
         std::istreambuf_iterator&lt;char&gt;</span>(instream.rdbuf());
         <span class="keyword">std::istreambuf_iterator&lt;char&gt;</span>());
 
-    <span class="comment">// The template wave::cpplexer::lex_token&lt;&gt; is the token 
-    // type to be used by the Wave library.
+    <span class="comment">// The template boost::wave::cpplexer::lex_token&lt;&gt; is the  
+    // token type to be used by the Wave library.
     // This token type is one of the central types throughout 
-    // the library, because it is a template parameter to many 
+    // the library, because it is a template parameter to some 
     // of the public classes and templates and it is returned 
-    // from the iterators itself.</span>
-    <span class="keyword">typedef</span> boost::wave::context&lt;<span class=keyword>std::string::iterator</span>, 
-                boost::wave::cpplexer::lex_token&lt;&gt; &gt;
-            context_t;
+    // from the iterators itself.
+    // The template boost::wave::cpplexer::lex_iterator&lt;&gt; is
+    // the lexer iterator to use as the token source for the
+    // preprocessing engine. In this case this is parametrized
+    // with the token type.</span>
+    <span class="keyword">typedef</span> <span class="identifier">boost::wave::cpplexer::lex_iterator</span><span class="special">&lt;</span>
+            <span class="identifier">boost::wave::cpplexer::lex_token</span><span class="special">&lt;&gt; &gt;</span>
+        <span class="identifier">lex_iterator_t</span><span class="special">;</span>
+    <span class="keyword">typedef</span> <span class="identifier">boost::wave::context</span><span class="special">&lt;</span>
+            std::string::iterator<span class="special">,</span> lex_iterator_t<span class="special">&gt;</span>
+        <span class="identifier">context_t</span><span class="special">;</span>
 
     <span class="comment">// The C++ preprocessor iterators shouldn't be constructed 
     // directly. These are to be generated through a 
-    // wave::context&lt;&gt; object. Additionally this wave::context&lt;&gt; 
-    // object is to be used to initialize and define different 
-    // parameters of the actual preprocessing.
+    // boost::wave::context&lt;&gt; object. Additionally this  
+    // boost::wave::context&lt;&gt; object is to be used to initialize 
+    // and define different parameters of the actual preprocessing.
 </span>    context_t ctx(input.begin(), input.end(), <span class="string">&quot;input.cpp&quot;</span>);
-    context_t::iterator_t first = ctx.begin();
+
+<span class="comment">    // At this point you may want to set the parameters of the
+    // preprocessing as include pathes and/or predefined macros.
+</span>        ctx.add_include_path(<span class="literal">&quot;...&quot;</span>);
+        ctx.add_macro_definition(...);
+
+<span class="comment">    // Get the preprocessor iterators and use them to generate 
+    // the token sequence.
+</span>    context_t::iterator_t first = ctx.begin();
     context_t::iterator_t last = ctx.end();
 
 <span class="comment">    // The preprocessing of the input stream is done on the fly 
@@ -86,8 +101,8 @@
   The third parameter supplies a filename, which is used subsequently inside the 
   preprocessed tokens returned from the preprocessing to indicate the token position 
   inside the underlying input stream. Note though, that this filename is used 
-  only as long no <tt>#include</tt> or <tt>#line</tt> directives are encountered, 
-  which in turn will alter the current filename.</P>
+  only as long as no <tt>#include</tt> or <tt>#line</tt> directives are encountered, 
+  which in turn will alter the current filename reported.</P>
 <P dir="ltr">The iteration over the preprocessed tokens is relativly straight 
   forward. Just get the starting and the ending iterators from the context object 
   (maybe after initializing some include search paths) and you are done! The dereferencing 
@@ -97,7 +112,7 @@
 <table border="0">
   <tr> 
     <td width="10"></td>
-    <td width="30"><a href="index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
     <td width="30"><a href="introduction.html"><img src="theme/l_arr.gif" width="20" height="19" border="0"></a></td>
     <td width="30"><a href="class_reference_context.html"><img src="theme/r_arr.gif" border="0"></a></td>
   </tr>
@@ -109,6 +124,6 @@
   License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) 
   </font> </p>
 <span class="updated">Last updated: 
-  <!-- #BeginDate format:fcAm1m -->Wednesday, January 14, 2004  12:41<!-- #EndDate -->
+  <!-- #BeginDate format:fcAm1m -->Saturday, January 31, 2004  12:57<!-- #EndDate -->
 </span></body>
 </html>

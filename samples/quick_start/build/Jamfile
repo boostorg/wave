@@ -1,6 +1,6 @@
 # Wave: A Standard compliant C++ preprocessor library
 #
-# Boost Wave Library Sample Build Jamfile (cpp_tokens)
+# Boost Wave Library Sample Build Jamfile (quick_start)
 #
 # Copyright (c) 2001-2004 Hartmut Kaiser
 # http://spirit.sourceforge.net/
@@ -9,17 +9,14 @@
 # License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
-exe cpp_tokens
-    : ../cpp_tokens.cpp 
-      ../instantiate_cpp_exprgrammar.cpp 
-      ../instantiate_cpp_grammar.cpp 
-      ../instantiate_cpp_literalgrammars.cpp 
-      ../instantiate_defined_grammar.cpp 
-      ../instantiate_slex_lexer.cpp 
+subproject libs/wave/samples/quick_start/build ;
+
+exe quick_start
+    : ../quick_start.cpp 
       <lib>../../../build/boost_wave
-      <lib>../../../../../libs/program_options/build/boost_program_options
       <lib>../../../../../libs/filesystem/build/boost_filesystem
     :
+      <sysinclude>$(BOOST_ROOT)
       <vc7.1><*><rtti>off        # workaround for compiler bug
     :
       <runtime-link>static

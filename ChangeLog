@@ -14,8 +14,22 @@ TODO (known issues):
 - Enforce, that #if/#endif and #region/#endregion are balanced file wise
 - Try to remove the second parameter from the pp_iterator<>::force_include
   function.
+
+
+Tue Feb  3 20:20:16 WEST 2004
+- Fixed the problem, that macro definitions in a config file were flagged as 
+  an error, if there was any whitespace in between the -D and the MACRO name
+  (same proble existed for -P).
   
+Fri Jan 30 20:28:27 WEST 2004
+- Fixed a missing boostification in the trace support header.
+- Added a missing std:: namespace qualification to the list_includes.cpp sample 
+  file.
+- Fixed line ending problems with the cpp.re and idl.re files.
+- Added quick_start sample.
+
 Sun Jan 25 20:26:45 WEST 2004
+This version was submitted to Boost as the review candidate (V1.1.0)
 - Fixed invalid explicit instantiation syntax as reported by the Comeau 
   compiler.
 - Added a missing header to flex_string.hpp.

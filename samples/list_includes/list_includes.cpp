@@ -142,7 +142,7 @@ boost::wave::util::file_position_t current_position;
                 cerr << "Could not open input file: " << *file_it << endl;
                 continue;
             }
-            instream.unsetf(ios::skipws);
+            instream.unsetf(std::ios::skipws);
             instring = string(istreambuf_iterator<char>(instream.rdbuf()),
                               istreambuf_iterator<char>());
             

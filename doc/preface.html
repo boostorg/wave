@@ -18,7 +18,7 @@
 <table border="0">
   <tr> 
     <td width="10"></td>
-    <td width="30"><a href="index.html"><img src="theme/u_arr.gif" border="0"></a></td>
+    <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
     <td width="30"><img src="theme/l_arr_disabled.gif" width="20" height="19" border="0"></td>
     <td width="30"><a href="introduction.html"><img src="theme/r_arr.gif" border="0"></a></td>
   </tr>
@@ -33,7 +33,7 @@
   this needs&nbsp;-&nbsp;<tt>Wave</tt> was born.</p>
 <p align="justify">The <tt>Wave</tt> C++ preprocessor library uses the <a href="http://spirit.sourceforge.net/"> 
   </a> <tt>Spirit<a href="references.html#spirit">[4]</a></tt> parser construction 
-  library to implement a C++ lexer with ISO/ANSI standard conformant preprocessing 
+  library to implement a C++ lexer with ISO/ANSI Standards conformant preprocessing 
   capabilities. It exposes an iterator interface, which returns the current preprocessed 
   token from the input stream. This preprocessed token is generated on the fly 
   while iterating over the preprocessor iterator sequence (in the terminology 
@@ -61,7 +61,8 @@
   generative metaprogramming combined with template metaprogramming in C++ is 
   by far one of the most powerful compile-time reflection/metaprogramming facilities 
   that any language has ever supported.</p>
-<p align="justify">The main goals for the <tt>Wave</tt> project are:</p>
+<p>The C++ Standard <a href="http://www.codeproject.com/script/Submit/ViewHTML.asp?guid=wave%5Fpreprocessor%2Fcpp3%2F25%2F2003#iso_cpp">[2] </a> was adopted back in 1998, but there is still no (known to me) C++ compiler, which has a bugfree implementation of the rather simple preprocessor requirements mandated therein. This may be a result of the mentioned underestimation or even banning of the preprocessor from good programming style during the last few years or may steem from the somewhat awkward standardese dialect of English used to describe it. </p>
+<p align="justify">So the main goals for the <tt>Wave</tt> project are:</p>
 <blockquote> 
   <p><b><img src="theme/bullet.gif" width="13" height="13" id="IMG1">&nbsp;</b>full 
     conformance with the C++ standard (ISO/IEC 14882:1998) <a href="references.html#iso_cpp">[1]</a> 
@@ -77,18 +78,19 @@
 </blockquote>
 <p>At the first steps it is not planned to make a very high performance or very 
   small C++ preprocessor. If you are looking for these objectives you probably 
-  have to look at other places. Although our C++ preprocessor iterator should 
-  work as expected and will be usable as a reference implementation, for instance 
+  have to look at other places. Although our C++ preprocessor iterator works as expected and is usable as a reference implementation, for instance 
   for testing of other preprocessor oriented libraries as the Boost Preprocessor 
-  library <a href="references.html#pp_lib">[7]</a> et.al.</p>
+  library <a href="references.html#pp_lib">[7]</a> et.al. Nevertheless recent work has lead to surprising performance enhancements (if compared
+  with earlier versions). Wave is still somewhat slower as for instance EDG
+  based preprocessors (Intel, Comeau) on simple input files, however, as
+  complexity increases, time dilates expontentially on EDG. Preprocessing time
+  dilates linearly under Wave, which causes it to easily outperform EDG based
+preprocessors when complexity increases.</p>
 <p>As tests showed, the <tt>Wave</tt> library is very conformant to the C++ Standard, 
   such that it compiles several strict conformant macro definitions, which are 
-  not even compilable with EDG based preprocessors (i.e. Comeau or Intel). It 
-  is shown further, that the EDG preprocessor will outperform the <tt>Wave</tt> 
-  preprocessor in simple cases. However, as complexity increases, time dilates 
-  expontentially on EDG. Preprocessing time dilates linearly under <tt>Wave</tt>, 
-  which causes it to easily outperform EDG based preprocessors when complexity 
-  increases.</p>
+  not even compilable with EDG based preprocessors (i.e. Comeau or Intel). The only preprocessor known to have similar Standards conformance
+today is the preprocessor of the gcc C/C++ compiler.</p>
+<p>During the last time <tt>Wave</tt> got another field of application: testing the usability and applicability of different Standards proposals. A new C++0x mode was implemented, which allows to try out and help to establish some ideas, which are designed to overcome some of the known limitations of the C++ preprocessor. You can read about this experimental features <a href="preliminary_cpp0x_support.html">here</a>. </p>
 <table border="0">
   <tr> 
     <td width="10"></td>
@@ -104,6 +106,6 @@
   License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) 
   </font> </p>
 <span class="updated">Last updated: 
-  <!-- #BeginDate format:fcAm1m -->Monday, January 5, 2004  14:57<!-- #EndDate -->
-  </span></body>
+  <!-- #BeginDate format:fcAm1m -->Wednesday, January 28, 2004  17:00<!-- #EndDate -->
+</span></body>
 </html>
