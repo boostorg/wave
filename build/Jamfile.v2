@@ -1,0 +1,31 @@
+# Wave: A Standard compliant C++ preprocessor library
+#
+# Boost Wave Library Build Jamfile
+#
+# Copyright (c) 2001-2004 Hartmut Kaiser
+# http://spirit.sourceforge.net/
+#
+# Use, modification, and distribution is subject to the Boost Software
+# License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt)
+
+project boost/wave
+    :   source-location ../src 
+    ;
+
+SOURCES = instantiate_cpp_exprgrammar 
+          instantiate_cpp_grammar 
+          instantiate_cpp_literalgrammars 
+          instantiate_defined_grammar
+          instantiate_predef_macros 
+          instantiate_re2c_lexer
+          instantiate_re2c_lexer_string
+          cpplexer/re2clex/aq 
+          cpplexer/re2clex/cpp.re
+    ;
+
+lib boost_wave
+    :   $(SOURCES).cpp
+    :   <vc7.1><*><rtti>off    # workaround for compiler bug
+        <no-warn>cpp.re.cpp
+    ;
