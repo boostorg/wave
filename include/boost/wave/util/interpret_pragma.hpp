@@ -11,8 +11,6 @@
 #if !defined(INTERPRET_PRAGMA_HPP_B1F2315E_C5CE_4ED1_A343_0EF548B7942A_INCLUDED)
 #define INTERPRET_PRAGMA_HPP_B1F2315E_C5CE_4ED1_A343_0EF548B7942A_INCLUDED
 
-#include <cstdlib>
-#include <cstdio>
 #include <string>
 #include <list>
 
@@ -31,7 +29,6 @@
 #include <boost/wave/cpp_exceptions.hpp>
 #include <boost/wave/cpp_iteration_context.hpp>
 #include <boost/wave/language_support.hpp>
-#include <boost/wave/trace_policies.hpp>
 
 #if !defined(spirit_append_actor)
 #if SPIRIT_VERSION >= 0x1700
@@ -49,114 +46,6 @@ namespace wave {
 namespace util {
 
 ///////////////////////////////////////////////////////////////////////////////
-namespace impl {
-
-///////////////////////////////////////////////////////////////////////////////
-//
-//  Interpret the different Wave specific pragma directives/operators
-//
-///////////////////////////////////////////////////////////////////////////////
-template <typename ContextT, typename ContainerT>
-inline bool 
-interpret_pragma_trace(ContextT &ctx, ContainerT const &values,
-    typename ContextT::token_type const &act_token)
-{
-    typedef typename ContextT::token_type token_type;
-    typedef typename token_type::string_type string_type;
-
-bool valid_option = false;
-
-    if (1 == values.size()) {
-    token_type const &value = values.front();
-    
-        using namespace boost::wave::trace_policies;
-        if (value.get_value() == "enable" ||
-            value.get_value() == "on" || 
-            value.get_value() == "1") 
-        {
-            ctx.enable_tracing(static_cast<trace_flags>(
-                ctx.tracing_enabled() | trace_macros));
-            valid_option = true;
-        }
-        else if (value.get_value() == "disable" ||
-            value.get_value() == "off" || 
-            value.get_value() == "0") 
-        {
-            ctx.enable_tracing(static_cast<trace_flags>(
-                ctx.tracing_enabled() & ~trace_macros));
-            valid_option = true;
-        }
-    }
-    if (!valid_option) {
-    // unknown option value
-    string_type option_str ("trace");
-
-        if (values.size() > 0) {
-            option_str += "(";
-            option_str += impl::as_string(values);
-            option_str += ")";
-        }
-        BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option,
-            option_str, act_token.get_position());
-    }
-    return true;
-}
-
-template <typename ContextT, typename ContainerT>
-inline bool
-interpret_pragma_system(ContextT &/*ctx*/, ContainerT &pending,
-    ContainerT const &values, typename ContextT::token_type const &act_token,
-    boost::wave::language_support language)
-{
-    typedef typename ContextT::token_type token_type;
-    typedef typename token_type::string_type string_type;
-
-    if (0 == values.size()) {
-        BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option,
-            "system", act_token.get_position());
-    }
-    
-string_type stdout_file(std::tmpnam(0));
-string_type stderr_file(std::tmpnam(0));
-string_type system_str(impl::as_string(values));
-string_type native_cmd(system_str);
-
-    system_str += " >" + stdout_file + " 2>" + stderr_file;
-    if (0 != std::system(system_str.c_str())) {
-    // unable to spawn the command
-    string_type error_str("unable to spawn command: ");
-    
-        error_str += native_cmd;
-        BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option,
-            error_str, act_token.get_position());
-    }
-    
-// rescan the content of the stdout_file and insert it as the 
-// _Pragma replacement
-    typedef typename ContextT::lexer_type lexer_type;
-    typedef typename ContextT::input_policy_type input_policy_type;
-    typedef boost::wave::iteration_context<lexer_type, input_policy_type> iteration_context_t;
-
-iteration_context_t iter_ctx(stdout_file.c_str(), act_token.get_position(), 
-    language);
-ContainerT pragma;
-
-    for (/**/; iter_ctx.first != iter_ctx.last; ++iter_ctx.first) 
-        pragma.push_back(*iter_ctx.first);
-
-// prepend the newly generated token sequence to the 'pending' container
-    pending.splice(pending.begin(), pragma);
-
-// erase the created tempfiles
-    std::remove(stdout_file.c_str());
-    std::remove(stderr_file.c_str());
-    return true;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-}   // namespace impl
-
-///////////////////////////////////////////////////////////////////////////////
 //
 //  The function interpret_pragma interprets the given token sequence as the
 //  body of a #pragma directive (or parameter to the _Pragma operator) and 
@@ -166,8 +55,7 @@ ContainerT pragma;
 template <typename ContextT, typename IteratorT, typename ContainerT>
 inline bool 
 interpret_pragma(ContextT &ctx, typename ContextT::token_type const &act_token,
-    IteratorT it, IteratorT const &end, ContainerT &pending,
-    boost::wave::language_support language)
+    IteratorT it, IteratorT const &end, ContainerT &pending)
 {
     typedef typename ContextT::token_type token_type;
     typedef typename token_type::string_type string_type;
@@ -177,13 +65,8 @@ interpret_pragma(ContextT &ctx, typename ContextT::token_type const &act_token,
     //  this is a wave specific option, it should have the form:
     //      #pragma wave option(value)
     //  where '(value)' is required only for some pragma directives
-    //
-    //  supported #pragma directives so far:
-    //      wave trace(enable) or wave trace(1)
-    //      wave trace(disable) or wave trace(0)
-    //      wave stop(error message)
-    //      wave system(command)
-    
+    //  all of the given #pragma operators are forwarded to the supplied 
+    //  context_policy    
         using namespace boost::spirit;
         token_type option;
         ContainerT values;
@@ -218,24 +101,8 @@ interpret_pragma(ContextT &ctx, typename ContextT::token_type const &act_token,
             }
         }
         
-    // decode the option
-        if (option.get_value() == "trace") {
-        // enable/disable tracing option
-            return impl::interpret_pragma_trace(ctx, values, act_token);
-        }
-        else if (option.get_value() == "stop") {
-        // stop the execution and output the argument
-            BOOST_WAVE_THROW(preprocess_exception, error_directive,
-                impl::as_string(values), act_token.get_position());
-        }
-        else if (option.get_value() == "system") {
-        // try to spawn the given argument as a system command and return the
-        // std::cout of this process as the replacement of this _Pragma
-            return impl::interpret_pragma_system(ctx, pending, values, 
-                act_token, language);
-        }
-        else if (!ctx.interpret_pragma(
-            pending, option, values, act_token, language)) 
+    // decode the option (call the context_policy hook)
+        if (!ctx.interpret_pragma(pending, option, values, act_token)) 
         {
         // unknown #pragma option 
         string_type option_str (option.get_value());

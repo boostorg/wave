@@ -10,17 +10,19 @@
 #if !defined(TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)
 #define TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED
 
+#include <cstdio>
 #include <ostream>
 #include <string>
 
 #include <boost/assert.hpp>
 #include <boost/config.hpp>
-#include <boost/timer.hpp>
 
 #include <boost/wave/token_ids.hpp>
 #include <boost/wave/util/macro_helpers.hpp>
-#include <boost/wave/trace_policies.hpp>
+#include <boost/wave/preprocessing_hooks.hpp>
 #include <boost/wave/language_support.hpp>
+
+#include "stop_watch.hpp"
 
 #ifdef BOOST_NO_STRINGSTREAM
 #include <strstream>
@@ -38,74 +40,12 @@ std::string BOOST_WAVE_GETSTRING(std::ostrstream& ss)
 #define BOOST_WAVE_OSSTREAM std::ostringstream
 #endif
 
-///////////////////////////////////////////////////////////////////////////////
-//  
-class stop_watch : public boost::timer {
-
-    typedef boost::timer base_t;
-    
-public:
-    stop_watch() : is_suspended_since(0), suspended_overall(0) {}
-
-    void suspend()
-    {
-        if (0 == is_suspended_since) {
-        // if not already suspended
-            is_suspended_since = this->base_t::elapsed();
-        }
-    }
-    void resume()
-    {
-        if (0 != is_suspended_since) {
-        // if really suspended
-            suspended_overall += this->base_t::elapsed() - is_suspended_since;
-            is_suspended_since = 0;
-        }
-    }
-    double elapsed() const
-    {
-        if (0 == is_suspended_since) {
-        // currently running
-            return this->base_t::elapsed() - suspended_overall;
-        }
-
-    // currently suspended
-        BOOST_ASSERT(is_suspended_since >= suspended_overall);
-        return is_suspended_since - suspended_overall;
-    }
-    
-    std::string format_elapsed_time() const
-    {
-    double current = elapsed();
-    char time_buffer[sizeof("1234:56:78.90 abcd.")+1];
-
-        using namespace std;
-        if (current >= 3600) {
-        // show hours
-            sprintf (time_buffer, "%d:%02d:%02d.%03d hrs.",
-                (int)(current) / 3600, ((int)(current) % 3600) / 60,
-                ((int)(current) % 3600) % 60, 
-                (int)(current * 1000) % 1000);
-        }
-        else if (current >= 60) {
-        // show minutes
-            sprintf (time_buffer, "%d:%02d.%03d min.", 
-                (int)(current) / 60, (int)(current) % 60, 
-                (int)(current * 1000) % 1000);
-        }
-        else {
-        // show seconds
-            sprintf(time_buffer, "%d.%03d sec.", (int)current, 
-                (int)(current * 1000) % 1000);
-        }
-        return time_buffer;
-    }
-    
-private:
-    double is_suspended_since;
-    double suspended_overall; 
+//  trace_flags:  enable single tracing functionality
+enum trace_flags {
+    trace_nothing = 0,      // disable tracing
+    trace_macros = 1,       // enable macro tracing
+    trace_includes = 2      // enable include file tracing
 };
-
 
 ///////////////////////////////////////////////////////////////////////////////
 //  
@@ -120,38 +60,17 @@ private:
 //
 ///////////////////////////////////////////////////////////////////////////////
 class trace_macro_expansion
-:   public boost::wave::trace_policies::default_tracing
+:   public boost::wave::context_policies::default_preprocessing_hooks
 {
 public:
-    trace_macro_expansion(std::ostream &outstrm_, 
-            boost::wave::trace_policies::trace_flags flags_)
-    :   outstrm(outstrm_), level(0), 
-        flags(flags_), logging_flags(boost::wave::trace_policies::trace_nothing)
+    trace_macro_expansion(std::ostream &outstrm_, trace_flags flags_)
+    :   outstrm(outstrm_), level(0), flags(flags_), logging_flags(trace_nothing)
     {
     }
     ~trace_macro_expansion()
     {
     }
     
-    ///////////////////////////////////////////////////////////////////////////
-    //  
-    //  The function enable_tracing is called, whenever the status of the 
-    //  tracing was changed.
-    //
-    //  The parameter 'enable' is to be used as the new tracing status.
-    //  
-    ///////////////////////////////////////////////////////////////////////////
-    void enable_tracing(boost::wave::trace_policies::trace_flags flags) 
-    { logging_flags = flags; }
-
-    ///////////////////////////////////////////////////////////////////////////
-    //  
-    //  The function tracing_enabled should return the current tracing status.
-    //  
-    ///////////////////////////////////////////////////////////////////////////
-    boost::wave::trace_policies::trace_flags tracing_enabled() 
-    { return logging_flags; }
-
     ///////////////////////////////////////////////////////////////////////////
     //  
     //  The function 'expanding_function_like_macro' is called, whenever a 
@@ -343,6 +262,9 @@ public:
     //  The function 'interpret_pragma' is called, whenever a #pragma wave 
     //  directive is found, which isn't known to the core Wave library. 
     //
+    //  The parameter 'ctx' is a reference to the context object used for 
+    //  instantiating the preprocessing iterators by the user.
+    //
     //  The parameter 'pending' may be used to push tokens back into the input 
     //  stream, which are to be used as the replacement text for the whole 
     //  #pragma wave() directive.
@@ -355,37 +277,159 @@ public:
     //  The parameter 'act_token' contains the actual #pragma token, which may 
     //  be used for error output.
     //
-    //  The parameter 'language' contains the current language mode, in which 
-    //  the Wave library operates.
-    //
     //  If the return value is 'false', the whole #pragma directive is 
     //  interpreted as unknown and a corresponding error message is issued. A
     //  return value of 'true' signs a successful interpretation of the given 
     //  #pragma.
     //
     ///////////////////////////////////////////////////////////////////////////
-    template <typename TokenT, typename ContainerT>
+    template <typename ContextT, typename ContainerT>
     bool 
-    interpret_pragma(ContainerT &pending, TokenT const &option, 
-        ContainerT const &values, TokenT const &act_token, 
-        boost::wave::language_support language)
+    interpret_pragma(ContextT const &ctx, ContainerT &pending, 
+        typename ContextT::token_type const &option, ContainerT const &values, 
+        typename ContextT::token_type const &act_token)
     {
+        typedef typename ContextT::token_type token_type;
+        
         if (option.get_value() == "timer") {
         // #pragma wave timer(value)
             if (0 == values.size()) {
             // no value means '1'
                 using namespace boost::wave;
-                timer(TokenT(T_INTLIT, "1", act_token.get_position()));
+                timer(token_type(T_INTLIT, "1", act_token.get_position()));
             }
             else {
                 timer(values.front());
             }
             return true;
         }
+        else if (option.get_value() == "trace") {
+        // enable/disable tracing option
+            return interpret_pragma_trace(ctx, values, act_token);
+        }
+        else if (option.get_value() == "system") {
+        // try to spawn the given argument as a system command and return the
+        // std::cout of this process as the replacement of this _Pragma
+            return interpret_pragma_system(ctx, pending, values, act_token);
+        }
+        if (option.get_value() == "stop") {
+        // stop the execution and output the argument
+            BOOST_WAVE_THROW(preprocess_exception, error_directive,
+                boost::wave::util::impl::as_string(values), 
+                act_token.get_position());
+        }
         return false;
     }
         
 protected:
+    //  Interpret the different Wave specific pragma directives/operators
+    template <typename ContextT, typename ContainerT>
+    bool 
+    interpret_pragma_trace(ContextT const &/*ctx*/, ContainerT const &values, 
+        typename ContextT::token_type const &act_token)
+    {
+        typedef typename ContextT::token_type token_type;
+        typedef typename token_type::string_type string_type;
+
+    bool valid_option = false;
+
+        if (1 == values.size()) {
+        token_type const &value = values.front();
+        
+            if (value.get_value() == "enable" ||
+                value.get_value() == "on" || 
+                value.get_value() == "1") 
+            {
+            // #pragma wave trace(enable)
+                enable_tracing(static_cast<trace_flags>(
+                    tracing_enabled() | trace_macros));
+                valid_option = true;
+            }
+            else if (value.get_value() == "disable" ||
+                value.get_value() == "off" || 
+                value.get_value() == "0") 
+            {
+            // #pragma wave trace(disable)
+                enable_tracing(static_cast<trace_flags>(
+                    tracing_enabled() & ~trace_macros));
+                valid_option = true;
+            }
+        }
+        if (!valid_option) {
+        // unknown option value
+        string_type option_str ("trace");
+
+            if (values.size() > 0) {
+                option_str += "(";
+                option_str += boost::wave::util::impl::as_string(values);
+                option_str += ")";
+            }
+            BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option,
+                option_str, act_token.get_position());
+        }
+        return true;
+    }
+
+    template <typename ContextT, typename ContainerT>
+    bool
+    interpret_pragma_system(ContextT const &ctx, ContainerT &pending, 
+        ContainerT const &values, 
+        typename ContextT::token_type const &act_token)
+    {
+        typedef typename ContextT::token_type token_type;
+        typedef typename token_type::string_type string_type;
+
+        if (0 == values.size()) return false;   // ill_formed_pragma_option
+        
+    string_type stdout_file(std::tmpnam(0));
+    string_type stderr_file(std::tmpnam(0));
+    string_type system_str(boost::wave::util::impl::as_string(values));
+    string_type native_cmd(system_str);
+
+        system_str += " >" + stdout_file + " 2>" + stderr_file;
+        if (0 != std::system(system_str.c_str())) {
+        // unable to spawn the command
+        string_type error_str("unable to spawn command: ");
+        
+            error_str += native_cmd;
+            BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option,
+                error_str, act_token.get_position());
+        }
+        
+    // rescan the content of the stdout_file and insert it as the 
+    // _Pragma replacement
+        typedef typename ContextT::lexer_type lexer_type;
+        typedef typename ContextT::input_policy_type input_policy_type;
+        typedef boost::wave::iteration_context<lexer_type, input_policy_type> 
+            iteration_context_type;
+
+    iteration_context_type iter_ctx(stdout_file.c_str(), 
+        act_token.get_position(), ctx.get_language());
+    ContainerT pragma;
+
+        for (/**/; iter_ctx.first != iter_ctx.last; ++iter_ctx.first) 
+            pragma.push_back(*iter_ctx.first);
+
+    // prepend the newly generated token sequence to the 'pending' container
+        pending.splice(pending.begin(), pragma);
+
+    // erase the created tempfiles
+        std::remove(stdout_file.c_str());
+        std::remove(stderr_file.c_str());
+        return true;
+    }
+
+    //  The function enable_tracing is called, whenever the status of the 
+    //  tracing was changed.
+    //  The parameter 'enable' is to be used as the new tracing status.
+    void enable_tracing(trace_flags flags) 
+        { logging_flags = flags; }
+
+    //  The function tracing_enabled should return the current tracing status.
+    trace_flags tracing_enabled() 
+        { return logging_flags; }
+
+    //  Helper functions for generating the trace output
     void open_trace_body(char const *label = 0)
     {
         if (label)
@@ -421,12 +465,10 @@ protected:
     
     bool enabled_macro_tracing() const 
     { 
-        using namespace boost::wave::trace_policies;
         return (flags & trace_macros) && (logging_flags & trace_macros); 
     }
     bool enabled_include_tracing() const 
     { 
-        using namespace boost::wave::trace_policies;
         return (flags & trace_includes) && (logging_flags & trace_includes); 
     }
     
@@ -457,8 +499,8 @@ protected:
 private:
     std::ostream &outstrm;          // output stream
     int level;                      // indentation level
-    boost::wave::trace_policies::trace_flags flags;            // enabled globally
-    boost::wave::trace_policies::trace_flags logging_flags;    // enabled by a #pragma
+    trace_flags flags;              // enabled globally
+    trace_flags logging_flags;      // enabled by a #pragma
     
     stop_watch elapsed_time;        // trace timings
 };

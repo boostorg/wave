@@ -13,10 +13,6 @@
 #define CPP_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED
 
 ///////////////////////////////////////////////////////////////////////////////
-//  Include the configuration stuff for the Wave library itself
-#include <boost/wave/wave_config.hpp>
-
-///////////////////////////////////////////////////////////////////////////////
 //  Uncomment the following, if you need debug output, the 
 //  BOOST_SPIRIT_DEBUG_FLAGS constants below helps to fine control the amount of 
 //  the generated debug output
@@ -50,6 +46,10 @@
     ) \
     /**/
 #endif 
+
+///////////////////////////////////////////////////////////////////////////////
+//  Include the configuration stuff for the Wave library itself
+#include <boost/wave/wave_config.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 //  MSVC specific #pragma's

@@ -112,24 +112,24 @@ template <typename ContextT>
 class macromap {
 
     typedef macromap<ContextT>                      self_type;
-    typedef typename ContextT::token_type              token_type;
-    typedef typename token_type::string_type              string_type;
-    typedef typename token_type::position_type            position_type;
+    typedef typename ContextT::token_type           token_type;
+    typedef typename token_type::string_type        string_type;
+    typedef typename token_type::position_type      position_type;
         
 // type of a token sequence
-    typedef typename ContextT::token_sequence_type     definition_container_t;
+    typedef typename ContextT::token_sequence_type  definition_container_type;
     
-    typedef macro_definition<token_type, definition_container_t> 
-        macro_definition_t;
+    typedef macro_definition<token_type, definition_container_type> 
+        macro_definition_type;
     
-    typedef symbol_table<string_type, macro_definition_t>  defined_macros_t;
-    typedef typename defined_macros_t::value_type::second_type macro_ref_t;
+    typedef symbol_table<string_type, macro_definition_type> defined_macros_type;
+    typedef typename defined_macros_type::value_type::second_type macro_ref_type;
 
-    typedef std::vector<token_type>                    parameter_container_t;
+    typedef std::vector<token_type> parameter_container_type;
 
 public:
     macromap(ContextT &ctx_) 
-    :   current_macros(0), defined_macros(new defined_macros_t(1)), 
+    :   current_macros(0), defined_macros(new defined_macros_type(1)), 
         main_pos("", 0), ctx(ctx_), macro_uid(1)
     {
         current_macros = defined_macros.get();
@@ -137,11 +137,12 @@ public:
     ~macromap() {}
 
     bool add_macro(token_type const &name, bool has_parameters, 
-        parameter_container_t &parameters, definition_container_t &definition, 
-        bool is_predefined = false, defined_macros_t *scope = 0);
+        parameter_container_type &parameters, 
+        definition_container_type &definition, bool is_predefined = false, 
+        defined_macros_type *scope = 0);
     bool is_defined(string_type const &name, 
-        typename defined_macros_t::iterator &it, 
-        defined_macros_t *scope = 0) const;
+        typename defined_macros_type::iterator &it, 
+        defined_macros_type *scope = 0) const;
     template <typename IteratorT>
     bool is_defined(IteratorT const &begin, IteratorT const &end);
     bool remove_macro(string_type const &name, bool even_predefined = false);
@@ -155,9 +156,9 @@ public:
         IteratorT const &first, IteratorT const &last, bool expand_undefined,
         bool *seen_qualified_name = 0);
 
-    void init_predefined_macros(defined_macros_t *scope = 0, 
+    void init_predefined_macros(defined_macros_type *scope = 0, 
         bool at_global_scope = true);
-    void predefine_macro(defined_macros_t *scope, string_type const &name, 
+    void predefine_macro(defined_macros_type *scope, string_type const &name, 
         token_type const &t);
     void reset_macromap();
 
@@ -182,9 +183,9 @@ protected:
 
     template <typename IteratorT, typename ContainerT>
     bool expand_macro(ContainerT &pending, token_type const &name, 
-        typename defined_macros_t::iterator it, 
+        typename defined_macros_type::iterator it, 
         IteratorT &first, IteratorT const &last, bool expand_undefined,
-        defined_macros_t *scope = 0, ContainerT *queue_symbol = 0,
+        defined_macros_type *scope = 0, ContainerT *queue_symbol = 0,
         bool *seen_qualified_name = 0);
 
     template <typename ContainerT>
@@ -199,13 +200,13 @@ protected:
 
     template <typename ContainerT>
     void expand_replacement_list(
-        macro_definition_t const &macrodefinition,
+        macro_definition_type const &macrodefinition,
         std::vector<ContainerT> &arguments, 
         bool expand_undefined, ContainerT &expanded);
 
     template <typename ContainerT>
     void rescan_replacement_list(token_type const &curr_token, 
-        macro_definition_t &macrodef, ContainerT &replacement_list, 
+        macro_definition_type &macrodef, ContainerT &replacement_list, 
         ContainerT &expanded, bool expand_undefined, bool *seen_qualified_name);
 
     template <typename IteratorT, typename ContainerT>
@@ -223,18 +224,18 @@ protected:
         position_type const &pos, ContainerT &rescanned);
 
     static bool 
-    definition_equals(definition_container_t const &definition,
-        definition_container_t const &new_definition);
+    definition_equals(definition_container_type const &definition,
+        definition_container_type const &new_definition);
     static bool 
-    parameters_equal(parameter_container_t const &parameters,
-        parameter_container_t const &new_definition);
+    parameters_equal(parameter_container_type const &parameters,
+        parameter_container_type const &new_definition);
 
     static bool 
     token_equals(token_type const &left, token_type const &right);
 
 private:
-    defined_macros_t *current_macros;                   // current symbol table
-    boost::shared_ptr<defined_macros_t> defined_macros; // global symbol table
+    defined_macros_type *current_macros;                   // current symbol table
+    boost::shared_ptr<defined_macros_type> defined_macros; // global symbol table
 
     token_type act_token;      // current token
     position_type main_pos;    // last token position in the pp_iterator
@@ -304,20 +305,20 @@ macromap<ContextT>::token_equals(token_type const &left, token_type const &right
 
 template <typename ContextT>
 inline bool 
-macromap<ContextT>::definition_equals(definition_container_t const &definition,
-  definition_container_t const &new_definition)
+macromap<ContextT>::definition_equals(definition_container_type const &definition,
+  definition_container_type const &new_definition)
 {
-    typedef definition_container_t::const_iterator const_iterator_t;
+    typedef definition_container_type::const_iterator const_iterator_type;
     
-typename const_iterator_t first1 = definition.begin();
-typename const_iterator_t last1 = definition.end();
-typename const_iterator_t first2 = new_definition.begin();
-typename const_iterator_t last2 = new_definition.end();
+typename const_iterator_type first1 = definition.begin();
+typename const_iterator_type last1 = definition.end();
+typename const_iterator_type first2 = new_definition.begin();
+typename const_iterator_type last2 = new_definition.end();
     
     while (first1 != last1 && token_equals(*first1, *first2)) {
     // skip whitespace, if both sequences have a whitespace next
-    token_id id1 = impl::next_token<const_iterator_t>::peek(first1, last1, false);
-    token_id id2 = impl::next_token<const_iterator_t>::peek(first2, last2, false);
+    token_id id1 = impl::next_token<const_iterator_type>::peek(first1, last1, false);
+    token_id id2 = impl::next_token<const_iterator_type>::peek(first2, last2, false);
 
         if (IS_CATEGORY(id1, WhiteSpaceTokenType) && 
             IS_CATEGORY(id2, WhiteSpaceTokenType)) 
@@ -343,17 +344,17 @@ typename const_iterator_t last2 = new_definition.end();
 
 template <typename ContextT>
 inline bool 
-macromap<ContextT>::parameters_equal(parameter_container_t const &parameters,
-  parameter_container_t const &new_parameters)
+macromap<ContextT>::parameters_equal(parameter_container_type const &parameters,
+  parameter_container_type const &new_parameters)
 {
     if (parameters.size() != new_parameters.size())
         return false;   // different parameter count
         
-    typedef parameter_container_t::const_iterator const_iterator_t;
+    typedef parameter_container_type::const_iterator const_iterator_type;
     
-typename const_iterator_t first1 = parameters.begin();
-typename const_iterator_t last1 = parameters.end();
-typename const_iterator_t first2 = new_parameters.begin();
+typename const_iterator_type first1 = parameters.begin();
+typename const_iterator_type last1 = parameters.end();
+typename const_iterator_type first2 = new_parameters.begin();
 
     while (first1 != last1) {
     // parameters are different, if the corresponding tokens are different
@@ -371,8 +372,8 @@ typename const_iterator_t first2 = new_parameters.begin();
 template <typename ContextT>
 inline bool 
 macromap<ContextT>::add_macro(token_type const &name, bool has_parameters, 
-    parameter_container_t &parameters, definition_container_t &definition, 
-    bool is_predefined, defined_macros_t *scope)
+    parameter_container_type &parameters, definition_container_type &definition, 
+    bool is_predefined, defined_macros_type *scope)
 {
     if (!is_predefined && is_special_macroname (name.get_value())) {
     // exclude special macro names
@@ -381,8 +382,8 @@ macromap<ContextT>::add_macro(token_type const &name, bool has_parameters,
     }
     
 // try to define the new macro
-defined_macros_t *current_scope = scope ? scope : current_macros;
-typename defined_macros_t::iterator it = current_scope->find(name.get_value());
+defined_macros_type *current_scope = scope ? scope : current_macros;
+typename defined_macros_type::iterator it = current_scope->find(name.get_value());
 
     if (it != current_scope->end()) {
     // redefinition, should not be different
@@ -400,14 +401,14 @@ typename defined_macros_t::iterator it = current_scope->find(name.get_value());
     if (has_parameters) {
         std::set<typename token_type::string_type> names;
     
-        typedef typename parameter_container_t::iterator 
-            parameter_iterator_t;
+        typedef typename parameter_container_type::iterator 
+            parameter_iterator_type;
         typedef typename std::set<typename token_type::string_type>::iterator 
-            name_iterator_t;
+            name_iterator_type;
             
-        parameter_iterator_t end = parameters.end();
-        for (parameter_iterator_t it = parameters.begin(); it != end; ++it) {
-        name_iterator_t pit = names.find((*it).get_value());
+        parameter_iterator_type end = parameters.end();
+        for (parameter_iterator_type it = parameters.begin(); it != end; ++it) {
+        name_iterator_type pit = names.find((*it).get_value());
         
             if (pit != names.end()) {
             // duplicate parameter name
@@ -419,11 +420,11 @@ typename defined_macros_t::iterator it = current_scope->find(name.get_value());
     }
     
 // insert a new macro node
-    std::pair<typename defined_macros_t::iterator, bool> p = 
+    std::pair<typename defined_macros_type::iterator, bool> p = 
         current_scope->insert(
-            defined_macros_t::value_type(
+            defined_macros_type::value_type(
                 name.get_value(), 
-                macro_ref_t(new macro_definition_t(name, 
+                macro_ref_type(new macro_definition_type(name, 
                     has_parameters, is_predefined, ++macro_uid)
                 )
             )
@@ -437,6 +438,10 @@ typename defined_macros_t::iterator it = current_scope->find(name.get_value());
 // add the parameters and the definition
     std::swap((*p.first).second->macroparameters, parameters);
     std::swap((*p.first).second->macrodefinition, definition);
+    
+// call the context supplied preprocessing hook
+    ctx.defined_macro(name, has_parameters, parameters, definition, 
+        is_predefined);
     return true;
 }
 
@@ -448,8 +453,8 @@ typename defined_macros_t::iterator it = current_scope->find(name.get_value());
 template <typename ContextT>
 inline bool 
 macromap<ContextT>::is_defined(typename token_type::string_type const &name,
-    typename defined_macros_t::iterator &it, 
-    defined_macros_t *scope) const
+    typename defined_macros_type::iterator &it, 
+    defined_macros_type *scope) const
 {
     if (0 == scope) scope = current_macros;
     
@@ -483,7 +488,7 @@ macromap<ContextT>::is_defined(IteratorT const &begin,
 
     IteratorT it = begin;
     string_type name ((*it).get_value());
-    typename defined_macros_t::iterator cit(
+    typename defined_macros_type::iterator cit(
         current_macros -> find(name));
 
         if (++it != end) {
@@ -506,7 +511,7 @@ inline bool
 macromap<ContextT>::remove_macro(string_type const &name, 
     bool even_predefined)
 {
-    typename defined_macros_t::iterator it = current_macros->find(name);
+    typename defined_macros_type::iterator it = current_macros->find(name);
     
     if (it != current_macros->end()) {
         if ((*it).second->is_predefined) {
@@ -516,6 +521,9 @@ macromap<ContextT>::remove_macro(string_type const &name,
             }
         }
         current_macros->erase(it);
+        
+    // call the context supplied preprocessing hook function
+        ctx.undefined_macro(name);
         return true;
     }
     else if (is_special_macroname(name)) {
@@ -665,7 +673,7 @@ macromap<ContextT>::expand_tokensequence_worker(
 // if there exist pending tokens (tokens, which are already preprocessed), then
 // return the next one from there
     if (!pending.empty()) {
-    on_exit::pop_front<definition_container_t> pop_front_token(pending);
+    on_exit::pop_front<definition_container_type> pop_front_token(pending);
     
         return act_token = pending.front();
     }
@@ -717,7 +725,7 @@ macromap<ContextT>::expand_tokensequence_worker_classical(
                 {
                 // unknown to us pragma or supplied replacement, return the 
                 // next token
-                on_exit::pop_front<definition_container_t> pop_token(pending);
+                on_exit::pop_front<definition_container_type> pop_token(pending);
 
                     return act_token = pending.front();
                 }
@@ -728,7 +736,7 @@ macromap<ContextT>::expand_tokensequence_worker_classical(
             }
 
         token_type name_token (*first);
-        typename defined_macros_t::iterator it;
+        typename defined_macros_type::iterator it;
         
             if (is_defined(name_token.get_value(), it)) {
             // the current token contains an identifier, which is currently 
@@ -751,7 +759,7 @@ macromap<ContextT>::expand_tokensequence_worker_classical(
                 }
                 else if (!pending.empty()) {
                 // return the first token from the pending queue
-                on_exit::pop_front<definition_container_t> pop_queue (pending);
+                on_exit::pop_front<definition_container_type> pop_queue (pending);
                 
                     return act_token = pending.front();
                 }
@@ -1096,12 +1104,12 @@ template <typename ContextT>
 template <typename ContainerT>
 inline void
 macromap<ContextT>::expand_replacement_list(
-    macro_definition_t const &macrodef,
+    macro_definition_type const &macrodef,
     std::vector<ContainerT> &arguments, bool expand_undefined, 
     ContainerT &expanded)
 {
     using namespace boost::wave;
-    typedef typename macro_definition_t::const_definition_iterator_t 
+    typedef typename macro_definition_type::const_definition_iterator_t 
         macro_definition_iter_t;
 
 std::vector<ContainerT> expanded_args(arguments.size());
@@ -1254,7 +1262,7 @@ template <typename ContextT>
 template <typename ContainerT>
 inline void 
 macromap<ContextT>::rescan_replacement_list(token_type const &curr_token, 
-    macro_definition_t &macro_def, ContainerT &replacement_list, 
+    macro_definition_type &macro_def, ContainerT &replacement_list, 
     ContainerT &expanded, bool expand_undefined, bool *seen_qualified_name)
 {
     using namespace boost::wave;
@@ -1336,9 +1344,9 @@ template <typename ContextT>
 template <typename IteratorT, typename ContainerT>
 inline bool 
 macromap<ContextT>::expand_macro(ContainerT &expanded, 
-    token_type const &curr_token, typename defined_macros_t::iterator it, 
+    token_type const &curr_token, typename defined_macros_type::iterator it, 
     IteratorT &first, IteratorT const &last, 
-    bool expand_undefined, defined_macros_t *scope, 
+    bool expand_undefined, defined_macros_type *scope, 
     ContainerT *queue_symbol, bool *seen_qualified_name) 
 {
     using namespace boost::wave;
@@ -1366,7 +1374,7 @@ macromap<ContextT>::expand_macro(ContainerT &expanded,
     }
 
 // ensure the parameters to be replaced with special parameter tokens
-macro_definition_t &macro_def = *(*it).second.get();
+macro_definition_type &macro_def = *(*it).second.get();
 
     macro_def.replace_parameters();
 
@@ -1579,7 +1587,7 @@ boost::spirit::parse_info<IteratorT> hit =
         is_defined(result.begin(), result.end()) ? "1" : "0", 
         main_pos));
 
-on_exit::pop_front<definition_container_t> pop_front_token(pending);
+on_exit::pop_front<definition_container_type> pop_front_token(pending);
 
     return act_token = pending.front();
 }
@@ -1661,13 +1669,13 @@ macromap<ContextT>::resolve_operator_pragma(IteratorT &first,
         string_type token_str = (*it_exp).get_value();
         pragma_cmd += token_str.substr(1, token_str.size() - 2);
     }
-    pragma_cmd = impl::unescape_lit(pragma_cmd);
+    string_type pragma_cmd_unesc = impl::unescape_lit(pragma_cmd);
 
 // tokenize the pragma body
     typedef typename ContextT::lexer_type lexer_type;
     
     ContainerT pragma;
-    std::string pragma_cmd_str(pragma_cmd.c_str());
+    std::string pragma_cmd_str(pragma_cmd_unesc.c_str());
     lexer_type it = lexer_type(pragma_cmd_str.begin(), pragma_cmd_str.end(), 
         pragma_token.get_position(), ctx.get_language());
     lexer_type end = lexer_type();
@@ -1677,7 +1685,7 @@ macromap<ContextT>::resolve_operator_pragma(IteratorT &first,
 // analyze the preprocessed tokensequence and eventually dispatch to the 
 // associated action
     if (interpret_pragma(ctx, pragma_token, pragma.begin(), pragma.end(), 
-        pending, ctx.get_language()))
+        pending))
     {
         return true;    // successfully recognized a wave specific pragma
     }
@@ -1708,6 +1716,11 @@ macromap<ContextT>::is_invalid_concat(string_type new_value,
     lexer_type end = lexer_type();
     for (/**/; it != end; ++it) 
         rescanned.push_back(*it);
+
+#if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
+    if (boost::wave::need_variadics(ctx.get_language()))
+        return false;       // in variadics mode token pasting is well defined
+#endif 
         
 // test if the newly generated token sequence contains more than 1 token
 // the second one is the T_EOF token
@@ -1813,6 +1826,25 @@ macromap<ContextT>::concat_tokensequence(ContainerT &expanded)
                     error_string, main_pos);
             }
 
+#if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
+            if (boost::wave::need_variadics(ctx.get_language())) {
+            // remove the prev, '##' and the next tokens from the sequence
+                expanded.erase(prev, ++next);       // remove not needed tokens   
+
+            // replace the old token (pointed to by *prev) with the retokenized
+            // sequence
+            typename ContainerT::reverse_iterator rit = rescanned.rbegin();
+
+                BOOST_ASSERT(rit != rescanned.rend());
+                rescanned.erase((++rit).base());
+                expanded.splice(next, rescanned);
+
+            // the last token of the inserted sequence is the new previous
+                prev = next;
+                --prev;
+            }
+            else
+#endif // BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
             {
             // we leave the token_id unchanged, but unmark the token as 
             // disabled, if appropriate
@@ -2076,10 +2108,10 @@ namespace predefined_macros {
 
 template <typename ContextT>
 inline void
-macromap<ContextT>::predefine_macro(defined_macros_t *scope, 
+macromap<ContextT>::predefine_macro(defined_macros_type *scope, 
     string_type const &name, token_type const &t)
 {
-definition_container_t macrodefinition;
+definition_container_type macrodefinition;
 std::vector<token_type> param;
 
     macrodefinition.push_back(t);
@@ -2089,13 +2121,13 @@ std::vector<token_type> param;
 
 template <typename ContextT>
 inline void 
-macromap<ContextT>::init_predefined_macros(defined_macros_t *scope,
+macromap<ContextT>::init_predefined_macros(defined_macros_type *scope,
     bool at_global_scope)
 {
     using namespace predefined_macros;
 
 // if no scope is given, use the current one
-defined_macros_t *current_scope = scope ? scope : current_macros;
+defined_macros_type *current_scope = scope ? scope : current_macros;
 
 // first, add the static macros
 position_type pos;

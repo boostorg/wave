@@ -18,6 +18,41 @@ TODO (known issues):
   
 - Do a sourceforge release.
 
+- Moved all of the #pragma wave option(value) operators out of the wavelib into 
+  the wave driver program. Removed enable_trace() and trace_flags() policy
+  functions. Renamed trace_policy into context_policy.
+- Added the defined_macro() and undefined_macro() preprocessing hooks to allow
+  easily to build macro cross referencers and such.
+
+Version 1.1.8
+- Replaced the usage of the string::erase() and string::insert() functions, 
+  which were the only non-const string member functions used.
+- Token pasting is now well defined in variadics mode (was in C++0x mode only).
+- Changed the timing code in the wave driver to include the parsing of 
+  files included by the --forceinclude command line switch.
+- Performance measurements (very informal) [sec], the files are some of the
+  preprocessor specific test cases from Paul Mensonides chaos_pp library.
+
+                        std::string   flex_string   const_string   const_string
+                                                      12 Byte        28 Byte
+    arithmetic.cpp        2.543          1.742         0.951           1.001
+    array.cpp             2.453          1.762         0.951           1.011
+    comparison.cpp        0.560          0.340         0.270           0.280
+    control.cpp           0.590          0.340         0.290           0.300
+    debug.cpp             0.370          0.310         0.190           0.190
+    detection.cpp         0.050          0.060         0.030           0.030
+    extended.cpp          0.370          0.260         0.190           0.190
+    facilities.cpp        0.610          0.340         0.290           0.300
+    iteration.cpp         1.081          0.550         0.410           0.450
+    list.cpp              1.742          1.141         0.811           0.851
+    logical.cpp           0.070          0.200         0.040           0.040
+    punctuation.cpp       0.030          0.080         0.020           0.020
+    repetition.cpp        1.392          0.851         0.650           0.690
+    selection.cpp         0.440          0.270         0.210           0.220
+    slot.cpp              0.680          0.350         0.240           0.270
+    tuple.cpp             0.420          0.240         0.190           0.210
+                      
+
 Wed Aug 25 13:23:27 WEDT 2004
 Version 1.1.7
 - Branched for Boost Release.

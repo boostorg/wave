@@ -40,7 +40,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Include the default context trace policies
-#include <boost/wave/trace_policies.hpp>
+#include <boost/wave/preprocessing_hooks.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 //  include lexer specifics, import lexer names
@@ -108,7 +108,7 @@ long seconds = long(std::difftime(compilation_time.get_time(),
 ///////////////////////////////////////////////////////////////////////////////
 //  policy class
 struct trace_include_files 
-:   public boost::wave::trace_policies::default_tracing 
+:   public boost::wave::context_policies::default_preprocessing_hooks 
 {
     trace_include_files(set<string> &files_) : files(files_) {}
     
@@ -159,9 +159,9 @@ boost::wave::util::file_position_type current_position;
         //  used by the Wave library.
             typedef boost::wave::cpplexer::lex_iterator<
                     boost::wave::cpplexer::lex_token<> >
-                lex_iterator_t;
+                lex_iterator_type;
             typedef boost::wave::context<
-                    std::string::iterator, lex_iterator_t,
+                    std::string::iterator, lex_iterator_type,
                     boost::wave::iteration_context_policies::load_file_to_string,
                     trace_include_files
                 > context_type;

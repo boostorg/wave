@@ -149,13 +149,17 @@
 //  This include is needed for the boost::fast_allocator class used in the 
 //  BOOST_WAVE_STRINGTYPE above.
 //  Configure Boost.Pool thread support (for now: no thread support at all)
-#define BOOST_NO_MT
-#include <boost/pool/pool_alloc.hpp>
+//#define BOOST_NO_MT
+//#include <boost/pool/pool_alloc.hpp>
 
+// Use the following, if you want to incorporate Maxim Yegorushkin's
+// const_string library (http://sourceforge.net/projects/conststring/), which
+// may be even faster, than using the flex_string class from above
 //#define BOOST_WAVE_STRINGTYPE boost::const_string<char>
 //
 //#include <boost/const_string/const_string.hpp>
 //#include <boost/const_string/io.hpp>
+//#include <boost/const_string/concatenation.hpp>
 
 #endif
 

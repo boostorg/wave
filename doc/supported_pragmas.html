@@ -36,7 +36,7 @@
   where <tt>'wave'</tt> is the specific keyword, <tt>'option'</tt> is the concrete 
   pragma functionality to trigger and <tt>'value'</tt> is an optional value to 
   be supplied to the <tt>'option'</tt> functionality. The following table lists 
-  all possible pragma functions supported by the <tt>Wave</tt> library. </p>
+  all possible pragma functions supported by the <tt>Wave</tt> library. For all recognised pragmas of this general form the interpret_pragma hook function from inside the context_policies are call, so that the user of the library is responsible for </p>
 <table width="77%" border="0" align="center">
   <tr> 
     <td colspan="4"> <p class="table_title">Supported pragma's</p></td>
@@ -55,14 +55,14 @@
         macro expansion process. This is needed, even if there is given the --trace 
         command line option, because the trace output is generated only, if there 
         is at least one trace(enable) pragma found.</p></td>
-    <td class="table_cells" width="20%"><p>Wave library</p></td>
+    <td class="table_cells" width="20%"><p>Wave driver</p></td>
   </tr>
   <tr> 
     <td class="table_cells"><p>stop</p></td>
     <td class="table_cells"><p>message</p></td>
     <td class="table_cells"><p>Stop the execution of <tt>Wave</tt> and print out 
         the given message. This is very helpful for direct debugging purposes.</p></td>
-    <td class="table_cells"><p>Wave library</p></td>
+    <td class="table_cells"><p>Wave driver</p></td>
   </tr>
   
   <tr> 
@@ -75,7 +75,7 @@
         to be successful, if/when the return value is zero, otherwise an error 
         is reported. <br>
       </p></td>
-    <td class="table_cells"><p>Wave library</p></td>
+    <td class="table_cells"><p>Wave driver</p></td>
   </tr>
   <tr> 
     <td class="table_cells"><p>timer</p></td>
@@ -105,7 +105,7 @@
   which specifies that the file, in which the pragma resides, will be included 
   (opened) only once by the compiler in a build. This may be used to optimize 
   the preprocessing of larger compilation units, which include a lot of files. Note though, that the #pragma once directive is supported only, if the compile time constant <tt>WAVE_SUPPORT_PRAGMA_ONCE</tt> was given during compilation of the library</span>.</p>
-<p>It is fairly easy to implement your own <tt>#pragma wave ... </tt> directives. All you have to do is to implement your own <tt>interpret_pragma</tt> function (see <a href="class_reference_tracepolicy.html#interpret_pragma">here</a>) which should the handle additional directives. For an example of how to do it, you may have a look at the Wave driver application, which implements the <tt>#pragma wave timer()</tt> directive with the help of a supplied <tt>interpret_pragma</tt> function. </p>
+<p>It is fairly easy to implement your own <tt>#pragma wave ... </tt> directives. All you have to do is to implement your own <tt>interpret_pragma</tt> function (see <a href="class_reference_contextpolicy.html#interpret_pragma">here</a>) which should the handle additional directives. For an example of how to do it, you may have a look at the Wave driver application, which implements the <tt>#pragma wave timer()</tt> directive with the help of a supplied <tt>interpret_pragma</tt> function. </p>
 <table border="0">
   <tr> 
     <td width="10"></td>
@@ -120,7 +120,7 @@
 <font size="2">Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) </font> </p>
 <span class="updated"></span>
 <p class="copyright"><span class="updated">Last updated: 
-  <!-- #BeginDate format:fcAm1m -->Friday, May 21, 2004  8:18<!-- #EndDate -->
+  <!-- #BeginDate format:fcAm1m -->Sunday, September 12, 2004  10:36<!-- #EndDate -->
   </span>
 </p>
 <p>&nbsp;</p>

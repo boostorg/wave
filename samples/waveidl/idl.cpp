@@ -74,8 +74,8 @@ int print_version()
 {
     typedef boost::wave::idllexer::lex_iterator<
             boost::wave::cpplexer::lex_token<> >
-        lex_iterator_t;
-    typedef boost::wave::context<std::string::iterator, lex_iterator_t>
+        lex_iterator_type;
+    typedef boost::wave::context<std::string::iterator, lex_iterator_type>
         context_type;
         
     string version (context_type::get_version_string());
@@ -254,8 +254,8 @@ boost::wave::util::file_position_type current_position;
     //  the Wave library, but it is possible to use your own types.
         typedef boost::wave::idllexer::lex_iterator<
                 boost::wave::cpplexer::lex_token<> >
-            lex_iterator_t;
-        typedef boost::wave::context<std::string::iterator, lex_iterator_t> 
+            lex_iterator_type;
+        typedef boost::wave::context<std::string::iterator, lex_iterator_type> 
             context_type;
 
     // The C++ preprocessor iterators shouldn't be constructed directly. They 

@@ -53,12 +53,12 @@ boost::wave::util::file_position_type current_position;
     
     //  The template boost::wave::cpplexer::lex_iterator<> is the lexer type to
     //  be used by the Wave library.
-        typedef boost::wave::cpplexer::lex_iterator<token_type> lex_iterator_t;
+        typedef boost::wave::cpplexer::lex_iterator<token_type> lex_iterator_type;
         
     //  This is the resulting context type to use. The first template parameter
     //  should match the iterator type to be used during construction of the
     //  corresponding context object (see below).
-        typedef boost::wave::context<std::string::iterator, lex_iterator_t>
+        typedef boost::wave::context<std::string::iterator, lex_iterator_type>
             context_type;
 
     // The preprocessor iterator shouldn't be constructed directly. It is 

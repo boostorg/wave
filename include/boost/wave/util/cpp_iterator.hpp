@@ -149,7 +149,7 @@ std::string::iterator end = macrostring.end();
     while(begin != end && isspace(*begin))
         ++begin;
         
-// parse the macr definition
+// parse the macro definition
 position_type act_pos("command line", 0);
 boost::spirit::tree_parse_info<lexer_type> hit = 
     predef_macros_type::parse_predefined_macro(
@@ -1651,8 +1651,7 @@ pp_iterator_functor<ContextT>::interpret_pragma(
     if (it == end)      // eof reached
         return false;
 
-    return boost::wave::util::interpret_pragma(ctx, act_token, it, end, result,
-        ctx.get_language());
+    return boost::wave::util::interpret_pragma(ctx, act_token, it, end, result);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

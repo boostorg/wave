@@ -12,10 +12,6 @@
 #define SYMBOL_TABLE_HPP_32B0F7C6_3DD6_4113_95A5_E16516C6F45A_INCLUDED
 
 #include <map>
-#include <algorithm>
-
-#include <boost/shared_ptr.hpp>
-#include <boost/wave/wave_config.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost {

@@ -73,9 +73,9 @@ int print_version()
 {
     typedef boost::wave::cpplexer::lex_iterator<
             boost::wave::cpplexer::lex_token<> >
-        lex_iterator_t;
+        lex_iterator_type;
     typedef boost::wave::context<
-            std::string::iterator, lex_iterator_t,
+            std::string::iterator, lex_iterator_type,
             boost::wave::iteration_context_policies::load_file_to_string,
             trace_macro_expansion> 
         context_type;
@@ -253,22 +253,18 @@ namespace {
 ///////////////////////////////////////////////////////////////////////////////
 //  do the actual preprocessing
 int 
-do_actual_work (std::string file_name, po::variables_map const &vm)
+do_actual_work (std::string file_name, std::istream &instream, 
+    po::variables_map const &vm)
 {
 // current file position is saved for exception handling
 boost::wave::util::file_position_type current_position;
 
     try {
     // process the given file
-    ifstream instream(file_name.c_str());
     string instring;
 
-        if (!instream.is_open()) {
-            cerr << "wave: could not open input file: " << file_name << endl;
-            return -1;
-        }
         instream.unsetf(std::ios::skipws);
-        
+
 #if defined(BOOST_NO_TEMPLATED_ITERATOR_CONSTRUCTORS)
         // this is known to be very slow for large files on some systems
         copy (istream_iterator<char>(instream),
@@ -283,9 +279,9 @@ boost::wave::util::file_position_type current_position;
     //  the Wave library, but it is possible to use your own types.
         typedef boost::wave::cpplexer::lex_iterator<
                 boost::wave::cpplexer::lex_token<> >
-            lex_iterator_t;
+            lex_iterator_type;
         typedef boost::wave::context<
-                std::string::iterator, lex_iterator_t,
+                std::string::iterator, lex_iterator_type,
                 boost::wave::iteration_context_policies::load_file_to_string,
                 trace_macro_expansion> 
             context_type;
@@ -297,8 +293,7 @@ boost::wave::util::file_position_type current_position;
     // The preprocessing of the input stream is done on the fly behind the 
     // scenes during iteration over the context_type::iterator_type stream.
     std::ofstream traceout;
-    boost::wave::trace_policies::trace_flags enable_trace = 
-        boost::wave::trace_policies::trace_nothing;
+    trace_flags enable_trace = trace_nothing;
     
         if (vm.count("traceto")) {
         // try to open the file, where to put the trace output
@@ -312,10 +307,9 @@ boost::wave::util::file_position_type current_position;
                     return -1;
                 }
             }
-            enable_trace = boost::wave::trace_policies::trace_macros;
+            enable_trace = trace_macros;
         }
-        if ((enable_trace & boost::wave::trace_policies::trace_macros) && 
-            !traceout.is_open()) 
+        if ((enable_trace & trace_macros) && !traceout.is_open()) 
         {
         // by default trace to std::cerr
             traceout.copyfmt(cerr);
@@ -441,6 +435,7 @@ boost::wave::util::file_position_type current_position;
         }
 
     // analyze the input file
+    auto_stop_watch elapsed_time(vm.count("timer") > 0, cout);
     context_type::iterator_type first = ctx.begin();
     context_type::iterator_type last = ctx.end();
     
@@ -461,8 +456,6 @@ boost::wave::util::file_position_type current_position;
         }
         
     // loop over all generated tokens outputing the generated text 
-    auto_stop_watch elapsed_time(vm.count("timer") > 0, cout);
-    
         while (first != last) {
         // print out the string representation of this token (skip comments)
             using namespace boost::wave;
@@ -611,7 +604,7 @@ main (int argc, char *argv[])
     // ... act as required 
         if (vm.count("help")) {
         po::options_description desc_help (
-            "Usage: wave [options] [@config-file(s)] file");
+            "Usage: wave [options] [@config-file(s)] [file]");
 
             desc_help.add(desc_cmdline).add(desc_generic).add(desc_ext);
             cout << desc_help << endl;
@@ -634,13 +627,23 @@ main (int argc, char *argv[])
             
     // if there is no input file given, then exit
         if (0 == arguments.size() || 0 == arguments[0].value.size()) {
-            cerr << "wave: no input file given, "
-                 << "use --help to get a hint." << endl;
-            return 5;
+//            cerr << "wave: no input file given, "
+//                 << "use --help to get a hint." << endl;
+//            return 5;
+        // preprocess the given input file
+            return do_actual_work("stdin", std::cin, vm);
         }
+        else {
+        std::string file_name(arguments[0].value[0]);
+        ifstream instream(file_name.c_str());
 
-    // preprocess the given input file
-        return do_actual_work(arguments[0].value[0], vm);
+        // preprocess the given input file
+            if (!instream.is_open()) {
+                cerr << "wave: could not open input file: " << file_name << endl;
+                return -1;
+            }
+            return do_actual_work(file_name, instream, vm);
+        }
     }
     catch (std::exception &e) {
         cout << "wave: exception caught: " << e.what() << endl;

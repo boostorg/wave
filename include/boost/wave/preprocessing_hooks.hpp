@@ -8,54 +8,24 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(TRACE_POLICIES_HPP_338DE478_A13C_4B63_9BA9_041C917793B8_INCLUDED)
-#define TRACE_POLICIES_HPP_338DE478_A13C_4B63_9BA9_041C917793B8_INCLUDED
+#if !defined(PREPROCESSING_HOOKS_HPP_338DE478_A13C_4B63_9BA9_041C917793B8_INCLUDED)
+#define PREPROCESSING_HOOKS_HPP_338DE478_A13C_4B63_9BA9_041C917793B8_INCLUDED
 
 #include <vector>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost {
 namespace wave {
-namespace trace_policies {
+namespace context_policies {
 
 ///////////////////////////////////////////////////////////////////////////////
 //  
-//  trace_flags:  enable single tracing functionality
-//  
-///////////////////////////////////////////////////////////////////////////////
-enum trace_flags {
-    trace_nothing = 0,      // disable tracing
-    trace_macros = 1,       // enable macro tracing
-    trace_includes = 2      // enable include file tracing
-};
-
-///////////////////////////////////////////////////////////////////////////////
-//  
-//  The default_tracing class is a placeholder for all macro 
-//  expansion trace hooks contained inside the macro expansion engine
+//  The default_preprocessing_hooks class is a placeholder for all 
+//  preprocessing hooks called from inside the preprocessing engine
 //
 ///////////////////////////////////////////////////////////////////////////////
-struct default_tracing {
+struct default_preprocessing_hooks {
 
-    ///////////////////////////////////////////////////////////////////////////
-    //  
-    //  The function enable_tracing is called, whenever the status of the 
-    //  tracing was changed.
-    //
-    //  The parameter 'enable' is to be used as the new tracing status.
-    //  
-    ///////////////////////////////////////////////////////////////////////////
-    void enable_tracing(trace_flags flags)
-    {}
-    
-    ///////////////////////////////////////////////////////////////////////////
-    //  
-    //  The function tracing_enabled should return the current tracing status.
-    //  
-    ///////////////////////////////////////////////////////////////////////////
-    trace_flags tracing_enabled() 
-    { return trace_nothing; }
-    
     ///////////////////////////////////////////////////////////////////////////
     //  
     //  The function 'expanding_function_like_macro' is called, whenever a 
@@ -158,6 +128,9 @@ struct default_tracing {
     //  The function 'interpret_pragma' is called, whenever a #pragma wave 
     //  directive is found, which isn't known to the core Wave library. 
     //
+    //  The parameter 'ctx' is a reference to the context object used for 
+    //  instantiating the preprocessing iterators by the user.
+    //
     //  The parameter 'pending' may be used to push tokens back into the input 
     //  stream, which are to be used as the replacement text for the whole 
     //  #pragma wave() directive.
@@ -170,28 +143,68 @@ struct default_tracing {
     //  The parameter 'act_token' contains the actual #pragma token, which may 
     //  be used for error output.
     //
-    //  The parameter 'language' contains the current language mode, in which 
-    //  the Wave library operates.
-    //
     //  If the return value is 'false', the whole #pragma directive is 
     //  interpreted as unknown and a corresponding error message is issued. A
     //  return value of 'true' signs a successful interpretation of the given 
     //  #pragma.
     //
     ///////////////////////////////////////////////////////////////////////////
-    template <typename TokenT, typename ContainerT>
+    template <typename ContextT, typename ContainerT>
     bool 
-    interpret_pragma(ContainerT &pending, TokenT const &option, 
-        ContainerT const &values, TokenT const &act_token, 
-        boost::wave::language_support language)
+    interpret_pragma(ContextT const &ctx, ContainerT &pending, 
+        typename ContextT::token_type const &option, ContainerT const &values, 
+        typename ContextT::token_type const &act_token)
     {
         return false;
     }
+    
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    //  The function 'defined_macro' is called, whenever a macro was defined
+    //  successfully.
+    //
+    //  The parameter 'name' is a reference to the token holding the macro name.
+    //
+    //  The parameter 'is_functionlike' is set to true, whenever the newly 
+    //  defined macro is defined as a function like macro.
+    //
+    //  The parameter 'parameters' holds the parameter tokens for the macro
+    //  definition. If the macro has no parameters or if it is a object like
+    //  macro, then this container is empty.
+    //
+    //  The parameter 'definition' contains the token sequence given as the
+    //  replacement sequence (definition part) of the newly defined macro.
+    //
+    //  The parameter 'is_predefined' is set to true for all macros predefined 
+    //  during the initialisation pahase of the library.
+    //
+    ///////////////////////////////////////////////////////////////////////////
+    template <typename TokenT, typename ParametersT, typename DefinitionT>
+    void
+    defined_macro(TokenT const &macro_name, bool is_functionlike, 
+        ParametersT const &parameters, DefinitionT const &definition, 
+        bool is_predefined)
+    {}
+    
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    //  The function 'undefined_macro' is called, whenever a macro definition
+    //  was removed successfully.
+    //  
+    //  The parameter 'name' holds the name of the macro, which definition was 
+    //  removed.
+    //
+    ///////////////////////////////////////////////////////////////////////////
+    template <typename StringT>
+    void
+    undefined_macro(StringT const &macro_name)
+    {}
+    
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-}   // namespace trace_policies
+}   // namespace context_policies
 }   // namespace wave
 }   // namespace boost
 
-#endif // !defined(TRACE_POLICIES_HPP_338DE478_A13C_4B63_9BA9_041C917793B8_INCLUDED)
+#endif // !defined(PREPROCESSING_HOOKS_HPP_338DE478_A13C_4B63_9BA9_041C917793B8_INCLUDED)

@@ -27,12 +27,20 @@ namespace impl {
     inline StringT
     escape_lit(StringT const &value)
     {
-        StringT result(value);
+        StringT result;
         typename StringT::size_type pos = 0;
-        while ((pos = result.find_first_of ("\"\\?", pos)) != StringT::npos)
-        {
-            result.insert (pos, 1, '\\');
-            pos += 2;
+        typename StringT::size_type pos1 = value.find_first_of ("\"\\?", 0);
+        if (StringT::npos != pos1) {
+            do {
+                result += value.substr(pos, pos1-pos) 
+                            + StringT("\\") 
+                            + StringT(1, value[pos1]);
+                pos1 = value.find_first_of ("\"\\?", pos = pos1+1);
+            } while (StringT::npos != pos1);
+            result += value.substr(pos);
+        }
+        else {
+            result = value;
         }
         return result;
     }
@@ -42,15 +50,23 @@ namespace impl {
     inline StringT
     unescape_lit(StringT const &value)
     {
-        StringT result(value);
+        StringT result;
         typename StringT::size_type pos = 0;
-        while ((pos = result.find_first_of ("\\", pos)) != StringT::npos)
-        {
-            if ('\\' == result[pos+1] || '\"' == result[pos+1] || 
-                '?' == result[pos+1])
-            {
-                result.erase(pos, 1);
-            }
+        typename StringT::size_type pos1 = value.find_first_of ("\\", 0);
+        if (StringT::npos != pos1) {
+            do {
+                if ('\\' == value[pos1+1] || '\"' == value[pos1+1] || 
+                    '?' == value[pos1+1])
+                {
+                    result += value.substr(pos, pos1-pos);
+                }
+                pos1 = value.find_first_of ("\\", pos = pos1+1);
+            } while (pos1 != StringT::npos);
+            result += value.substr(pos);
+        }
+        else {
+        // the string doesn't contain any escaped character sequences
+            result = value;
         }
         return result;
     }

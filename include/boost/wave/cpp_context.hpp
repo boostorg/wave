@@ -28,7 +28,7 @@
 #include <boost/wave/util/cpp_iterator.hpp>
 #include <boost/wave/util/cpp_macromap.hpp>
 
-#include <boost/wave/trace_policies.hpp>
+#include <boost/wave/preprocessing_hooks.hpp>
 #include <boost/wave/cpp_iteration_context.hpp>
 #include <boost/wave/language_support.hpp>
 
@@ -61,7 +61,7 @@ template <
     typename IteratorT,
     typename LexIteratorT, 
     typename InputPolicyT = iteration_context_policies::load_file_to_string,
-    typename TraceT = trace_policies::default_tracing
+    typename TraceT = context_policies::default_preprocessing_hooks
 >
 class context {
 
@@ -170,11 +170,7 @@ public:
     iter_size_type get_max_include_nesting_depth() const
         { return iter_ctxs.get_max_include_nesting_depth(); }
 
-// enable/disable tracing
-    void enable_tracing(trace_policies::trace_flags enable) 
-        { trace.enable_tracing(enable); }
-    trace_policies::trace_flags tracing_enabled()
-        { return trace.tracing_enabled(); }
+// access the trace policy
     trace_policy_type &get_trace_policy() 
         { return trace; }
 
@@ -259,16 +255,28 @@ public:
     bool add_pragma_once_header(std::string const &filename)
         { return includes.add_pragma_once_header(filename); }
 #endif 
-    
+
+// forwarding functions for the context policy hooks    
     template <typename ContainerT>
     bool interpret_pragma(ContainerT &pending, token_type const &option, 
-        ContainerT const &values, token_type const &act_token, 
-        boost::wave::language_support language)
+        ContainerT const &values, token_type const &act_token)
     {
-        return trace.interpret_pragma(pending, option, values, act_token, 
-            language);
+        return trace.interpret_pragma(*this, pending, option, values, 
+            act_token);
     }
-
+    template <typename ParametersT, typename DefinitionT>
+    void defined_macro(token_type const &name, bool is_functionlike, 
+        ParametersT const &parameters, DefinitionT const &definition, 
+        bool is_predefined)
+    {
+        trace.defined_macro(name, is_functionlike, parameters, definition, 
+            is_predefined);
+    }
+    void undefined_macro(typename token_type::string_type const &name)
+    {
+        trace.undefined_macro(name);
+    }
+    
 private:
 // the main input stream
     target_iterator_type const &first;  // underlying input stream

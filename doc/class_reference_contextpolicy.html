@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>The Tracing Policy</title>
+<title>The Context Policy</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link href="theme/style.css" rel="stylesheet" type="text/css">
 </head>
@@ -11,7 +11,7 @@
   <tr> 
     <td width="21"> <h1></h1></td>
     <td width="885"> <font face="Verdana, Arial, Helvetica, sans-serif"><b><font size="6">The 
-      Tracing Policy</font></b></font></td>
+      Context Policy</font></b></font></td>
     <td width="96"><a href="http://spirit.sf.net"><img src="theme/wave.gif" width="93" height="68" align="right" border="0"></a></td>
   </tr>
 </table>
@@ -26,47 +26,31 @@
 </table>
 <blockquote> 
   <p><a href="class_reference_tracepolicy.html#introduction">Introduction</a><br>
-    <a href="class_reference_tracepolicy.html#header_synopsis">Header 'wave/trace_policies.hpp' 
+    <a href="class_reference_tracepolicy.html#header_synopsis">Header 'wave/preprocessing_hooks.hpp' 
     synopsis</a><br>
     <a href="class_reference_tracepolicy.html#member_functions">Member functions</a></p>
 </blockquote>
 <h2><b><a name="introduction"></a>Introduction</b></h2>
-<p>There is implemented an unique tracing facility as a part of the <tt>Wave</tt> 
-  library, which allows to selectively trace all stages of the macro expansion 
-  process, involving the argument expansion and the rescanning of the replacement 
-  results. This tracing facility greatly helps to understand foreign code or to 
-  debug your own macros.</p>
-<p>The tracing policy is used to trace the macro expansion of macros whenever 
-  it is requested from inside the input stream to preprocess through the <tt>#pragma&nbsp;wave_option(trace:&nbsp;enable)</tt> 
-  (or <tt>_Pragma(&quot;wave&nbsp;trace(enable)&quot;)</tt>) directive. The macro 
-  tracing may be disabled again with the help of a <tt>#pragma wave_option(trace: 
-  disable)</tt> (or <tt>_Pragma(&quot;wave&nbsp;trace(disable)&quot;)</tt>) directive. 
-  Note though, that the <tt>Wave</tt> driver executable requires additionally 
-  to specify the <tt>-t</tt> (<tt>--trace</tt>) command line option, which defines 
-  the stream, where the trace output goes.</p>
+<p>The context policy is used to provide callback hooks, which are called from inside the library into the user code, whenever</p>
+<ul>
+  <li>a macro get's defined or undefind, </li>
+  <li>a macro is expanded or rescanned,</li>
+  <li>an include file is opened or left, </li>
+  <li> a pragma of the form <tt>'wave option[(value)]'</tt> is recognised. </li>
+</ul>
 <p>This policy type is used as a template parameter to the <a href="class_reference_context.html"><tt>wave::context&lt;&gt;</tt></a> 
-  object, where the default policy does no tracing at all.</p>
-<h2><a name="header_synopsis"></a>Header <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/spirit/spirit/wave/wave/macro_trace_policies.hpp?rev=1.1&content-type=text/vnd.viewcvs-markup">wave/trace_policies.hpp</a> 
+  object, where the default policy proviedes empty hooks functions only.</p>
+<h2><a name="header_synopsis"></a>Header <a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/spirit/spirit/wave/wave/macro_trace_policies.hpp?rev=1.1&content-type=text/vnd.viewcvs-markup">wave/</a><a href="class_reference_tracepolicy.html#header_synopsis">preprocessing_hooks</a><a href="http://cvs.sourceforge.net/cgi-bin/viewcvs.cgi/spirit/spirit/wave/wave/macro_trace_policies.hpp?rev=1.1&content-type=text/vnd.viewcvs-markup">.hpp</a> 
   synopsis</h2>
 <pre>
 <span class="keyword">namespace</span> boost {
 <span class="keyword">namespace</span> wave {
-<span class="keyword">namespace</span> trace_policies {
+<span class="keyword">namespace</span> context_policies {
  
-    <span class="keyword">enum</span> trace_flags {
-	        trace_nothing = 0,      <span class="comment">// disable tracing</span>
-			trace_macros = 1,       <span class="comment">// enable macro tracing</span>
-	        trace_includes = 2      <span class="comment">// enable include file tracing</span>
-    };
-
-    <span class="keyword">struct</span> default_tracing {
+    <span class="keyword">struct</span> default_preprocessing_hooks {
 
         <span class="comment">// general control function</span>
-        <span class="keyword">void</span> <a href="class_reference_tracepolicy.html#enable_tracing">enable_tracing</a>(trace_flags enable);
-        trace_flags <a href="class_reference_tracepolicy.html#tracing_enabled">tracing_enabled</a>();
-
-        <span class="comment">// macro tracing functions</span>
-        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> TokenT, <span class="keyword">typename</span> ContainerT&gt;
+        template</span> &lt;<span class="keyword">typename</span> TokenT, <span class="keyword">typename</span> ContainerT&gt;
         <span class="keyword">void</span> <a href="class_reference_tracepolicy.html#expanding_function_like_macro">expanding_function_like_macro</a>(TokenT <span class="keyword">const</span> &amp;macrodef, 
             <span class="keyword">std::vector</span>&lt;TokenT&gt; <span class="keyword">const</span> &amp;formal_args, 
             ContainerT <span class="keyword">const</span> &amp;definition, TokenT <span class="keyword">const</span> &amp;macrocall, 
@@ -88,32 +72,29 @@
 
         <span class="keyword">void</span> <a href="class_reference_tracepolicy.html#returning_from_include_file">returning_from_include_file</a>();
 
-        <span class="comment">// interpretation of unknown #pragma's</span>
-        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> TokenT, <span class="keyword">typename</span> ContainerT&gt;
-		        bool <a href="class_reference_tracepolicy.html#interpret_pragma">interpret_pragma</a>(ContainerT &amp;pending, 
-             TokenT const &amp;option, ContainerT <span class="keyword">const</span> &amp;values, 
-             TokenT <span class="keyword">const</span> &amp;pragma_token, language_support language);
+        <span class="comment">// interpretation of #pragma's of the form </span>
+        <span class="comment">// 'wave option[(value)]'</span>
+        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;
+		bool <a href="class_reference_tracepolicy.html#interpret_pragma">interpret_pragma</a>(ContextT <span class="keyword">const</span> &amp;ctx, ContainerT &amp;pending, 
+            <span class="keyword">typename</span> ContextT::token_type <span class="keyword">const</span> &amp;option, 
+            ContainerT <span class="keyword">const</span> &amp;values, 
+            <span class="keyword">typename</span> ContextT::token_type <span class="keyword">const</span> &amp;pragma_token);
+
+        <span class="comment">// macro definition hooks</span>
+        <span class="keyword">template</span> &lt;
+            <span class="keyword">typename</span> TokenT, <span class="keyword">typename</span> ParametersT, <span class="keyword">typename</span> DefinitionT
+        &gt;
+        <span class="keyword">void</span> <a href="class_reference_tracepolicy.html#defined_macro">defined_macro</a>(TokenT <span class="keyword">const</span> &amp;name, <span class="keyword">bool</span> is_functionlike,
+            ParametersT <span class="keyword">const</span> &amp;parameters, DefinitionT <span class="keyword">const</span> &amp;definition,
+            <span class="keyword">bool</span> is_predefined);
+
+        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> StringT&gt;
+        <span class="keyword">void</span> <a href="class_reference_tracepolicy.html#undefined_macro">undefined_macro</a>(StringT <span class="keyword">const</span> &amp;name);
     };
 
-}   <span class="comment">// namespace macro_trace_policy</span>
-}   
-</pre>
+}}}   <span class="comment">// namespace boost::wave::context_policies</span></pre>
 <h2><a name="member_functions"></a>Member functions</h2>
-<h3>General control functions</h3>
-<p><a name="enable_tracing"></a><b>enable_tracing</b></p>
-<pre>    <span class="keyword">void</span> enable_tracing(<span class="keyword">trace_flags</span> enable);</pre>
-<blockquote> 
-  <p>The function <tt>enable_tracing</tt> is called, whenever the status of the 
-    tracing was changed from inside the stream to preprocess.</p>
-  <p>The parameter <tt>enable</tt> is to be used as the new tracing status.</p>
-</blockquote>
-<p><a name="tracing_enabled"></a><b>tracing_enabled</b></p>
-<pre>    <span class="keyword">trace_flags</span> tracing_enabled();</pre>
-<blockquote> 
-  <p>The function <tt>tracing_enabled</tt> should return the current tracing status.</p>
-</blockquote>
-<h3>Tracing functions</h3>
-<h4>Macro tracing functions</h4>
+<h3>Macro expansion tracking functions</h3>
 <p><a name="expanding_function_like_macro"></a><b>expanding_function_like_macro</b></p>
 <pre><span class="keyword">    template</span> &lt;<span class="keyword">typename</span> TokenT, <span class="keyword">typename</span> ContainerT&gt;
     <span class="keyword">void</span> expanding_function_like_macro(TokenT <span class="keyword">const</span> &amp;macrodef, 
@@ -181,7 +162,7 @@
     expansion. This is a standard STL container containing the generated token 
     sequence.</p>
 </blockquote>
-<h4>Include file tracing functions</h4>
+<h3>Include file tracing functions</h3>
 <p><a name="opened_include_file" id="opened_include_file"></a><strong>opened_include_file</strong></p>
 <pre>    <span class="keyword">void</span> opened_include_file(std::string <span class="keyword">const</span> &amp;filename, 
         std::size_t include_depth, <span class="keyword">bool</span> is_system_include);
@@ -203,16 +184,19 @@
   <p>The function <tt>returning_from_include_file</tt> is called, whenever an 
     included file is about to be closed after it's processing is complete.</p>
 </blockquote>
+<h3>Interpretation of #pragma's</h3>
 <p><strong><a name="interpret_pragma"></a>interpret_pragma</strong></p>
-<pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> TokenT, <span class="keyword">typename</span> ContainerT&gt;
-		   bool <a href="class_reference_tracepolicy.html#interpret_pragma">interpret_pragma</a>(ContainerT &amp;pending, 
-        TokenT const &amp;option, ContainerT <span class="keyword">const</span> &amp;values, 
-        TokenT <span class="keyword">const</span> &amp;pragma_token, language_support language);
+<pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> Context, <span class="keyword">typename</span> ContainerT&gt;
+    bool <a href="class_reference_tracepolicy.html#interpret_pragma">interpret_pragma</a>(ContextT <span class="keyword">const</span> &amp;ctx, ContainerT &amp;pending, 
+        <span class="keyword">typename</span> ContextT::token_type <span class="keyword">const</span> &amp;option, 
+        ContainerT <span class="keyword">const</span> &amp;values, 
+        <span class="keyword">typename</span> ContextT::token_type<span class="keyword"> const</span> &amp;pragma_token);
 </pre>
 <blockquote> 
   <p>The function <tt>interpret_pragma</tt> is called, whenever an unrecognized 
     <tt>#pragma&nbsp;wave&nbsp;...</tt> or operator <tt>_Pragma(&quot;wave&nbsp;...&quot;)</tt> 
     is found in the input stream.</p>
+  <p>The <tt>ctx</tt> parameter provides a reference to the <tt>context_type</tt> used during instatiation of the preprocessing iterators by the user. </p>
   <p>The <tt>pending</tt> parameter may be used to push tokens back into the input 
     stream, which are to be used as the replacement text for the whole <tt>#pragma&nbsp;wave()</tt> 
     directive. If this sequence is left empty, no replacement takes place, i.e. 
@@ -222,12 +206,42 @@
     the pragma operator.</p>
   <p>The <tt>pragma_token</tt> parameter contains the actual #pragma token, which 
     may be used for extraction of the location information for some error output.</p>
-  <p>The <tt>language</tt> parameter contains the current language mode, in which 
-    the <tt>Wave</tt> library operates.</p>
   <p>If the return value is 'false', the whole #pragma directive is interpreted 
     as unknown and a corresponding error message is issued. A return value of 
     'true' signs a successful interpretation of the given #pragma.<br>
   </p>
+</blockquote>
+<h3>Macro definition </h3>
+<p><strong><a name="defined_macro" id="defined_macro"></a>defined_macro</strong></p>
+<pre>    <span class="keyword">template</span> &lt;
+        <span class="keyword">typename</span> TokenT, <span class="keyword">typename</span> ParametersT, <span class="keyword">typename</span> DefinitionT
+    &gt;
+    <span class="keyword">void</span> <a href="class_reference_tracepolicy.html#defined_macro">defined_macro</a>(TokenT <span class="keyword">const</span> &amp;name, <span class="keyword">bool</span> is_functionlike,
+        ParametersT <span class="keyword">const</span> &amp;parameters, DefinitionT <span class="keyword">const</span> &amp;definition,
+        <span class="keyword">bool</span> is_predefined);
+</pre>
+<blockquote>  <p>The function <tt>defined_macro</tt> is called, whenever a macro was defined successfully.</p>
+  <p>The parameter <tt>name</tt> is a reference to the token holding the macro name.</p>
+  <p>The parameter <tt>is_functionlike</tt> is set to true, whenever the newly 
+    defined macro is defined as a function like macro.</p>
+  <p>The parameter <tt>parameters</tt> holds the parameter tokens for the macro
+      definition. If the macro has no parameters or if it is a object like
+  macro, then this container is empty.</p>
+  <p>The parameter <tt>definition</tt> contains the token sequence given as the
+  replacement sequence (definition part) of the newly defined macro.</p>
+  <p>The parameter <tt>is_predefined</tt> is set to true for all macros predefined 
+      during the initialisation pahase of the library.<br>
+  </p>
+</blockquote>
+<p><strong><a name="undefined_macro" id="undefined_macro"></a>undefined_macro</strong></p>
+<pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> StringT&gt;
+    <span class="keyword">void</span> <a href="class_reference_tracepolicy.html#undefined_macro">undefined_macro</a>(StringT <span class="keyword">const</span> &amp;name);
+</pre>
+<blockquote>
+  <p>The function <tt>undefined_macro</tt> is called, whenever a macro definition
+    was removed successfully.</p>
+  <p>The parameter <tt>name</tt> holds the name of the macro, which definition was removed.<br>
+      </p>
 </blockquote>
 <table border="0">
   <tr> 
@@ -243,7 +257,7 @@
 <font size="2">Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) </font> </p>
 <span class="updated"></span>
 <p class="copyright"><span class="updated">Last updated: 
-  <!-- #BeginDate format:fcAm1m -->Saturday, August 21, 2004  20:01<!-- #EndDate -->
+  <!-- #BeginDate format:fcAm1m -->Monday, September 13, 2004  12:07<!-- #EndDate -->
 </span></p>
 </body>
 </html>

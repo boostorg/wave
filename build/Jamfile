@@ -36,7 +36,7 @@ lib boost_wave
 #    : ../src/$(SOURCES).cpp
 #    :                        # build requirements
 #      [ common-names ]       # magic for install and auto-link features
-#      <define>BOOST_FILESYSTEM_DYN_LINK=1  # tell source we're building dll's
+#      <define>BOOST_WAVE_DYN_LINK=1  # tell source we're building dll's
 #      <runtime-link>dynamic  # build only for dynamic runtimes
 #      <include>$(BOOST_ROOT) 
 #      <sysinclude>$(BOOST_ROOT)
