@@ -33,6 +33,8 @@ Version 1.1.12
 - Identified a performance problem, where the token_cache was instantiated
   for every created lexer object, but needed to be initialsed only once.
 - Added #include <wave_version.hpp> to wave_config.hpp
+- Fixed problems reported by the gcc 3.4.1 compiler.
+- Adjusted Jamfiles for the new toolset names introduced in Boost V1.32.
 
 Version 1.1.11
 - Updated copyrights.
