@@ -23,6 +23,7 @@ TODO (known issues):
 CHANGELOG
 
 - Fixed some typename errors in cpp_macromap.hpp (thanks to Vladimir Prus).
+- Fixed the BoostBuild V2 Jamfiles (thanks to Vladimir Prus).
 
 Version 1.1.9
 - Moved all of the #pragma wave option(value) operators out of the wavelib into 
