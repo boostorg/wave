@@ -24,7 +24,8 @@ SOURCES = instantiate_cpp_exprgrammar
     ;
 
 lib boost_wave
-    :   $(SOURCES).cpp
-    :   <vc7.1><*><rtti>off    # workaround for compiler bug
-        <no-warn>cpp.re.cpp
+    :   $(SOURCES).cpp /boost/filesystem//boost_filesystem
+    :   <toolset>vc-7.1:<rtti>off
+        # Not supported by V2 
+        # <no-warn>cpp.re.cpp
     ;

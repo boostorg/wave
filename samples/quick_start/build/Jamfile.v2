@@ -10,12 +10,6 @@
 
 exe quick_start
     : ../quick_start.cpp 
-      <lib>../../../build/boost_wave
-      <lib>../../../../../libs/filesystem/build/boost_filesystem
-    :
-      <vc7.1><*><rtti>off        # workaround for compiler bug
-    :
-      <runtime-link>static
-      <threading>single
-    ;
+      ../../../build//boost_wave
+    ;  
 

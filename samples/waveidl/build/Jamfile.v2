@@ -16,13 +16,7 @@ exe waveidl
       ../instantiate_re2c_lexer.cpp
       ../instantiate_re2c_lexer_string.cpp
       ../idllexer/idl.re.cpp
-      <lib>../../../build/boost_wave
-      <lib>../../../../../libs/program_options/build/boost_program_options
-      <lib>../../../../../libs/filesystem/build/boost_filesystem
-    :
-      <vc7.1><*><rtti>off        # workaround for compiler bug
-    :
-      <runtime-link>static
-      <threading>single
+      ../../../build//boost_wave
+      /boost/program_options//boost_program_options
     ;
 
