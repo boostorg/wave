@@ -17,6 +17,9 @@ TODO (known issues):
 - Fix the trigraph backslash problem in the re2c (C/C++ and IDL) scanners, if 
   there is the end of the (internal) buffer just in between a '??/' and a '\n'.
 
+Mon Mar 29 09:36:59 WEDT 2004
+- Corrected the signature of the main() functions (was main(int, char const*[])).
+
 Sun Mar 28 12:55:59 WEDT 2004
 Version 1.1.4
 - Fixed a problem, where the first returned token was lost, whenever a 

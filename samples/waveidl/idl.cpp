@@ -421,7 +421,7 @@ boost::wave::util::file_position_t current_position;
 ///////////////////////////////////////////////////////////////////////////////
 //  main entry point
 int
-main (int argc, char const *argv[])
+main (int argc, char *argv[])
 {
     try {
     // analyze the command line options and arguments
