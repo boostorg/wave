@@ -155,7 +155,8 @@ public:
         alreadydefined_name,
         undefined_macroname,
         invalid_macroname,
-        unexpected_qualified_name
+        unexpected_qualified_name,
+        division_by_zero
     };
 
     preprocess_exception(char const *what_, error_code code, int line_, 
@@ -223,7 +224,8 @@ public:
             "a macro or scope name",                    // alreadydefined_name
             "undefined macro or scope name may not be imported", // undefined_macroname
             "ill formed macro name or " BOOST_WAVE_PP_REGION " name",  // invalid_macroname
-            "qualified names are supported in C++0x mode only"   // unexpected_qualified_name
+            "qualified names are supported in C++0x mode only",   // unexpected_qualified_name
+            "division by zero in preprocessor expression"   // division_by_zero
         };
         BOOST_ASSERT(unexpected_error <= code && 
             code <= unexpected_qualified_name);
@@ -264,7 +266,8 @@ public:
             util::severity_error,              // alreadydefined_name
             util::severity_error,              // undefined_macroname
             util::severity_error,              // invalid_macroname
-            util::severity_error               // unexpected_qualified_name
+            util::severity_error,              // unexpected_qualified_name
+            util::severity_fatal               // division_by_zero
         };
         BOOST_ASSERT(unexpected_error <= code && 
             code <= unexpected_qualified_name);

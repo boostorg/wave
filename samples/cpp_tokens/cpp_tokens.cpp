@@ -19,10 +19,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 //  Include Wave itself
 #include <boost/wave.hpp>
-#include <boost/wave/token_ids.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
-//  The follwoing files contain the custom lexer type to use
+//  The following files contain the custom lexer type to use
 #include "slex_token.hpp"
 #include "slex_iterator.hpp"
 

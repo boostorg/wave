@@ -25,11 +25,13 @@
 //  Include Wave itself
 #include <boost/wave.hpp>
 
+///////////////////////////////////////////////////////////////////////////////
 //  Include the lexer related stuff
-#include <boost/wave/token_ids.hpp>                   // token Id's
 #include <boost/wave/cpplexer/cpp_lex_token.hpp>      // token type
 #include <boost/wave/cpplexer/cpp_lex_iterator.hpp>   // lexer type
 
+///////////////////////////////////////////////////////////////////////////////
+//  Include the context trace policies to use
 #include "trace_macro_expansion.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////

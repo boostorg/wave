@@ -15,6 +15,7 @@
 #include <boost/spirit/core.hpp>
 #include <boost/spirit/core/assert.hpp>
 #include <boost/spirit/attribute/closure.hpp>
+#include <boost/spirit/dynamic/if.hpp>
 #if SPIRIT_VERSION >= 0x1700
 #include <boost/spirit/actor/assign_actor.hpp>
 #include <boost/spirit/actor/push_back_actor.hpp>
@@ -124,6 +125,29 @@ namespace impl {
     };
     phoenix::function<convert_chlit> const as_chlit;
 
+////////////////////////////////////////////////////////////////////////////////
+//
+//  Handle the ?: operator with correct type propagation
+//
+////////////////////////////////////////////////////////////////////////////////
+    struct operator_questionmark {
+    
+        template <typename CondT, typename Arg1T, typename Arg2T>
+        struct result { 
+        
+            typedef boost::wave::grammars::closures::closure_value type; 
+        };
+
+        template <typename CondT, typename Arg1T, typename Arg2T>
+        boost::wave::grammars::closures::closure_value operator()(
+            CondT const &cond, Arg1T &val1, Arg2T const &val2) const
+        { 
+            typedef boost::wave::grammars::closures::closure_value return_t;
+            return return_t(val1.handle_questionmark(cond, val2));
+        }
+    };
+    phoenix::function<operator_questionmark> const questionmark;
+    
 }   // namespace impl
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -160,8 +184,15 @@ struct expression_grammar :
         rule_t add_exp, multiply_exp;
         rule_t unary_exp, primary_exp, constant;
 
+        rule_t const_exp_nocalc;
+        rule_t logical_or_exp_nocalc, logical_and_exp_nocalc;
+        rule_t inclusive_or_exp_nocalc, exclusive_or_exp_nocalc, and_exp_nocalc;
+        rule_t cmp_equality_nocalc, cmp_relational_nocalc;
+        rule_t shift_exp_nocalc;
+        rule_t add_exp_nocalc, multiply_exp_nocalc;
+        rule_t unary_exp_nocalc, primary_exp_nocalc, constant_nocalc;
+
         boost::spirit::subrule<0, closure_t::context_t> const_exp_subrule;
-        boost::spirit::subrule<1, closure_t::context_t> shift_exp_clos;
 
         definition(expression_grammar const &self)
         {
@@ -178,45 +209,67 @@ struct expression_grammar :
                 =   logical_or_exp[const_exp.val = arg1]
                     >> !(const_exp_subrule =
                             ch_p(T_QUESTION_MARK)
-                            >>  logical_or_exp
+                            >>  const_exp
                                 [
-                                    if_(const_exp.val)
-                                    [
-                                        const_exp_subrule.val = arg1
-                                    ]
+                                    const_exp_subrule.val = arg1
                                 ] 
                             >>  ch_p(T_COLON)
-                            >>  logical_or_exp
+                            >>  const_exp
                                 [
-                                    if_(!const_exp.val)
-                                    [
-                                        const_exp_subrule.val = arg1
-                                    ]
+                                    const_exp_subrule.val = 
+                                        impl::questionmark(const_exp.val, 
+                                            const_exp_subrule.val, arg1)
                                 ]
                         )[const_exp.val = arg1]
                 ;
 
             logical_or_exp 
                 =   logical_and_exp[logical_or_exp.val = arg1]
-                    >> *(   pattern_p(T_OROR, MainTokenMask)
-                            >>  logical_and_exp
-                                [
-                                    logical_or_exp.val = 
-                                        static_cast_<bool>(logical_or_exp.val) 
-                                     || static_cast_<bool>(arg1)
-                                ]
+                    >> *(   if_p(static_cast_<bool>(logical_or_exp.val))
+                            [
+                                // if one of the || operators is true, no more
+                                // evaluation is required
+                                pattern_p(T_OROR, MainTokenMask)
+                                >>  logical_and_exp_nocalc
+                                    [
+                                        logical_or_exp.val = 
+                                            static_cast_<bool>(logical_or_exp.val)
+                                    ]
+                            ]
+                            .else_p
+                            [
+                                pattern_p(T_OROR, MainTokenMask)
+                                >>  logical_and_exp
+                                    [
+                                        logical_or_exp.val = 
+                                            logical_or_exp.val || arg1
+                                    ]
+                            ]
                         )
                 ;
 
             logical_and_exp
                 =   inclusive_or_exp[logical_and_exp.val = arg1]
-                    >> *(   pattern_p(T_ANDAND, MainTokenMask)
-                            >>  inclusive_or_exp
-                                [
-                                    logical_and_exp.val = 
-                                        static_cast_<bool>(logical_and_exp.val)
-                                     && static_cast_<bool>(arg1)
-                                ]
+                    >> *(   if_p(static_cast_<bool>(logical_and_exp.val))
+                            [
+                                pattern_p(T_ANDAND, MainTokenMask)
+                                >>  inclusive_or_exp
+                                    [
+                                        logical_and_exp.val = 
+                                            logical_and_exp.val && arg1
+                                    ]
+                            ]
+                            .else_p
+                            [
+                                // if one of the && operators is false, no more
+                                // evaluation is required
+                                pattern_p(T_ANDAND, MainTokenMask)
+                                >>  inclusive_or_exp_nocalc
+                                    [
+                                        logical_and_exp.val =
+                                            static_cast_<bool>(logical_and_exp.val)
+                                    ]
+                            ]
                         )
                 ;
 
@@ -226,8 +279,8 @@ struct expression_grammar :
                             >>  exclusive_or_exp
                                 [
                                     inclusive_or_exp.val = 
-                                        static_cast_<unsigned int>(inclusive_or_exp.val) 
-                                      | static_cast_<unsigned int>(arg1)
+                                          static_cast_<unsigned int>(inclusive_or_exp.val) 
+                                      |   static_cast_<unsigned int>(arg1)
                                 ]
                         )
                 ;
@@ -304,39 +357,16 @@ struct expression_grammar :
 
             shift_exp
                 =   add_exp[shift_exp.val = arg1]
-                    >> *(shift_exp_clos 
-                            =   ch_p(T_SHIFTLEFT)
-                                >>  add_exp
-                                    [
-                                        shift_exp_clos.val = arg1,
-                                        if_(shift_exp_clos.val < -64)
-                                        [
-                                            shift_exp_clos.val = -64
-                                        ],
-                                        if_(shift_exp_clos.val > 64)
-                                        [
-                                            shift_exp_clos.val = 64
-                                        ],
-                                        shift_exp.val = 
-                                            static_cast_<unsigned int>(shift_exp.val)
-                                         << static_cast_<int>(shift_exp_clos.val)
-                                    ]
-                            |   ch_p(T_SHIFTRIGHT)
-                                >>  add_exp
-                                    [
-                                        shift_exp_clos.val = arg1,
-                                        if_(shift_exp_clos.val < -64)
-                                        [
-                                            shift_exp_clos.val = -64
-                                        ],
-                                        if_(shift_exp_clos.val > 64)
-                                        [
-                                            shift_exp_clos.val = 64
-                                        ],
-                                        shift_exp.val =
-                                            static_cast_<unsigned int>(shift_exp.val) 
-                                         >> static_cast_<int>(shift_exp_clos.val)
-                                    ]
+                    >> *(   ch_p(T_SHIFTLEFT)
+                            >>  add_exp
+                                [
+                                    shift_exp.val <<= arg1
+                                ]
+                        |   ch_p(T_SHIFTRIGHT)
+                            >>  add_exp
+                                [
+                                    shift_exp.val >>= arg1
+                                ]
                         )
                 ;
 
@@ -379,8 +409,14 @@ struct expression_grammar :
 
             unary_exp
                 =   primary_exp[unary_exp.val = arg1]
-                |   ch_p(T_PLUS) >> unary_exp[unary_exp.val = arg1]
-                |   ch_p(T_MINUS) >> unary_exp[unary_exp.val = -arg1]
+                |   ch_p(T_PLUS) >> unary_exp
+                    [
+                        unary_exp.val = static_cast_<int>(arg1)
+                    ]
+                |   ch_p(T_MINUS) >> unary_exp
+                    [
+                        unary_exp.val = -static_cast_<int>(arg1)
+                    ]
                 |   pattern_p(T_COMPL, MainTokenMask) >> unary_exp
                     [
                         unary_exp.val = ~static_cast_<unsigned int>(arg1)
@@ -409,6 +445,123 @@ struct expression_grammar :
                     ]
                 ;
               
+            //  here follows the same grammar, but without any embedded 
+            //  calculations
+            const_exp_nocalc
+                =   logical_or_exp_nocalc
+                    >> !(   ch_p(T_QUESTION_MARK)
+                            >>  logical_or_exp_nocalc
+                            >>  ch_p(T_COLON)
+                            >>  logical_or_exp_nocalc
+                        )
+                ;
+
+            logical_or_exp_nocalc 
+                =   logical_and_exp_nocalc
+                    >> *(   pattern_p(T_OROR, MainTokenMask)
+                            >>  logical_and_exp_nocalc
+                        )
+                ;
+
+            logical_and_exp_nocalc
+                =   inclusive_or_exp_nocalc
+                    >> *(   pattern_p(T_ANDAND, MainTokenMask)
+                            >>  inclusive_or_exp_nocalc
+                        )
+                ;
+
+            inclusive_or_exp_nocalc
+                =   exclusive_or_exp_nocalc
+                    >> *(   pattern_p(T_OR, MainTokenMask)
+                            >>  exclusive_or_exp_nocalc
+                        )
+                ;
+
+            exclusive_or_exp_nocalc
+                =   and_exp_nocalc
+                    >> *(   pattern_p(T_XOR, MainTokenMask)
+                            >>  and_exp_nocalc
+                        )
+                ;
+
+            and_exp_nocalc
+                =   cmp_equality_nocalc
+                    >> *(   pattern_p(T_AND, MainTokenMask)
+                            >>  cmp_equality_nocalc
+                        )
+                ;
+
+            cmp_equality_nocalc
+                =   cmp_relational_nocalc
+                    >> *(   ch_p(T_EQUAL)
+                            >>  cmp_relational_nocalc
+                        |   pattern_p(T_NOTEQUAL, MainTokenMask)
+                            >>  cmp_relational_nocalc
+                        )
+                ;
+
+            cmp_relational_nocalc
+                =   shift_exp_nocalc
+                    >> *(   ch_p(T_LESSEQUAL)
+                            >>  shift_exp_nocalc
+                        |   ch_p(T_GREATEREQUAL)
+                            >>  shift_exp_nocalc
+                        |   ch_p(T_LESS)
+                            >>  shift_exp_nocalc
+                        |   ch_p(T_GREATER)
+                            >>  shift_exp_nocalc
+                        )
+                ;
+
+            shift_exp_nocalc
+                =   add_exp_nocalc
+                    >> *(   ch_p(T_SHIFTLEFT)
+                            >>  add_exp_nocalc
+                        |   ch_p(T_SHIFTRIGHT)
+                            >>  add_exp_nocalc
+                        )
+                ;
+
+            add_exp_nocalc
+                =   multiply_exp_nocalc
+                    >> *(   ch_p(T_PLUS)
+                            >>  multiply_exp_nocalc
+                        |   ch_p(T_MINUS)
+                            >>  multiply_exp_nocalc
+                        )
+                ;
+
+            multiply_exp_nocalc
+                =   unary_exp_nocalc
+                    >> *(   ch_p(T_STAR)
+                            >>  unary_exp_nocalc
+                        |   ch_p(T_DIVIDE)
+                            >>  unary_exp_nocalc
+                        |   ch_p(T_PERCENT)
+                            >>  unary_exp_nocalc
+                        )
+                ;
+
+            unary_exp_nocalc
+                =   primary_exp_nocalc
+                |   ch_p(T_PLUS) >> unary_exp_nocalc
+                |   ch_p(T_MINUS) >> unary_exp_nocalc
+                |   pattern_p(T_COMPL, MainTokenMask) >> unary_exp_nocalc
+                |   pattern_p(T_NOT, MainTokenMask) >> unary_exp_nocalc
+                ;
+
+            primary_exp_nocalc
+                =   constant_nocalc
+                |   ch_p(T_LEFTPAREN) 
+                    >> const_exp_nocalc
+                    >> ch_p(T_RIGHTPAREN)
+                ;
+
+            constant_nocalc
+                =   ch_p(T_INTLIT) 
+                |   ch_p(T_CHARLIT) 
+                ;
+
             BOOST_SPIRIT_DEBUG_TRACE_RULE(pp_expression, TRACE_CPP_EXPR_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(const_exp, TRACE_CPP_EXPR_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(logical_or_exp, TRACE_CPP_EXPR_GRAMMAR);
@@ -425,7 +578,21 @@ struct expression_grammar :
             BOOST_SPIRIT_DEBUG_TRACE_RULE(primary_exp, TRACE_CPP_EXPR_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(constant, TRACE_CPP_EXPR_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(const_exp_subrule, TRACE_CPP_EXPR_GRAMMAR);
-            BOOST_SPIRIT_DEBUG_TRACE_RULE(shift_exp_clos, TRACE_CPP_EXPR_GRAMMAR);
+
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(const_exp, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(logical_or_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(logical_and_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(inclusive_or_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(exclusive_or_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(and_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(cmp_equality_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(cmp_relational_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(shift_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(add_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(multiply_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(unary_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(primary_exp_nocalc, TRACE_CPP_EXPR_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(constant_nocalc, TRACE_CPP_EXPR_GRAMMAR);
         }
 
     // start rule of this grammar
@@ -519,6 +686,14 @@ parse_info<iterator_t> hit = parse (first, last, g[spirit_assign_actor(result)],
         }
     }
 
+    if (!result.is_valid()) {
+    // division by zero occured
+        typedef typename token_sequence_t::value_type::string_t string_t;
+        BOOST_WAVE_THROW(preprocess_exception, division_by_zero, 
+            boost::wave::util::impl::as_string<string_t>(first, last), 
+            act_pos);
+    }
+    
 // token sequence is a valid expression
     return bool(result);
 }

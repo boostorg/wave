@@ -26,10 +26,9 @@
 //  Include Wave itself
 #include <boost/wave.hpp>
 
+///////////////////////////////////////////////////////////////////////////////
 //  Include the lexer related stuff
-#include <boost/wave/token_ids.hpp>               // token Id's
 #include <boost/wave/cpplexer/cpp_lex_token.hpp>  // token type
-
 #include "idllexer/idl_lex_iterator.hpp"          // lexer type
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -325,6 +325,8 @@ struct cpp_grammar :
                     ]
                     >>  (   ch_p(T_IDENTIFIER) 
                         |   pattern_p(KeywordTokenType, TokenTypeMask)
+                        |   pattern_p(OperatorTokenType|AltExtTokenType, 
+                                ExtTokenTypeMask)   // and, bit_and etc.
                         )
                     >> !macro_parameters
                     >> !macro_definition
@@ -445,7 +447,11 @@ struct cpp_grammar :
 
         // # something else (ill formed preprocessor directive)
             illformed           // for error reporting
-                =   no_node_d[ch_p(T_POUND) >> *ppsp]
+                =   no_node_d
+                    [
+                        pattern_p(T_POUND, ~(AltTokenType|TriGraphTokenType)) 
+                        >> *ppsp
+                    ]
                     >>  (   anychar_p -
                             (ch_p(T_NEWLINE) | ch_p(T_CPPCOMMENT) | ch_p(T_EOF)) 
                         )

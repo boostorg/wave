@@ -34,15 +34,14 @@
 //  Include Wave itself
 #include <boost/wave.hpp>
 
-//#include <boost/wave/util/time_conversion_helper.hpp>
-//#include <boost/wave/util/file_position.hpp>
-
-#include <boost/wave/token_ids.hpp>
+///////////////////////////////////////////////////////////////////////////////
+// Include the lexer stuff
 #include <boost/wave/cpplexer/cpp_lex_token.hpp>
 #include <boost/wave/cpplexer/cpp_lex_iterator.hpp>
 
+///////////////////////////////////////////////////////////////////////////////
+// Include the default context trace policies
 #include <boost/wave/trace_policies.hpp>
-#include <boost/wave/cpp_context.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 //  include lexer specifics, import lexer names

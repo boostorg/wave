@@ -325,8 +325,11 @@ macromap<ContextT>::token_equals(token_t const &left, token_t const &right)
             left.get_value() == right.get_value();
     }
 
-    return token_id(left) == token_id(right) && 
-        left.get_value() == right.get_value();
+    // if the left token has whitespace, the value is irrelevant
+    return token_id(left) == token_id(right) && (
+            IS_CATEGORY(left, WhiteSpaceTokenType) ||
+            left.get_value() == right.get_value()
+        );
 }
 
 template <typename ContextT>
@@ -334,17 +337,17 @@ inline bool
 macromap<ContextT>::definition_equals(definition_container_t const &definition,
   definition_container_t const &new_definition)
 {
-    if (definition.size() == new_definition.size()) {
-    typename definition_container_t::const_iterator first1 = definition.begin();
-    typename definition_container_t::const_iterator last1 = definition.end();
-    typename definition_container_t::const_iterator first2 = new_definition.begin();
-        
-    	  while (first1 != last1 && token_equals(*first1, *first2))
-		        ++first1, ++first2;
-
-        return (first1 == last1) ? true : false;
+typename definition_container_t::const_iterator first1 = definition.begin();
+typename definition_container_t::const_iterator last1 = definition.end();
+typename definition_container_t::const_iterator first2 = new_definition.begin();
+typename definition_container_t::const_iterator last2 = new_definition.end();
+    
+    while (first1 != last1 && token_equals(*first1, *first2)) {
+    // all consecutive whitespace tokens count as one whitespace
+        impl::skip_whitespace(first1, last1);
+        impl::skip_whitespace(first2, last2);
     }
-    return false;
+    return (first1 == last1 && first2 == last2) ? true : false;
 }
 
 template <typename ContextT>
@@ -353,12 +356,8 @@ macromap<ContextT>::add_macro(token_t const &name, bool has_parameters,
     parameter_container_t &parameters, definition_container_t &definition, 
     bool is_predefined, defined_macros_t *scope)
 {
-// exclude special macro names
-    if (!is_predefined && (
-            is_special_macroname (name.get_value()) || 
-            IS_EXTCATEGORY(name, AltTokenType)
-        ))
-    {
+    if (!is_predefined && is_special_macroname (name.get_value())) {
+    // exclude special macro names
         BOOST_WAVE_THROW(preprocess_exception, illegal_redefinition, 
             name.get_value(), main_pos);
     }
@@ -1558,14 +1557,14 @@ bool adjacent_stringize = false;
         cit != cend; ++cit)
     {
     bool use_replaced_arg = true;
-    token_id id = token_id(*cit);
+    token_id base_id = BASE_TOKEN(token_id(*cit));
     
-        if (T_POUND_POUND == id) {
+        if (T_POUND_POUND == base_id) {
         // concatenation operator
             adjacent_concat = true;
             seen_concat = true;
         }
-        else if (T_POUND == id) {
+        else if (T_POUND == base_id) {
         // stringize operator
             adjacent_stringize = true;
 //            seen_concat = true;
@@ -1676,7 +1675,7 @@ bool adjacent_stringize = false;
                 }
             }
         }
-        else if (!adjacent_stringize || T_POUND != id) {
+        else if (!adjacent_stringize || T_POUND != base_id) {
         // insert the actual replacement token (if it is not the '#' operator)
             expanded.push_back(*cit);
         }
@@ -1756,7 +1755,7 @@ namespace impl {
         bool operator()(TokenT const &tok)
         {
             using namespace cpplexer;
-            if (T_POUND_POUND == token_id(tok))
+            if (T_POUND_POUND == BASE_TOKEN(token_id(tok)))
                 found_concat = true;
             return false;
         }
@@ -2183,7 +2182,7 @@ macromap<ContextT>::concat_tokensequence(ContainerT &expanded)
     iterator_t prev = end;
     for (iterator_t it = expanded.begin(); it != end; /**/) 
     {
-        if (T_POUND_POUND == token_id(*it)) {
+        if (T_POUND_POUND == BASE_TOKEN(token_id(*it))) {
         iterator_t next = it;
     
             ++next;

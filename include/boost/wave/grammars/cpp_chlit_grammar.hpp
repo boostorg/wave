@@ -14,28 +14,15 @@
 
 #include <boost/spirit/core.hpp>
 #include <boost/spirit/attribute/closure.hpp>
-#if SPIRIT_VERSION >= 0x1700
-#include <boost/spirit/actor/assign_actor.hpp>
-#include <boost/spirit/actor/push_back_actor.hpp>
-#endif // SPIRIT_VERSION >= 0x1700
 
 #include <boost/spirit/phoenix/operators.hpp>
 #include <boost/spirit/phoenix/primitives.hpp>
 #include <boost/spirit/phoenix/statements.hpp>
+#include <boost/spirit/phoenix/functions.hpp>
 
 #include <boost/wave/wave_config.hpp>   
 #include <boost/wave/cpp_exceptions.hpp>   
 #include <boost/wave/grammars/cpp_literal_grammar_gen.hpp>
-
-#if !defined(spirit_append_actor)
-#if SPIRIT_VERSION >= 0x1700
-#define spirit_append_actor(actor) boost::spirit::push_back_a(actor)
-#define spirit_assign_actor(actor) boost::spirit::assign_a(actor)
-#else
-#define spirit_append_actor(actor) boost::spirit::append(actor)
-#define spirit_assign_actor(actor) boost::spirit::assign(actor)
-#endif // SPIRIT_VERSION >= 0x1700
-#endif // !defined(spirit_append_actor)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -51,9 +38,35 @@ namespace closures {
     struct chlit_closure 
     :   boost::spirit::closure<chlit_closure, unsigned int> 
     {
-        member1 val;
+        member1 value;
     };
 }
+
+namespace impl {
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  compose a multibyte character literal
+//
+///////////////////////////////////////////////////////////////////////////////
+    struct compose_character_literal {
+
+        template <typename ResultT, typename ArgT>
+        struct result { 
+        
+            typedef unsigned int type; 
+        };
+
+        unsigned int 
+        operator()(unsigned int res, unsigned int character) const
+        { 
+            unsigned int retval = (res << 8) | (character & 0xff);
+            return retval;
+        }
+    };
+    phoenix::function<compose_character_literal> const compose;
+
+}   // namespace impl
 
 ///////////////////////////////////////////////////////////////////////////////
 //  define, whether the rule's should generate some debug output
@@ -74,47 +87,90 @@ struct chlit_grammar :
     template <typename ScannerT>
     struct definition
     {
-        typedef boost::spirit::rule<ScannerT> rule_t;
+        typedef 
+            boost::spirit::rule<ScannerT, closures::chlit_closure::context_t> 
+            rule_t;
 
         rule_t ch_lit;
 
         definition(chlit_grammar const &self)
         {
             using namespace boost::spirit;
+            using namespace phoenix;
             
             ch_lit
                 =  !ch_p('L') 
-                    >>  ch_p('\'')
-                    >>  (   ch_p('\\') 
-                        >>  (   ch_p('a')[self.val = 0x07]    // BEL
-                            |   ch_p('b')[self.val = 0x08]    // BS
-                            |   ch_p('t')[self.val = 0x09]    // HT
-                            |   ch_p('n')[self.val = 0x0a]    // NL
-                            |   ch_p('v')[self.val = 0x0b]    // VT
-                            |   ch_p('f')[self.val = 0x0c]    // FF
-                            |   ch_p('r')[self.val = 0x0d]    // CR
-                            |   ch_p('?')[spirit_assign_actor(self.val)]
-                            |   ch_p('\'')[spirit_assign_actor(self.val)]
-                            |   ch_p('\"')[spirit_assign_actor(self.val)]
-                            |   ch_p('\\')[spirit_assign_actor(self.val)]
-                            |   ch_p('x') 
-                                >>  hex_p[spirit_assign_actor(self.val)]
-                            |   uint_parser<unsigned int, 8, 1, 3>()
-                                [
-                                    spirit_assign_actor(self.val)
-                                ]
-                            |   ch_p('u') 
-                                >>  uint_parser<unsigned int, 16, 4, 4>()
+                    >>  ch_p('\'')[self.value = val(0)]
+                    >> +(   (
+                            ch_p('\\') 
+                            >>  (   ch_p('a')    // BEL
                                     [
-                                        spirit_assign_actor(self.val)
+                                        self.value = impl::compose(self.value, val(0x07))
                                     ]
-                            |   ch_p('U')
-                                >>  uint_parser<unsigned int, 16, 8, 8>()
+                                |   ch_p('b')    // BS
                                     [
-                                        spirit_assign_actor(self.val)
+                                        self.value = impl::compose(self.value, val(0x08))
                                     ]
+                                |   ch_p('t')    // HT
+                                    [
+                                        self.value = impl::compose(self.value, val(0x09))
+                                    ]
+                                |   ch_p('n')    // NL
+                                    [
+                                        self.value = impl::compose(self.value, val(0x0a))
+                                    ]
+                                |   ch_p('v')    // VT
+                                    [
+                                        self.value = impl::compose(self.value, val(0x0b))
+                                    ]
+                                |   ch_p('f')    // FF
+                                    [
+                                        self.value = impl::compose(self.value, val(0x0c))
+                                    ]
+                                |   ch_p('r')    // CR
+                                    [
+                                        self.value = impl::compose(self.value, val(0x0d))
+                                    ]
+                                |   ch_p('?')
+                                    [
+                                        self.value = impl::compose(self.value, val('?'))
+                                    ]
+                                |   ch_p('\'')
+                                    [
+                                        self.value = impl::compose(self.value, val('\''))
+                                    ]
+                                |   ch_p('\"')
+                                    [
+                                        self.value = impl::compose(self.value, val('\"'))
+                                    ]
+                                |   ch_p('\\')
+                                    [
+                                        self.value = impl::compose(self.value, val('\\'))
+                                    ]
+                                |   ch_p('x') >> hex_p
+                                    [
+                                        self.value = impl::compose(self.value, arg1)
+                                    ]
+                                |   uint_parser<unsigned int, 8, 1, 3>()
+                                    [
+                                        self.value = impl::compose(self.value, arg1)
+                                    ]
+                                |   ch_p('u') 
+                                    >>  uint_parser<unsigned int, 16, 4, 4>()
+                                        [
+                                            self.value = impl::compose(self.value, arg1)
+                                        ]
+                                |   ch_p('U')
+                                    >>  uint_parser<unsigned int, 16, 8, 8>()
+                                        [
+                                            self.value = impl::compose(self.value, arg1)
+                                        ]
+                                )
                             )
-                        |   anychar_p[spirit_assign_actor(self.val)]
+                        |   eps_p(anychar_p - ch_p('\'')) >> anychar_p
+                            [
+                                self.value = impl::compose(self.value, arg1)
+                            ]
                         )
                     >>  ch_p('\'')
                 ;

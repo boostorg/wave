@@ -69,6 +69,7 @@ enum token_category {
     TokenTypeMask               = 0xFF000000,
     AltTokenType                = 0x00100000,
     TriGraphTokenType           = 0x00200000,
+    AltExtTokenType             = 0x00500000,   // and, bit_and etc.
     ExtTokenTypeMask            = 0xFFF00000,
     TokenValueMask              = 0x000FFFFF,
     MainTokenMask               = TokenTypeMask|TokenValueMask,
@@ -79,22 +80,22 @@ enum token_category {
 enum token_id {
     T_FIRST_TOKEN  = 256,
     T_AND          = TOKEN_FROM_ID(T_FIRST_TOKEN, OperatorTokenType),
-    T_AND_ALT      = TOKEN_FROM_ID(T_FIRST_TOKEN, OperatorTokenType|AltTokenType),
+    T_AND_ALT      = TOKEN_FROM_ID(T_FIRST_TOKEN, OperatorTokenType|AltExtTokenType),
     T_ANDAND       = TOKEN_FROM_ID(257, OperatorTokenType),
-    T_ANDAND_ALT   = TOKEN_FROM_ID(257, OperatorTokenType|AltTokenType),
+    T_ANDAND_ALT   = TOKEN_FROM_ID(257, OperatorTokenType|AltExtTokenType),
     T_ASSIGN       = TOKEN_FROM_ID(258, OperatorTokenType),
     T_ANDASSIGN    = TOKEN_FROM_ID(259, OperatorTokenType),
-    T_ANDASSIGN_ALT     = TOKEN_FROM_ID(259, OperatorTokenType|AltTokenType),
+    T_ANDASSIGN_ALT     = TOKEN_FROM_ID(259, OperatorTokenType|AltExtTokenType),
     T_OR           = TOKEN_FROM_ID(260, OperatorTokenType),
-    T_OR_ALT       = TOKEN_FROM_ID(260, OperatorTokenType|AltTokenType),
+    T_OR_ALT       = TOKEN_FROM_ID(260, OperatorTokenType|AltExtTokenType),
     T_OR_TRIGRAPH  = TOKEN_FROM_ID(260, OperatorTokenType|TriGraphTokenType),
     T_ORASSIGN     = TOKEN_FROM_ID(261, OperatorTokenType),
-    T_ORASSIGN_ALT      = TOKEN_FROM_ID(261, OperatorTokenType|AltTokenType),
+    T_ORASSIGN_ALT      = TOKEN_FROM_ID(261, OperatorTokenType|AltExtTokenType),
     T_XOR          = TOKEN_FROM_ID(262, OperatorTokenType),
-    T_XOR_ALT      = TOKEN_FROM_ID(262, OperatorTokenType|AltTokenType),
+    T_XOR_ALT      = TOKEN_FROM_ID(262, OperatorTokenType|AltExtTokenType),
     T_XOR_TRIGRAPH = TOKEN_FROM_ID(262, OperatorTokenType|TriGraphTokenType),
     T_XORASSIGN    = TOKEN_FROM_ID(263, OperatorTokenType),
-    T_XORASSIGN_ALT     = TOKEN_FROM_ID(263, OperatorTokenType|AltTokenType),
+    T_XORASSIGN_ALT     = TOKEN_FROM_ID(263, OperatorTokenType|AltExtTokenType),
     T_COMMA        = TOKEN_FROM_ID(264, OperatorTokenType),
     T_COLON        = TOKEN_FROM_ID(265, OperatorTokenType),
     T_DIVIDE       = TOKEN_FROM_ID(266, OperatorTokenType),
@@ -120,11 +121,11 @@ enum token_id {
     T_PERCENT      = TOKEN_FROM_ID(282, OperatorTokenType),
     T_PERCENTASSIGN = TOKEN_FROM_ID(283, OperatorTokenType),
     T_NOT          = TOKEN_FROM_ID(284, OperatorTokenType),
-    T_NOT_ALT      = TOKEN_FROM_ID(284, OperatorTokenType|AltTokenType),
+    T_NOT_ALT      = TOKEN_FROM_ID(284, OperatorTokenType|AltExtTokenType),
     T_NOTEQUAL     = TOKEN_FROM_ID(285, OperatorTokenType),
-    T_NOTEQUAL_ALT      = TOKEN_FROM_ID(285, OperatorTokenType|AltTokenType),
+    T_NOTEQUAL_ALT      = TOKEN_FROM_ID(285, OperatorTokenType|AltExtTokenType),
     T_OROR         = TOKEN_FROM_ID(286, OperatorTokenType),
-    T_OROR_ALT     = TOKEN_FROM_ID(286, OperatorTokenType|AltTokenType),
+    T_OROR_ALT     = TOKEN_FROM_ID(286, OperatorTokenType|AltExtTokenType),
     T_PLUS         = TOKEN_FROM_ID(287, OperatorTokenType),
     T_PLUSASSIGN   = TOKEN_FROM_ID(288, OperatorTokenType),
     T_PLUSPLUS     = TOKEN_FROM_ID(289, OperatorTokenType),
@@ -146,7 +147,7 @@ enum token_id {
     T_SHIFTRIGHTASSIGN = TOKEN_FROM_ID(301, OperatorTokenType),
     T_STAR         = TOKEN_FROM_ID(302, OperatorTokenType),
     T_COMPL        = TOKEN_FROM_ID(303, OperatorTokenType),
-    T_COMPL_ALT         = TOKEN_FROM_ID(303, OperatorTokenType|AltTokenType),
+    T_COMPL_ALT         = TOKEN_FROM_ID(303, OperatorTokenType|AltExtTokenType),
     T_COMPL_TRIGRAPH    = TOKEN_FROM_ID(303, OperatorTokenType|TriGraphTokenType),
     T_STARASSIGN   = TOKEN_FROM_ID(304, OperatorTokenType),
     T_ASM          = TOKEN_FROM_ID(305, KeywordTokenType),
@@ -299,6 +300,9 @@ enum token_id {
 //  redefine the TOKEN_FROM_ID macro to be more type safe
 #undef TOKEN_FROM_ID
 #define TOKEN_FROM_ID(id, cat)   boost::wave::token_id((id) | (cat))
+#define BASE_TOKEN(tok)                                                       \
+    boost::wave::token_id((tok) & ~(AltTokenType|TriGraphTokenType))          \
+  /**/
 
 ///////////////////////////////////////////////////////////////////////////////
 //  return a token name

@@ -728,7 +728,7 @@ namespace {
     {
         using namespace boost::wave;
         
-        BOOST_ASSERT(T_POUND == token_id(*it));
+        BOOST_ASSERT(T_POUND == BASE_TOKEN(token_id(*it)));
         for (++it; it != end; ++it) {
         token_id id = token_id(*it);
         
@@ -771,7 +771,7 @@ lex_t it = iter_ctx->first;
 
     if (!next_token_is_pp_directive(it, iter_ctx->last)) {
     // eventually skip null pp directive (no need to do it via the parser)
-        if (it != iter_ctx->last && T_POUND == token_id(*it) &&
+        if (it != iter_ctx->last && T_POUND == BASE_TOKEN(token_id(*it)) &&
             is_pp_null(it, iter_ctx->last))
         {
             seen_newline = true;

@@ -164,6 +164,19 @@ int count_backslash_newlines(Scanner *s, uchar *cursor)
     return skipped;
 }
 
+bool is_backslash(uchar *p, uchar *end, int &len)
+{
+    if (*p == '\\') {
+        len = 1;
+        return true;
+    }
+    else if (*p == '?' && *(p+1) == '?' && (p+2 < end && *(p+2) == '/')) {
+        len = 3;
+        return true;
+    }
+    return false;
+}
+
 uchar *fill(Scanner *s, uchar *cursor)
 {
     if(!s->eof)
@@ -228,27 +241,31 @@ uchar *fill(Scanner *s, uchar *cursor)
         /* first scan for backslash-newline and erase them */
         for (p = s->lim; p < s->lim + cnt - 2; ++p)
         {
-            if (*p == '\\')
+            int len = 0;
+            if (is_backslash(p, s->lim + cnt, len))
             {
-                if (*(p+1) == '\n')
+                if (*(p+len) == '\n')
                 {
-                    memmove(p, p + 2, s->lim + cnt - p - 2);
-                    cnt -= 2;
+                    int offset = len + 1;
+                    memmove(p, p + offset, s->lim + cnt - p - offset);
+                    cnt -= offset;
                     --p;
                     aq_enqueue(s->eol_offsets, p - s->bot + 1);    
                 }
-                else if (*(p+1) == '\r')
+                else if (*(p+len) == '\r')
                 {
-                    if (*(p+2) == '\n')
+                    if (*(p+len+1) == '\n')
                     {
-                        memmove(p, p + 3, s->lim + cnt - p - 3);
-                        cnt -= 3;
+                        int offset = len + 2;
+                        memmove(p, p + offset, s->lim + cnt - p - offset);
+                        cnt -= offset;
                         --p;
                     }
                     else
                     {
-                        memmove(p, p + 2, s->lim + cnt - p - 2);
-                        cnt -= 2;
+                        int offset = len + 1;
+                        memmove(p, p + offset, s->lim + cnt - p - offset);
+                        cnt -= offset;
                         --p;
                     }
                     aq_enqueue(s->eol_offsets, p - s->bot + 1);    
@@ -256,6 +273,9 @@ uchar *fill(Scanner *s, uchar *cursor)
             }
         }
 
+        /* FIXME: the following code should be fixed to recognize correctly the 
+                  trigraph backslash token */
+                  
         /* check to see if what we just read ends in a backslash */
         if (cnt >= 2)
         {
@@ -289,7 +309,7 @@ uchar *fill(Scanner *s, uchar *cursor)
                 else if (next != -1) /* -1 means end of file */
                 {
                     /* next was something else, so rewind the stream */
-                    lseek(s->fd, -1, SEEK_CUR);
+                    rewind_stream(s, -1);
                 }
             }
             /* check \ \r EOB */

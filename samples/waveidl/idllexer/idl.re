@@ -170,6 +170,21 @@ count_backslash_newlines(boost::wave::cpplexer::re2clex::Scanner *s,
     return skipped;
 }
 
+bool is_backslash(
+  boost::wave::cpplexer::re2clex::uchar *p, 
+  boost::wave::cpplexer::re2clex::uchar *end, int &len)
+{
+    if (*p == '\\') {
+        len = 1;
+        return true;
+    }
+    else if (*p == '?' && *(p+1) == '?' && (p+2 < end && *(p+2) == '/')) {
+        len = 3;
+        return true;
+    }
+    return false;
+}
+
 boost::wave::cpplexer::re2clex::uchar *
 fill(boost::wave::cpplexer::re2clex::Scanner *s, 
     boost::wave::cpplexer::re2clex::uchar *cursor)
@@ -238,35 +253,40 @@ fill(boost::wave::cpplexer::re2clex::Scanner *s,
         /* first scan for backslash-newline and erase them */
         for (p = s->lim; p < s->lim + cnt - 2; ++p)
         {
-            if (*p == '\\')
+            int len = 0;
+            if (is_backslash(p, s->lim + cnt, len))
             {
-                if (*(p+1) == '\n')
+                if (*(p+len) == '\n')
                 {
-                    memmove(p, p + 2, s->lim + cnt - p - 2);
-                    cnt -= 2;
+                    int offset = len + 1;
+                    memmove(p, p + offset, s->lim + cnt - p - offset);
+                    cnt -= offset;
                     --p;
-                    boost::wave::cpplexer::re2clex::aq_enqueue(s->eol_offsets, 
-                        p - s->bot + 1);    
+                    aq_enqueue(s->eol_offsets, p - s->bot + 1);    
                 }
-                else if (*(p+1) == '\r')
+                else if (*(p+len) == '\r')
                 {
-                    if (*(p+2) == '\n')
+                    if (*(p+len+1) == '\n')
                     {
-                        memmove(p, p + 3, s->lim + cnt - p - 3);
-                        cnt -= 3;
+                        int offset = len + 2;
+                        memmove(p, p + offset, s->lim + cnt - p - offset);
+                        cnt -= offset;
                         --p;
                     }
                     else
                     {
-                        memmove(p, p + 2, s->lim + cnt - p - 2);
-                        cnt -= 2;
+                        int offset = len + 1;
+                        memmove(p, p + offset, s->lim + cnt - p - offset);
+                        cnt -= offset;
                         --p;
                     }
-                    boost::wave::cpplexer::re2clex::aq_enqueue(s->eol_offsets,  
-                        p - s->bot + 1);    
+                    aq_enqueue(s->eol_offsets, p - s->bot + 1);    
                 }
             }
         }
+
+        /* FIXME: the following code should be fixed to recognize correctly the 
+                  trigraph backslash token */
 
         /* check to see if what we just read ends in a backslash */
         if (cnt >= 2)
