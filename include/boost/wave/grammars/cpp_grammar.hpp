@@ -328,8 +328,14 @@ struct cpp_grammar :
                         |   pattern_p(OperatorTokenType|AltExtTokenType, 
                                 ExtTokenTypeMask)   // and, bit_and etc.
                         )
-                    >> !macro_parameters
-                    >> !macro_definition
+                    >>  (   (   no_node_d[eps_p(ch_p(T_LEFTPAREN))]
+                                >>  macro_parameters
+                                >> !macro_definition
+                            )
+                        |  !(   no_node_d[+ppsp] 
+                                >>  macro_definition
+                            )
+                        )
                 ;
 
         // parameter list
@@ -449,7 +455,7 @@ struct cpp_grammar :
             illformed           // for error reporting
                 =   no_node_d
                     [
-                        pattern_p(T_POUND, ~(AltTokenType|TriGraphTokenType)) 
+                        pattern_p(T_POUND, MainTokenMask) 
                         >> *ppsp
                     ]
                     >>  (   anychar_p -

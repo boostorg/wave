@@ -1443,7 +1443,11 @@ namespace {
                 if (T_STRINGLIT != token_id(*first)) 
                     return false;
 
-                StringT const &file_lit = (*first).get_value();
+            StringT const &file_lit = (*first).get_value();
+            
+                if ('L' == file_lit[0])
+                    return false;       // shouldn't be a wide character string 
+                    
                 file = file_lit.substr(1, file_lit.size()-2);
             }
             return true;

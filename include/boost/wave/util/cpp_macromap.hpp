@@ -249,7 +249,10 @@ protected:
 
     static bool 
     definition_equals(definition_container_t const &definition,
-      definition_container_t const &new_definition);
+        definition_container_t const &new_definition);
+    static bool 
+    parameters_equal(parameter_container_t const &parameters,
+        parameter_container_t const &new_definition);
 
     static bool 
     token_equals(token_t const &left, token_t const &right);
@@ -337,17 +340,65 @@ inline bool
 macromap<ContextT>::definition_equals(definition_container_t const &definition,
   definition_container_t const &new_definition)
 {
-typename definition_container_t::const_iterator first1 = definition.begin();
-typename definition_container_t::const_iterator last1 = definition.end();
-typename definition_container_t::const_iterator first2 = new_definition.begin();
-typename definition_container_t::const_iterator last2 = new_definition.end();
+    typedef definition_container_t::const_iterator const_iterator_t;
+    
+typename const_iterator_t first1 = definition.begin();
+typename const_iterator_t last1 = definition.end();
+typename const_iterator_t first2 = new_definition.begin();
+typename const_iterator_t last2 = new_definition.end();
     
     while (first1 != last1 && token_equals(*first1, *first2)) {
-    // all consecutive whitespace tokens count as one whitespace
-        impl::skip_whitespace(first1, last1);
-        impl::skip_whitespace(first2, last2);
+    // skip whitespace, if both sequences have a whitespace next
+    token_id id1 = impl::next_token<const_iterator_t>::peek(first1, last1, false);
+    token_id id2 = impl::next_token<const_iterator_t>::peek(first2, last2, false);
+
+        if (IS_CATEGORY(id1, WhiteSpaceTokenType) && 
+            IS_CATEGORY(id2, WhiteSpaceTokenType)) 
+        {
+        // all consecutive whitespace tokens count as one whitespace
+        // adjust first1 and first2 accordingly
+            impl::skip_whitespace(first1, last1);
+            impl::skip_whitespace(first2, last2);
+        }
+        else if (!IS_CATEGORY(id1, WhiteSpaceTokenType) && 
+                 !IS_CATEGORY(id2, WhiteSpaceTokenType)) 
+        {
+            ++first1;
+            ++first2;
+        }
+        else {
+        // the sequences differ
+            break;
+        }
     }
     return (first1 == last1 && first2 == last2) ? true : false;
+}
+
+template <typename ContextT>
+inline bool 
+macromap<ContextT>::parameters_equal(parameter_container_t const &parameters,
+  parameter_container_t const &new_parameters)
+{
+    if (parameters.size() != new_parameters.size())
+        return false;   // different parameter count
+        
+    typedef parameter_container_t::const_iterator const_iterator_t;
+    
+typename const_iterator_t first1 = parameters.begin();
+typename const_iterator_t last1 = parameters.end();
+typename const_iterator_t first2 = new_parameters.begin();
+
+    while (first1 != last1) {
+    // parameters are different, if the corresponding tokens are different
+        if (token_id(*first1) != token_id(*first2) ||
+            (*first1).get_value() != (*first2).get_value())
+        {
+            break;
+        }
+        ++first1;
+        ++first2;
+    }
+    return (first1 == last1) ? true : false;
 }
 
 template <typename ContextT>
@@ -370,11 +421,11 @@ typename defined_macros_t::iterator it = current_scope->find(name.get_value());
     // redefinition, should not be different
 #if BOOST_WAVE_USE_TST_SYMBOLTABLE == 0
         if ((*it).second->is_functionlike != has_parameters ||
-            (*it).second->macroparameters != parameters ||
+            !parameters_equal((*it).second->macroparameters, parameters) ||
             !definition_equals((*it).second->macrodefinition, definition))
 #else
         if ((*it).data()->is_functionlike != has_parameters ||
-            (*it).data()->macroparameters != parameters ||
+            !parameters_equal((*it).data()->macroparameters, parameters) ||
             !definition_equals((*it).data()->macrodefinition, definition))
 #endif 
         {

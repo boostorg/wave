@@ -301,7 +301,7 @@ enum token_id {
 #undef TOKEN_FROM_ID
 #define TOKEN_FROM_ID(id, cat)   boost::wave::token_id((id) | (cat))
 #define BASE_TOKEN(tok)                                                       \
-    boost::wave::token_id((tok) & ~(AltTokenType|TriGraphTokenType))          \
+    boost::wave::token_id((tok) & MainTokenMask)                              \
   /**/
 
 ///////////////////////////////////////////////////////////////////////////////

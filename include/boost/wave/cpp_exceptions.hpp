@@ -228,7 +228,7 @@ public:
             "division by zero in preprocessor expression"   // division_by_zero
         };
         BOOST_ASSERT(unexpected_error <= code && 
-            code <= unexpected_qualified_name);
+            code <= division_by_zero);
         return preprocess_exception_errors[code];
     }
 
@@ -270,7 +270,7 @@ public:
             util::severity_fatal               // division_by_zero
         };
         BOOST_ASSERT(unexpected_error <= code && 
-            code <= unexpected_qualified_name);
+            code <= division_by_zero);
         return preprocess_exception_severity[code];
     }
     static char const *severity_text(int code)

@@ -450,9 +450,9 @@ struct expression_grammar :
             const_exp_nocalc
                 =   logical_or_exp_nocalc
                     >> !(   ch_p(T_QUESTION_MARK)
-                            >>  logical_or_exp_nocalc
+                            >>  const_exp_nocalc
                             >>  ch_p(T_COLON)
-                            >>  logical_or_exp_nocalc
+                            >>  const_exp_nocalc
                         )
                 ;
 

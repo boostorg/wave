@@ -185,10 +185,14 @@ lexer<IteratorT, PositionT>::get()
         break;
         
     default:
-        if (CATEGORY_FROM_TOKEN(id) != EXTCATEGORY_FROM_TOKEN(id))
+        if (CATEGORY_FROM_TOKEN(id) != EXTCATEGORY_FROM_TOKEN(id) ||
+            IS_CATEGORY(id, UnknownTokenType))
+        {
             value = string_t((char const *)scanner.tok, scanner.cur-scanner.tok);
-        else
+        }
+        else {
             value = token_cache.get_token_value(id);
+        }
         break;
     }
     
