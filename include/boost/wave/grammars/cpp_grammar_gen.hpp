@@ -1,12 +1,11 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_GRAMMAR_GEN_HPP_80CB8A59_5411_4E45_B406_62531A12FB99_INCLUDED)
@@ -48,12 +47,6 @@ struct cpp_grammar_rule_ids {
     std::size_t pragma_id;             // #pragma
     std::size_t illformed_id;
     std::size_t ppspace_id;
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-    std::size_t pp_regionsupport_id;
-    std::size_t ppregion_id;           // #region
-    std::size_t ppendregion_id;        // #endregion
-    std::size_t ppimport_id;           // #import
-#endif 
     std::size_t ppqualifiedname_id;
 };
 
@@ -70,9 +63,9 @@ struct cpp_grammar_rule_ids {
 template <typename LexIteratorT>
 struct cpp_grammar_gen
 {
-    typedef LexIteratorT                    iterator_t;
-    typedef typename LexIteratorT::token_t  token_t;
-    typedef typename token_t::position_t    position_t;
+    typedef LexIteratorT                    iterator_type;
+    typedef typename LexIteratorT::token_type  token_type;
+    typedef typename token_type::position_type    position_type;
     
 //  the parser_id's of all rules of the cpp_grammar are stored here
 //  note: these are valid only after the first call to parse_cpp_grammar
@@ -80,7 +73,7 @@ struct cpp_grammar_gen
 
 //  the actual position of the last matched T_NEWLINE is stored here into the
 //  member 'pos_of_newline'
-    static position_t pos_of_newline;
+    static position_type pos_of_newline;
 
 //  the found_eof flag is set to true during the parsing, if the directive 
 //  under inspection terminates with a T__EOF token
@@ -90,9 +83,9 @@ struct cpp_grammar_gen
     static boost::wave::token_id found_directive;
         
 //  parse the cpp_grammar and return the resulting parse tree    
-    static boost::spirit::tree_parse_info<iterator_t> 
-    parse_cpp_grammar (iterator_t const &first, iterator_t const &last,
-        bool &found_eof_, position_t const &act_pos);
+    static boost::spirit::tree_parse_info<iterator_type> 
+    parse_cpp_grammar (iterator_type const &first, iterator_type const &last,
+        bool &found_eof_, position_type const &act_pos);
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -102,7 +95,7 @@ cpp_grammar_rule_ids
     cpp_grammar_gen<LexIteratorT>::rule_ids;
 
 template <typename LexIteratorT>
-typename LexIteratorT::token_t::position_t 
+typename LexIteratorT::token_type::position_type 
     cpp_grammar_gen<LexIteratorT>::pos_of_newline;
 
 template <typename LexIteratorT>

@@ -1,10 +1,9 @@
 Wave: A Standard compliant C++ preprocessor library
-Copyright (c) 2001-2004 Hartmut Kaiser
 http://spirit.sourceforge.net/
 
-Use, modification and distribution is subject to the Boost Software
-License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-http://www.boost.org/LICENSE_1_0.txt)
+Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+Software License, Version 1.0. (See accompanying file
+LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 -------------------------------------------------------------------------------
 
 TODO (known issues):
@@ -16,14 +15,40 @@ TODO (known issues):
   function.
 - Fix the trigraph backslash problem in the re2c (C/C++ and IDL) scanners, if 
   there is the end of the (internal) buffer just in between a '??/' and a '\n'.
+  
+- Do a sourceforge release.
+
+Wed Aug 25 13:23:27 WEDT 2004
+Version 1.1.7
+- Branched for Boost Release.
+- Removed several features from the code base:
+  . removed C++0x support
+  . removed TST support
+- Fixed the program_option validator syntax, which has changed since the last 
+  update.
+- Removed misleading configuration options from the cpp_config.hpp file, 
+  because the application will have to use the same config options as were used
+  during the compilation of the library.
+- Changed the naming convention of typedef'd types in the library. Removed the 
+  _t suffix, wherever possible.
+- Updated the documentation to reflect the removal of the C++0x features.
+
+- Changed the licensing scheme to:
+// Copyright 2004 Joe Coder. Distributed under the Boost
+// Software License, Version 1.0. (See accompanying file
+// LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
+Mon May 24 10:02:47 WEDT 2004
+Version 1.1.6
+- Fixed a incompatibility with the new program_options version.
 
 Version 1.1.5
 Version 1.0.6
 - Fixed a bug, which reported an #include statement as ill formed, if it was 
   followed by an empty C comment only. This was an error in the cpp.re regular 
-  expression for C comments. Since this change simplified the Re2C generated
-  lexer a lot it was possible to remove the compiler workaround for the VC7.1
-  compiler which prevented the optimization of this lexer.
+  expression for C comments. Additionally, since this change simplified the 
+  Re2C generated lexer a lot it was possible to remove the compiler workaround 
+  for the VC7.1 compiler which prevented the optimization of this lexer.
   
 Mon Mar 29 09:36:59 WEDT 2004
 - Corrected the signature of the main() functions (was main(int, char const*[])).

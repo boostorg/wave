@@ -1,24 +1,18 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #include "cpp.hpp"                  // global configuration
 
 ///////////////////////////////////////////////////////////////////////////////
-//  This sample requires the program_options library written by Vladimir Prus,
-//  which is already accepted into Boost, but not included with the 
-//  distribution yet. 
-//  It is available here: http://boost-sandbox.sourceforge.net/program_options.
-//
+// Include additional Boost libraries
 #include <boost/program_options.hpp>
-#include <boost/program_options/value_semantic.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/timer.hpp>
 
@@ -84,9 +78,9 @@ int print_version()
             std::string::iterator, lex_iterator_t,
             boost::wave::iteration_context_policies::load_file_to_string,
             trace_macro_expansion> 
-        context_t;
+        context_type;
         
-    string version (context_t::get_version_string());
+    string version (context_type::get_version_string());
     cout 
         << version.substr(1, version.size()-2)  // strip quotes
         << " (" << CPP_VERSION_DATE << ")"      // add date
@@ -98,15 +92,14 @@ int print_version()
 // print the copyright statement
 int print_copyright()
 {
- char const *copyright[] = {
+    char const *copyright[] = {
         "",
         "Wave: A Standard conformant C++ preprocessor",
-        "Copyright (c) 2001-2004 Hartmut Kaiser",
         "It is hosted by http://spirit.sourceforge.net/.", 
         "",
-        "Use, modification and distribution is subject to the Boost Software",
-        "License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at",
-        "http://www.boost.org/LICENSE_1_0.txt)",
+        "Copyright (c) 2001-2004 Hartmut Kaiser, Distributed under the Boost",
+        "Software License, Version 1.0. (See accompanying file",
+        "LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)",
         0
     };
     
@@ -219,12 +212,15 @@ namespace cmd_line_util {
 //  switching the semantics of an -I option.
 //
 ///////////////////////////////////////////////////////////////////////////////
-void 
-po::validator<cmd_line_util::include_paths>::operator()(
-    boost::any &v, std::vector<std::string> const &s) 
-{
-    cmd_line_util::include_paths::validate(v, s);
-}
+namespace boost { namespace program_options {
+
+    void validate(boost::any &v, std::vector<std::string> const &s,
+        cmd_line_util::include_paths *, int) 
+    {
+        cmd_line_util::include_paths::validate(v, s);
+    }
+
+}}  // namespace boost::program_options
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace {
@@ -260,7 +256,7 @@ int
 do_actual_work (std::string file_name, po::variables_map const &vm)
 {
 // current file position is saved for exception handling
-boost::wave::util::file_position_t current_position;
+boost::wave::util::file_position_type current_position;
 
     try {
     // process the given file
@@ -292,14 +288,14 @@ boost::wave::util::file_position_t current_position;
                 std::string::iterator, lex_iterator_t,
                 boost::wave::iteration_context_policies::load_file_to_string,
                 trace_macro_expansion> 
-            context_t;
+            context_type;
 
     // The C++ preprocessor iterators shouldn't be constructed directly. They 
     // are to be generated through a boost::wave::context<> object. This 
     // boost::wave::context object is additionally to be used to initialize and 
     // define different parameters of the actual preprocessing.
     // The preprocessing of the input stream is done on the fly behind the 
-    // scenes during iteration over the context_t::iterator_t stream.
+    // scenes during iteration over the context_type::iterator_type stream.
     std::ofstream traceout;
     boost::wave::trace_policies::trace_flags enable_trace = 
         boost::wave::trace_policies::trace_nothing;
@@ -327,27 +323,14 @@ boost::wave::util::file_position_t current_position;
             static_cast<std::basic_ios<char> &>(traceout).rdbuf(cerr.rdbuf());
         }
         
-    context_t ctx (instring.begin(), instring.end(), file_name.c_str(),
+    context_type ctx (instring.begin(), instring.end(), file_name.c_str(),
         trace_macro_expansion(traceout, enable_trace));
 
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
     // enable C99 mode, if appropriate (implies variadics)
         if (vm.count("c99")) {
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-            if (vm.count("c++0x")) {
-                cerr << 
-                    "wave: the C99 and C++0x modes are mutually exclusive, "
-                    "working in C99 mode." << endl;
-            }
-#endif 
             ctx.set_language(boost::wave::support_c99);
         }
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-    // enable experimental C++0x mode (implies variadics)
-        else if (vm.count("c++0x")) {
-            ctx.set_language(boost::wave::support_cpp0x);
-        }
-#endif 
         else if (vm.count("variadics")) {
         // enable variadics and placemarkers, if appropriate
             ctx.set_language(boost::wave::enable_variadics(ctx.get_language()));
@@ -458,8 +441,8 @@ boost::wave::util::file_position_t current_position;
         }
 
     // analyze the input file
-    context_t::iterator_t first = ctx.begin();
-    context_t::iterator_t last = ctx.end();
+    context_type::iterator_type first = ctx.begin();
+    context_type::iterator_type last = ctx.end();
     
     // preprocess the required include files 
         if (vm.count("forceinclude")) {
@@ -478,7 +461,7 @@ boost::wave::util::file_position_t current_position;
         }
         
     // loop over all generated tokens outputing the generated text 
-    auto_stop_watch elapsed_time(vm.count("timer") > 0, cerr);
+    auto_stop_watch elapsed_time(vm.count("timer") > 0, cout);
     
         while (first != last) {
         // print out the string representation of this token (skip comments)
@@ -557,7 +540,8 @@ main (int argc, char *argv[])
     po::options_description desc_generic ("Options allowed additionally in a config file");
 
         desc_generic.add_options()
-            ("output,o", "specify a file to use for output instead of stdout")
+            ("output,o", po::value<string>(), 
+                "specify a file to use for output instead of stdout")
             ("include,I", po::value<cmd_line_util::include_paths>()->composing(), 
                 "specify an additional include directory")
             ("sysinclude,S", po::value<vector<string> >()->composing(), 
@@ -583,9 +567,6 @@ main (int argc, char *argv[])
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
             ("variadics", "enable certain C99 extensions in C++ mode")
             ("c99", "enable C99 mode (implies --variadics)")
-#endif 
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-            ("c++0x", "enable C++0x support (implies --variadics)")
 #endif 
         ;
     

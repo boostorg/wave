@@ -1,12 +1,11 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_GRAMMAR_HPP_FEAEBC2E_2734_428B_A7CA_85E5A415E23E_INCLUDED)
@@ -182,12 +181,6 @@ struct cpp_grammar :
         rule_t ppwarning;
         rule_t pppragma;
         rule_t illformed;
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-        rule_t ppregion; 
-        rule_t ppendregion;
-        rule_t ppimport;
-        rule_t pp_regionsupport;
-#endif
         rule_t ppqualifiedname;
         rule_t eol_tokens;
         no_tree_rule_t ppsp;
@@ -220,12 +213,6 @@ struct cpp_grammar :
             self.rule_ids.pragma_id = pppragma.id().to_long();
             self.rule_ids.illformed_id = illformed.id().to_long();
             self.rule_ids.ppspace_id = ppsp.id().to_long();
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-            self.rule_ids.ppregion_id = ppregion.id().to_long();
-            self.rule_ids.ppendregion_id = ppendregion.id().to_long();
-            self.rule_ids.pp_regionsupport_id = pp_regionsupport.id().to_long();
-            self.rule_ids.ppimport_id = ppimport.id().to_long();
-#endif 
             self.rule_ids.ppqualifiedname_id = ppqualifiedname.id().to_long();
 
 #if BOOST_WAVE_DUMP_PARSE_TREE != 0
@@ -258,9 +245,6 @@ struct cpp_grammar :
                     |   pperror
                     |   ppwarning
                     |   pppragma
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-                    |   pp_regionsupport
-#endif 
                     |   illformed
                     )
                     >> eol_tokens
@@ -270,16 +254,6 @@ struct cpp_grammar :
 #endif // !(defined(BOOST_SPIRIT_DEBUG) &&
 //  (BOOST_SPIRIT_DEBUG_FLAGS_CPP & BOOST_SPIRIT_DEBUG_FLAGS_CPP_GRAMMAR))
                 ;
-
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-        // the pp_regionsupport is factored out, because else
-        // VC7.1 complains about an out of heapspace error (non-fixable)
-            pp_regionsupport
-                =   ppregion
-                |   ppendregion
-                |   ppimport
-                ;
-#endif
 
         // #include ...
             include_file            // include "..."
@@ -507,67 +481,12 @@ struct cpp_grammar :
                         )
                 ;
 
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-        // #region [name]
-            ppregion
-                =   no_node_d
-                    [
-                        ch_p(T_PP_REGION) 
-                        [ store_found_directive_t(self.found_directive) ]
-                    ]
-                    >> !(
-                            no_node_d[+ppsp]
-                        >>  ppqualifiedname
-                        )
-                ;
-
-        // #endregion
-            ppendregion
-                =   no_node_d
-                    [
-                        ch_p(T_PP_ENDREGION) 
-                        [ store_found_directive_t(self.found_directive) ]
-                    ]
-                ;
-
-        // #import name
-            ppimport
-                =   no_node_d
-                    [
-                        ch_p(T_PP_IMPORT) 
-                        [ store_found_directive_t(self.found_directive) ]
-                        >> *ppsp
-                    ]
-                    >>  list_p(
-                            ppqualifiedname,
-                            no_node_d[*ppsp >> ch_p(T_COMMA) >> *ppsp]
-                        )
-                ;
-#endif 
-                
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-        // possibly qualified name
-            ppqualifiedname 
-                =   ch_p(T_COLON_COLON)
-                    ||  (no_node_d[*ppsp]
-                        >>  list_p(
-                                (   ch_p(T_IDENTIFIER) 
-                                |   pattern_p(KeywordTokenType, TokenTypeMask)
-                                ), 
-                                no_node_d[*ppsp]
-                                >>  ch_p(T_COLON_COLON)
-                                >>  no_node_d[*ppsp]
-                            )
-                        )
-                ;
-#else
             ppqualifiedname
                 =   no_node_d[*ppsp]
                     >>  (   ch_p(T_IDENTIFIER) 
                         |   pattern_p(KeywordTokenType, TokenTypeMask)
                         ) 
                 ;
-#endif // BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
 
         // auxiliary helper rules
             ppsp     // valid space in a line with a preprocessor directive
@@ -609,13 +528,6 @@ struct cpp_grammar :
             BOOST_SPIRIT_DEBUG_TRACE_RULE(ppwarning, TRACE_CPP_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(illformed, TRACE_CPP_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(ppsp, TRACE_CPP_GRAMMAR);
-
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-            BOOST_SPIRIT_DEBUG_TRACE_RULE(pp_regionsupport, TRACE_CPP_GRAMMAR);
-            BOOST_SPIRIT_DEBUG_TRACE_RULE(ppregion, TRACE_CPP_GRAMMAR);
-            BOOST_SPIRIT_DEBUG_TRACE_RULE(ppendregion, TRACE_CPP_GRAMMAR);
-            BOOST_SPIRIT_DEBUG_TRACE_RULE(ppimport, TRACE_CPP_GRAMMAR);
-#endif 
             BOOST_SPIRIT_DEBUG_TRACE_RULE(ppqualifiedname, TRACE_CPP_GRAMMAR);
         }
 
@@ -672,12 +584,6 @@ struct cpp_grammar :
                 { self.rule_ids.pragma_id, "pppragma" },
                 { self.rule_ids.illformed_id, "illformed" },
                 { self.rule_ids.ppsp_id, "ppsp" },
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-                { self.rule_ids.pp_regionsupport_id, "pp_regionsupport" },
-                { self.rule_ids.ppregion_id, "pp" BOOST_WAVE_PP_REGION },
-                { self.rule_ids.ppendregion_id, "pp" BOOST_WAVE_PP_ENDREGION },
-                { self.rule_ids.ppimport_id, "pp" BOOST_WAVE_PP_IMPORT },
-#endif
                 { self.rule_ids.ppqualifiedname_id, "ppqualifiedname" },
                 { 0 }
             };
@@ -731,11 +637,6 @@ namespace {
         case T_PP_ERROR:    return "#error";
         case T_PP_WARNING:  return "#warning";
         case T_PP_PRAGMA:   return "#pragma";
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-        case T_PP_REGION:       return "#" BOOST_WAVE_PP_REGION;
-        case T_PP_ENDREGION:    return "#" BOOST_WAVE_PP_ENDREGION;
-        case T_PP_IMPORT:       return "#" BOOST_WAVE_PP_IMPORT;
-#endif
         default:
             return "#unknown directive";
         }
@@ -747,16 +648,16 @@ BOOST_WAVE_GRAMMAR_GEN_INLINE
 boost::spirit::tree_parse_info<LexIteratorT>
 cpp_grammar_gen<LexIteratorT>::parse_cpp_grammar (
     LexIteratorT const &first, LexIteratorT const &last,
-    bool &found_eof_, position_t const &act_pos)
+    bool &found_eof_, position_type const &act_pos)
 {
     using namespace boost::spirit;
     using namespace boost::wave;
     
-    pos_of_newline = position_t();  // reset position
+    pos_of_newline = position_type();  // reset position
     found_eof = false;              // reset flag
     found_directive = T_EOF;        // reset found directive
     
-    static cpp_grammar<position_t> g(
+    static cpp_grammar<position_type> g(
         rule_ids, pos_of_newline, found_eof, found_directive);
     
     tree_parse_info<LexIteratorT> hit = pt_parse (first, last, g);

@@ -1,12 +1,11 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(TRANSFORM_ITERATOR_HPP_D492C659_88C7_4258_8C42_192F9AE80EC0_INCLUDED)
@@ -120,8 +119,8 @@ namespace impl {
     {
         typedef typename ref_transform_iterator_generator<
                 AdaptableUnaryFunctionT, IteratorT>::type
-            iterator_t;
-        return iterator_t(base, f.transform);
+            iterator_type;
+        return iterator_type(base, f.transform);
     }
 
     //  Retrieve the token value given a parse node

@@ -3,12 +3,11 @@
 
     Sample: IDL oriented preprocessor
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost 
+    Software License, Version 1.0. (See accompanying file 
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #include "idl.hpp"                  // global configuration
@@ -77,9 +76,9 @@ int print_version()
             boost::wave::cpplexer::lex_token<> >
         lex_iterator_t;
     typedef boost::wave::context<std::string::iterator, lex_iterator_t>
-        context_t;
+        context_type;
         
-    string version (context_t::get_version_string());
+    string version (context_type::get_version_string());
     cout 
         << version.substr(1, version.size()-2)  // strip quotes
         << " (" << IDL_VERSION_DATE << ")"      // add date
@@ -91,16 +90,15 @@ int print_version()
 // print the copyright statement
 int print_copyright()
 {
-char const *copyright[] = {
+    char const *copyright[] = {
         "",
         "Sample: IDL oriented preprocessor",
         "Based on: Wave, A Standard conformant C++ preprocessor library",
-        "Copyright (c) 2001-2004 Hartmut Kaiser",
         "It is hosted by http://spirit.sourceforge.net/.", 
         "",
-        "Use, modification and distribution is subject to the Boost Software",
-        "License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at",
-        "http://www.boost.org/LICENSE_1_0.txt)",
+        "Copyright (c) 2001-2004 Hartmut Kaiser, Distributed under the Boost",
+        "Software License, Version 1.0. (See accompanying file",
+        "LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)",
         0
     };
     
@@ -191,9 +189,8 @@ namespace cmd_line_util {
         }
 
         if (options.size() > 0) {
-        po::options_and_arguments oa = po::parse_command_line(options, desc);
-
-            po::store(oa, vm, desc);
+            po::store(po::command_line_parser(options).options(desc).run(), vm);
+            po::notify(vm);
         }
     }
 
@@ -214,12 +211,15 @@ namespace cmd_line_util {
 //  switching the semantics of an -I option.
 //
 ///////////////////////////////////////////////////////////////////////////////
-void 
-po::validator<cmd_line_util::include_paths>::operator()(
-    boost::any &v, std::vector<std::string> const &s) 
-{
-    cmd_line_util::include_paths::validate(v, s);
-}
+namespace boost { namespace program_options {
+
+  void validate(boost::any &v, std::vector<std::string> const &s,
+      cmd_line_util::include_paths *, int) 
+  {
+      cmd_line_util::include_paths::validate(v, s);
+  }
+
+}}  // namespace boost::program_options
 
 ///////////////////////////////////////////////////////////////////////////////
 //  do the actual preprocessing
@@ -227,7 +227,7 @@ int
 do_actual_work (std::string file_name, po::variables_map const &vm)
 {
 // current file position is saved for exception handling
-boost::wave::util::file_position_t current_position;
+boost::wave::util::file_position_type current_position;
 
     try {
     // process the given file
@@ -256,15 +256,15 @@ boost::wave::util::file_position_t current_position;
                 boost::wave::cpplexer::lex_token<> >
             lex_iterator_t;
         typedef boost::wave::context<std::string::iterator, lex_iterator_t> 
-            context_t;
+            context_type;
 
     // The C++ preprocessor iterators shouldn't be constructed directly. They 
     // are to be generated through a boost::wave::context<> object. This 
     // boost::wave::context object is additionally to be used to initialize and 
     // define different parameters of the actual preprocessing.
     // The preprocessing of the input stream is done on the fly behind the 
-    // scenes during iteration over the context_t::iterator_t stream.
-    context_t ctx (instring.begin(), instring.end(), file_name.c_str());
+    // scenes during iteration over the context_type::iterator_type stream.
+    context_type ctx (instring.begin(), instring.end(), file_name.c_str());
 
     // add include directories to the system include search paths
         if (vm.count("sysinclude")) {
@@ -360,8 +360,8 @@ boost::wave::util::file_position_t current_position;
         }
 
     // analyze the input file
-    context_t::iterator_t first = ctx.begin();
-    context_t::iterator_t last = ctx.end();
+    context_type::iterator_type first = ctx.begin();
+    context_type::iterator_type last = ctx.end();
     
     // loop over all generated tokens outputing the generated text 
         while (first != last) {

@@ -1,15 +1,13 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
-
     Whitespace eater
     
-    Copyright (c) 2003 Paul Mensonides
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2003 Paul Mensonides
+    Copyright (c) 2001-2004 Hartmut Kaiser. 
+    Distributed under the Boost Software License, Version 1.0. (See accompanying 
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(EAT_WHITESPACE_HPP_4CE9AD17_F82D_4AB2_A117_555DF0DCC801_INCLUDED)
@@ -65,7 +63,7 @@ eat_whitespace<TokenT>::general(TokenT &token, bool &skipped_newline)
         state = &eat_whitespace::whitespace;
 
         if (T_CCOMMENT == id) {
-            if (TokenT::string_t::npos != 
+            if (TokenT::string_type::npos != 
                 token.get_value().find_first_of("\n"))
             {
                 skipped_newline = true;
@@ -98,7 +96,7 @@ eat_whitespace<TokenT>::newline(TokenT &token, bool &skipped_newline)
     }
 
     if (T_CCOMMENT == id) {
-        if (TokenT::string_t::npos != 
+        if (TokenT::string_type::npos != 
             token.get_value().find_first_of("\n"))
         {
             skipped_newline = true;
@@ -117,7 +115,7 @@ eat_whitespace<TokenT>::newline_2nd(TokenT &token, bool &skipped_newline)
     if (T_SPACE == id || T_SPACE2 == id)
         return true;
     if (T_CCOMMENT == id) {
-        if (TokenT::string_t::npos != 
+        if (TokenT::string_type::npos != 
             token.get_value().find_first_of("\n"))
         {
             skipped_newline = true;
@@ -142,7 +140,7 @@ eat_whitespace<TokenT>::whitespace(TokenT &token, bool &skipped_newline)
         return general(token, skipped_newline);
 
     if (T_CCOMMENT == id) {
-        if (TokenT::string_t::npos != 
+        if (TokenT::string_type::npos != 
             token.get_value().find_first_of("\n"))
         {
             skipped_newline = true;

@@ -1,12 +1,11 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_CHLIT_GRAMMAR_HPP_9527D349_6592_449A_A409_42A001E6C64C_INCLUDED)
@@ -209,8 +208,8 @@ chlit_grammar_gen<TokenT>::evaluate(TokenT const &token)
     
 static chlit_grammar g;
 unsigned int result = 0;
-typename TokenT::string_t const &token_val = token.get_value();
-parse_info<typename TokenT::string_t::const_iterator> hit =
+typename TokenT::string_type const &token_val = token.get_value();
+parse_info<typename TokenT::string_type::const_iterator> hit =
     parse(token_val.begin(), token_val.end(), g[spirit_assign_actor(result)]);
 
     if (!hit.hit) {

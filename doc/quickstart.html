@@ -45,7 +45,7 @@ Standard (such as for variadics and placemarkers)<br>
   the iterator type of the underlying input stream to use and the type of the lexer iterator to be used as the token source for the preprocessing engine.</p>
 <P dir="ltr">Do not instantiate the main, preprocessing iterators yourself.
 Get them from the wave::context object instead.<br>
-The following code snippet is taken from the <a href="../samples/quick_start/quick_start.cpp">quick_start</a> sample, which shows a minimal usage scenario for <tt>Wave</tt>. </P>
+The following code snippet is taken from the <tt>quick_start</tt> sample, which shows a minimal usage scenario for <tt>Wave</tt>. </P>
 <pre><span class="comment">    // The following preprocesses a given input file.
     // Open the file and read it into a string variable</span>
     <span class="keyword">std::ifstream</span> instream(<span class="string">&quot;input.cpp&quot;</span>);
@@ -65,12 +65,12 @@ The following code snippet is taken from the <a href="../samples/quick_start/qui
     // with the token type.</span>
     <span class="keyword">typedef</span> <span class="identifier">boost::wave::cpplexer::lex_iterator</span><span class="special">&lt;</span>
             <span class="identifier">boost::wave::cpplexer::lex_token</span><span class="special">&lt;&gt; &gt;</span>
-        <span class="identifier">lex_iterator_t</span><span class="special">;</span>
+        <span class="identifier">lex_iterator_type</span><span class="special">;</span>
     <span class="keyword">typedef</span> <span class="identifier">boost::wave::context</span><span class="special">&lt;</span>
-            std::string::iterator<span class="special">,</span> lex_iterator_t<span class="special">&gt;</span>
-        <span class="identifier">context_t</span><span class="special">;</span>
+            std::string::iterator<span class="special">,</span> lex_iterator_type<span class="special">&gt;</span>
+        <span class="identifier">context_type</span><span class="special">;</span>
 
-    context_t ctx(input.begin(), input.end(), <span class="string">&quot;input.cpp&quot;</span>);
+    context_type ctx(input.begin(), input.end(), <span class="string">&quot;input.cpp&quot;</span>);
 
 <span class="comment">    // At this point you may want to set the parameters of the
     // preprocessing as include pathes and/or predefined macros.
@@ -79,8 +79,8 @@ The following code snippet is taken from the <a href="../samples/quick_start/qui
 
 <span class="comment">    // Get the preprocessor iterators and use them to generate 
     // the token sequence.
-</span>    context_t::iterator_t first = ctx.begin();
-    context_t::iterator_t last = ctx.end();
+</span>    context_type::iterator_type first = ctx.begin();
+    context_type::iterator_type last = ctx.end();
 
 <span class="comment">    // The input stream is preprocessed for you during iteration<br>    // over [first, last)<br></span>        <span class="keyword">while</span> (first != last) {
             <span class="keyword">std::cout</span> &lt;&lt; (*first).get_value();
@@ -112,10 +112,10 @@ Note though, that this filename is used
 <hr size="1">
 <p class="copyright">Copyright &copy; 2003-2004 Hartmut Kaiser<br>
   <br>
-  <font size="2">Use, modification and distribution is subject to the Boost Software 
-  License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) 
-  </font> </p>
-<span class="updated">Last updated: 
-  <!-- #BeginDate format:fcAm1m -->Thursday, February 12, 2004  6:42<!-- #EndDate -->
-</span></body>
+<font size="2">Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) </font> </p>
+<span class="updated"></span>
+<p class="copyright"><span class="updated">Last updated: 
+  <!-- #BeginDate format:fcAm1m -->Saturday, August 21, 2004  19:56<!-- #EndDate -->
+</span></p>
+</body>
 </html>

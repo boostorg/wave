@@ -21,7 +21,7 @@
     <td width="10"></td>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
     <td width="30"><a href="supported_pragmas.html"><img src="theme/l_arr.gif" width="20" height="19" border="0"></a></td>
-    <td width="30"><a href="preliminary_cpp0x_support.html"><img src="theme/r_arr.gif" border="0"></a></td>
+    <td width="30"><a href="samples.html"><img src="theme/r_arr.gif" border="0"></a></td>
   </tr>
 </table>
 <p><b><a name="compiletime_config"></a>Library compile time configuration</b></p>
@@ -90,14 +90,6 @@
     <td class="table_cells"><p>If defined, it will determine the initial maximal 
         possible include file nesting depth supported. It defaults to 1024.</p></td>
   </tr>
-  <tr> 
-    <td class="table_cells"><code><code>BOOST_</code>WAVE_ENABLE_CPP0X_EXTENSIONS</code></td>
-    <td class="table_cells"><p>If defined, then the preprocessor library supports 
-        a couple of experimental C++0x extensions, as macro scopes, variadics 
-        and placemarkers in C++ mode, well defined token pasting of unrelated 
-        tokens. For more details please refer to <a href="preliminary_cpp0x_support.html">The 
-        Preliminary C++0x support</a>.</p></td>
-  </tr>
   <tr>
     <td class="table_cells"><code><code>BOOST_</code>WAVE_SUPPORT_PRAGMA_ONCE</code></td>
     <td class="table_cells"><p>If defined, then the <code>#pragma once</code> directive is supported by <tt>Wave</tt>. This specifies that the file, in which the pragma resides, will be included 
@@ -109,7 +101,7 @@
   </tr>
 </table>
 <P dir="ltr"><b><a name="using_custom_lexer"></a>Using a different token type or lexer type in conjunction with Wave </b></P>
-<P dir="ltr">It is possible to use the <tt>Wave</tt> library while using your own token and/or lexer types. This may be achieved by providing your lexer type as the second template parameter while instantiating the <tt>boost::wave::context&lt;&gt;</tt> object. The token type used by the library is derived from the <tt>token_t</tt> typedef to be provided by the lexer type. If you want to provide your own token type only, you may use the <tt>boost::wave::lex_iterator&lt;&gt;</tt> type contained with the library. This type needs to be parametrized with the token type to use. </P>
+<P dir="ltr">It is possible to use the <tt>Wave</tt> library while using your own token and/or lexer types. This may be achieved by providing your lexer type as the second template parameter while instantiating the <tt>boost::wave::context&lt;&gt;</tt> object. The token type used by the library is derived from the <tt>token_type</tt> typedef to be provided by the lexer type. If you want to provide your own token type only, you may use the <tt>boost::wave::lex_iterator&lt;&gt;</tt> type contained with the library. This type needs to be parametrized with the token type to use. </P>
 <P dir="ltr">To show, how this may be done, the <tt>Wave</tt> library contains several samples illustrating this possibility. The <tt>cpp_tokens</tt> sample shows the usage of a custom lexer and a custom token types. The lexer type used is functionally fully compatible to the <tt>re2c</tt> <a href="references.html#re2c">[3]</a> based lexer used by default. It is implemented based on the <tt>SLex</tt> <a href="references.html#slex">[5]</a> lexer example written by Dan Nuffer. The used theiring token type is functionally equivalent to the default token type except for an additional <tt>operator&lt;&lt;</tt> used for dumping the information carried bz the token.</P>
 <P dir="ltr"><b><a name="compilation_models"></a>Separation and inclusion compilation 
   models</b></P>
@@ -196,16 +188,16 @@
     <td width="10"></td>
     <td width="30"><a href="../index.html"><img src="theme/u_arr.gif" border="0"></a></td>
     <td width="30"><a href="supported_pragmas.html"><img src="theme/l_arr.gif" width="20" height="19" border="0"></a></td>
-    <td width="30"><a href="preliminary_cpp0x_support.html"><img src="theme/r_arr.gif" border="0"></a></td>
+    <td width="30"><a href="samples.html"><img src="theme/r_arr.gif" border="0"></a></td>
   </tr>
 </table>
 <hr size="1">
 <p class="copyright">Copyright &copy; 2003-2004 Hartmut Kaiser<br>
   <br>
-  <font size="2">Use, modification and distribution is subject to the Boost Software 
-  License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) 
-  </font> </p>
-<span class="updated">Last updated: 
-  <!-- #BeginDate format:fcAm1m -->Wednesday, January 28, 2004  17:01<!-- #EndDate -->
-</span></body>
+<font size="2">Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) </font> </p>
+<span class="updated"></span>
+<p class="copyright"><span class="updated">Last updated: 
+  <!-- #BeginDate format:fcAm1m -->Saturday, August 21, 2004  19:53<!-- #EndDate -->
+</span></p>
+</body>
 </html>

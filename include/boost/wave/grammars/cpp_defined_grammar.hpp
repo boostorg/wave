@@ -1,12 +1,11 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_DEFINED_GRAMMAR_HPP_F48287B2_DC67_40A8_B4A1_800EFBD67869_INCLUDED)
@@ -64,9 +63,6 @@ struct defined_grammar :
 
         rule_t defined_op;
         rule_t identifier;
-//#if !defined(WAVE_USE_RE2C_IDL_LEXER)
-        rule_t qualified_name;
-//#endif 
 
         definition(defined_grammar const &self)
         {
@@ -74,43 +70,16 @@ struct defined_grammar :
             using namespace boost::wave;
             using namespace boost::wave::util;
 
-//#if !defined(WAVE_USE_RE2C_IDL_LEXER)
             defined_op      // parens not required, see C++ standard 16.1.1
                 =   ch_p(T_IDENTIFIER)      // token contains 'defined'
                     >>  (
                             (   ch_p(T_LEFTPAREN)
-                                >>  qualified_name
+                                >>  identifier
                                 >>  ch_p(T_RIGHTPAREN)
                             )
-                            |   qualified_name
+                            |   identifier
                         )
                 ;
-
-            qualified_name
-                =  !ch_p(T_COLON_COLON)
-                    [
-                        spirit_append_actor(self.result_seq)
-                    ]
-                    >>  identifier 
-                    >> *(   ch_p(T_COLON_COLON) 
-                            [
-                                spirit_append_actor(self.result_seq)
-                            ]
-                        >>  identifier
-                        )
-                ;
-//#else
-//            defined_op      // parens not required, see C++ standard 16.1.1
-//                =   ch_p(T_IDENTIFIER)      // token contains 'defined'
-//                    >>  (
-//                            (   ch_p(T_LEFTPAREN)
-//                                >>  identifier
-//                                >>  ch_p(T_RIGHTPAREN)
-//                            )
-//                            |   identifier
-//                        )
-//                ;
-//#endif
 
             identifier
                 =   ch_p(T_IDENTIFIER)
@@ -125,9 +94,6 @@ struct defined_grammar :
 
             BOOST_SPIRIT_DEBUG_TRACE_RULE(defined_op, TRACE_CPP_DEFINED_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(identifier, TRACE_CPP_DEFINED_GRAMMAR);
-//#if !defined(WAVE_USE_RE2C_IDL_LEXER)
-            BOOST_SPIRIT_DEBUG_TRACE_RULE(qualified_name, TRACE_CPP_DEFINED_GRAMMAR);
-//#endif
         }
 
     // start rule of this grammar
@@ -169,12 +135,12 @@ boost::spirit::parse_info<
 >
 defined_grammar_gen<LexIteratorT>::parse_operator_defined (
     iterator1_t const &first, iterator1_t const &last,
-    token_sequence_t &found_qualified_name)
+    token_sequence_type &found_qualified_name)
 {
     using namespace boost::spirit;
     using namespace boost::wave;
     
-    defined_grammar<token_sequence_t> g(found_qualified_name);
+    defined_grammar<token_sequence_type> g(found_qualified_name);
     return boost::spirit::parse (
         first, last, g, ch_p(T_SPACE) | ch_p(T_CCOMMENT));
 }
@@ -186,12 +152,12 @@ boost::spirit::parse_info<
 >
 defined_grammar_gen<LexIteratorT>::parse_operator_defined (
     iterator2_t const &first, iterator2_t const &last,
-    token_sequence_t &found_qualified_name)
+    token_sequence_type &found_qualified_name)
 {
     using namespace boost::spirit;
     using namespace boost::wave;
     
-    defined_grammar<token_sequence_t> g(found_qualified_name);
+    defined_grammar<token_sequence_type> g(found_qualified_name);
     return boost::spirit::parse (
         first, last, g, ch_p(T_SPACE) | ch_p(T_CCOMMENT));
 }

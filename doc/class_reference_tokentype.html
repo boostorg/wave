@@ -59,20 +59,20 @@
     <span class="keyword">class</span> lex_token 
     {
     <span class="keyword">public</span>:
-        <span class="keyword">typedef</span> <span class="keyword">std::basic_string</span><char> string_t;
-        <span class="keyword">typedef</span> PositionT         position_t;
+        <span class="keyword">typedef</span> <span class="keyword">std::basic_string</span><char>&lt;char&gt; string_type;
+        <span class="keyword">typedef</span> PositionT               position_type;
     
         <a href="class_reference_tokentype.html#constructor">lex_token</a>();
-        <a href="class_reference_tokentype.html#constructor">lex_token</a>(token_id id, string_t <span class="keyword">const</span> &value, 
+        <a href="class_reference_tokentype.html#constructor">lex_token</a>(token_id id, string_type <span class="keyword">const</span> &value, 
             PositionT <span class="keyword">const</span> &pos);
 
     // accessors
         <a href="class_reference_tokentype.html#operator_tokenid">operator token_id</a>() <span class="keyword">const</span>;
-        string_t const &amp;<a href="class_reference_tokentype.html#get_value">get_value</a>() <span class="keyword">const</span>;
-        position_t const &amp;<a href="class_reference_tokentype.html#get_position">get_position</a>() <span class="keyword">const</span>;
+        string_type const &amp;<a href="class_reference_tokentype.html#get_value">get_value</a>() <span class="keyword">const</span>;
+        position_type const &amp;<a href="class_reference_tokentype.html#get_position">get_position</a>() <span class="keyword">const</span>;
         void <a href="class_reference_tokentype.html#set_token_id">set_token_id</a> (token_id id);
-        void <a href="class_reference_tokentype.html#set_value">set_value</a> (string_t <span class="keyword">const</span> &amp;newval);
-        void <a href="class_reference_tokentype.html#set_position">set_position</a> (position_t <span class="keyword">const</span> &amp;pos);
+        void <a href="class_reference_tokentype.html#set_value">set_value</a> (string_type <span class="keyword">const</span> &amp;newval);
+        void <a href="class_reference_tokentype.html#set_position">set_position</a> (position_type <span class="keyword">const</span> &amp;pos);
     };
 
 }   <span class="comment">// namespace cpplexer</span>
@@ -107,7 +107,7 @@
 <blockquote> 
   <p>Allows the access to the token id of the token. This access function is implemented 
     as an implicit conversion function to allow the operation of <tt>Spirit</tt> 
-    parsers directly on top o<!-- #BeginDate format:fcAm1m -->Wednesday, January 28, 2004  17:01<!-- #EndDate -->l">here</a>. </p>
+    parsers directly on top o<!-- #BeginDate format:fcAm1m -->Saturday, August 21, 2004  20:01<!-- #EndDate -->l">here</a>. </p>
   <p>This function does not throw in any case.</p>
 </blockquote>
 <p><a name="get_value"></a><b>get_value</b></p>
@@ -162,11 +162,11 @@
 <hr size="1">
 <p class="copyright">Copyright &copy; 2003-2004 Hartmut Kaiser<br>
   <br>
-  <font size="2">Use, modification and distribution is subject to the Boost Software 
-  License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) 
-  </font> </p>
-<span class="updated">Last updated: 
-  <!-- #BeginDate format:fcAm1m -->Monday, January 5, 2004  14:57<!-- #EndDate -->
-  </span></body>
+  <font size="2">Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) </font> </p>
+<span class="updated"></span>
+<p class="copyright"><span class="updated">Last updated: 
+  <!-- #BeginDate format:fcAm1m -->Saturday, August 21, 2004  20:01<!-- #EndDate -->
+  </span></p>
+</body>
 </html>
-<!-- #BeginDate format:fcAm1m -->Wednesday, January 28, 2004  17:01<!-- #EndDate -->
+<!-- #BeginDate format:fcAm1m -->Saturday, August 21, 2004  20:01<!-- #EndDate -->

@@ -9,12 +9,11 @@
     To get a hint which commandline options are supported, call it with the 
     --help option.
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost 
+    Software License, Version 1.0. (See accompanying file 
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #include "list_includes.hpp"            // config data
@@ -137,7 +136,7 @@ int
 do_actual_work(vector<string> const &arguments, po::variables_map const &vm)
 {
 // current file position is saved for exception handling
-boost::wave::util::file_position_t current_position;
+boost::wave::util::file_position_type current_position;
 
     try {
     // list the included files for all arguments given
@@ -165,7 +164,7 @@ boost::wave::util::file_position_t current_position;
                     std::string::iterator, lex_iterator_t,
                     boost::wave::iteration_context_policies::load_file_to_string,
                     trace_include_files
-                > context_t;
+                > context_type;
 
         set<string> files;
         trace_include_files trace(files);
@@ -175,8 +174,8 @@ boost::wave::util::file_position_t current_position;
         // object is additionally to be used to initialize and define different 
         // parameters of the actual preprocessing.
         // The preprocessing of the input stream is done on the fly behind the 
-        // scenes during iteration over the context_t::iterator_t stream.
-        context_t ctx (instring.begin(), instring.end(), (*file_it).c_str(), trace);
+        // scenes during iteration over the context_type::iterator_type stream.
+        context_type ctx (instring.begin(), instring.end(), (*file_it).c_str(), trace);
 
         // add include directories to the include path
             if (vm.count("include")) {
@@ -203,8 +202,8 @@ boost::wave::util::file_position_t current_position;
             }
             
         // analyze the actual file
-        context_t::iterator_t first = ctx.begin();
-        context_t::iterator_t last = ctx.end();
+        context_type::iterator_type first = ctx.begin();
+        context_type::iterator_type last = ctx.end();
         
             cout << "Printing dependency information for: " 
                  << *file_it << endl;

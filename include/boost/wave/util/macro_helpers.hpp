@@ -1,12 +1,11 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(MACRO_HELPERS_HPP_931BBC99_EBFA_4692_8FBE_B555998C2C39_INCLUDED)
@@ -58,13 +57,13 @@ namespace impl {
     
     // return the string representation of a token sequence
     template <typename ContainerT, typename PositionT>
-    inline typename ContainerT::value_type::string_t
+    inline typename ContainerT::value_type::string_type
     as_stringlit (ContainerT const &token_sequence, PositionT const &pos)
     {
         using namespace boost::wave;
-        typedef typename ContainerT::value_type::string_t string_t;
+        typedef typename ContainerT::value_type::string_type string_type;
         
-        string_t result("\"");
+        string_type result("\"");
         bool was_whitespace = false;
         typename ContainerT::const_iterator end = token_sequence.end();
         for (typename ContainerT::const_iterator it = token_sequence.begin(); 
@@ -109,16 +108,16 @@ namespace impl {
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
     // return the string representation of a token sequence
     template <typename ContainerT, typename PositionT>
-    inline typename ContainerT::value_type::string_t
+    inline typename ContainerT::value_type::string_type
     as_stringlit (std::vector<ContainerT> const &arguments, 
         typename std::vector<ContainerT>::size_type i, PositionT const &pos)
     {
         using namespace boost::wave;
-        typedef typename ContainerT::value_type::string_t string_t;
+        typedef typename ContainerT::value_type::string_type string_type;
         
         BOOST_SPIRIT_ASSERT(0 <= i && i < arguments.size());
         
-        string_t result("\"");
+        string_type result("\"");
         bool was_whitespace = false;
         
         for (/**/; i < arguments.size(); ++i) {
@@ -182,11 +181,11 @@ namespace impl {
     
     // return the string representation of a token sequence
     template <typename ContainerT>
-    inline typename ContainerT::value_type::string_t
+    inline typename ContainerT::value_type::string_type
     as_string (ContainerT const &token_sequence)
     {
-        typedef typename ContainerT::value_type::string_t string_t;
-        return as_string<string_t>(token_sequence.begin(), token_sequence.end());
+        typedef typename ContainerT::value_type::string_type string_type;
+        return as_string<string_type>(token_sequence.begin(), token_sequence.end());
     }
     
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
@@ -201,9 +200,9 @@ namespace impl {
         ContainerT &expanded, PositionT const &pos)
     {
         using namespace cpplexer;
-        typedef typename ContainerT::value_type token_t;
+        typedef typename ContainerT::value_type token_type;
         
-        token_t comma(T_COMMA, ",", pos);
+        token_type comma(T_COMMA, ",", pos);
         for (/**/; index < arguments.size(); ++index) {
         ContainerT const &arg = arguments[index];
         

@@ -1,14 +1,12 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
-
     Definition of the preprocessor context
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_ITERATION_CONTEXT_HPP_00312288_9DDB_4668_AFE5_25D3994FD095_INCLUDED)
@@ -58,7 +56,7 @@ namespace iteration_context_policies {
             void init_iterators(IterContextT &iter_ctx, 
                 PositionT const &act_pos)
             {
-                typedef typename IterContextT::iterator_t iterator_t;
+                typedef typename IterContextT::iterator_type iterator_type;
                 
                 std::ifstream instream(iter_ctx.filename.c_str());
                 if (!instream.is_open()) {
@@ -78,10 +76,10 @@ namespace iteration_context_policies {
                     std::istreambuf_iterator<char>());
 #endif // defined(BOOST_NO_TEMPLATED_ITERATOR_CONSTRUCTORS)
 
-                iter_ctx.first = iterator_t(iter_ctx.instring.begin(), 
+                iter_ctx.first = iterator_type(iter_ctx.instring.begin(), 
                     iter_ctx.instring.end(), PositionT(iter_ctx.filename),
                     iter_ctx.language);
-                iter_ctx.last = iterator_t();
+                iter_ctx.last = iterator_type();
             }
 
         private:
@@ -110,7 +108,7 @@ namespace iteration_context_policies {
             void init_iterators(IterContextT &iter_ctx, 
                 PositionT const &act_pos)
             {
-                typedef typename IterContextT::iterator_t iterator_t;
+                typedef typename IterContextT::iterator_type iterator_type;
                 
                 iter_ctx.instream.open(iter_ctx.filename.c_str());
                 if (!iter_ctx.instream.is_open()) {
@@ -120,12 +118,12 @@ namespace iteration_context_policies {
                 iter_ctx.instream.unsetf(std::ios::skipws);
 
                 using boost::spirit::make_multi_pass;
-                iter_ctx.first = iterator_t(
+                iter_ctx.first = iterator_type(
                     make_multi_pass(std::istreambuf_iterator<char>(
                         iter_ctx.instream.rdbuf())),
                     make_multi_pass(std::istreambuf_iterator<char>()),
                     PositionT(iter_ctx.filename), iter_ctx.language);
-                iter_ctx.last = iterator_t();
+                iter_ctx.last = iterator_type();
             }
 
         private:
@@ -171,18 +169,18 @@ struct iteration_context
     public InputPolicyT::template 
         inner<iteration_context<IteratorT, InputPolicyT> >
 {
-    typedef IteratorT iterator_t;
-    typedef typename IteratorT::token_t::position_t position_t;
+    typedef IteratorT iterator_type;
+    typedef typename IteratorT::token_type::position_type position_type;
     
-    typedef iteration_context<IteratorT, InputPolicyT> self_t;
+    typedef iteration_context<IteratorT, InputPolicyT> self_type;
     
     iteration_context(BOOST_WAVE_STRINGTYPE const &fname, 
-            position_t const &act_pos, 
+            position_type const &act_pos, 
             boost::wave::language_support language_) 
     :   base_iteration_context<IteratorT>(fname), 
         language(language_)
     {
-        InputPolicyT::template inner<self_t>::init_iterators(*this, act_pos);
+        InputPolicyT::template inner<self_type>::init_iterators(*this, act_pos);
     }
     
     boost::wave::language_support language;

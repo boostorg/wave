@@ -3,12 +3,11 @@
 
     Definition of the position_iterator and file_position templates
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(FILE_POSITION_H_52BDEDF7_DAD3_4F24_802F_E66BB8098F68_INCLUDED)
@@ -35,31 +34,31 @@ namespace util {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <typename StringT = std::string>
+template <typename StringT>
 struct file_position {
 
 public:
-    typedef StringT string_t;
+    typedef StringT string_type;
     
     file_position()
     :   file(), line(1), column(1)
     {}
-    explicit file_position(string_t const& file_, int line_ = 1, 
+    explicit file_position(string_type const& file_, int line_ = 1, 
             int column_ = 1)
     :   file(file_), line(line_), column(column_)
     {}
 
 // accessors
-    string_t const &get_file() const { return file; }
+    string_type const &get_file() const { return file; }
     int get_line() const { return line; }
     int get_column() const { return column; }
     
-    void set_file(string_t const &file_) { file = file_; }
+    void set_file(string_type const &file_) { file = file_; }
     void set_line(int line_) { line = line_; }
     void set_column(int column_) { column = column_; }
     
 private:
-    string_t file;
+    string_type file;
     int line;
     int column;
 };
@@ -80,7 +79,7 @@ operator<< (std::ostream &o, file_position<StringT> const &pos)
     return o;
 }
 
-typedef file_position<BOOST_WAVE_STRINGTYPE> file_position_t;
+typedef file_position<BOOST_WAVE_STRINGTYPE> file_position_type;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -128,14 +127,14 @@ namespace spirit {
 ///////////////////////////////////////////////////////////////////////////////
 
     template <>
-    class position_policy<boost::wave::util::file_position_t> {
+    class position_policy<boost::wave::util::file_position_type> {
 
     public:
         position_policy()
             : m_CharsPerTab(4)
         {}
 
-        void next_line(boost::wave::util::file_position_t &pos)
+        void next_line(boost::wave::util::file_position_type &pos)
         {
             pos.set_line(pos.get_line() + 1);
             pos.set_column(1);
@@ -146,12 +145,12 @@ namespace spirit {
             m_CharsPerTab = chars;
         }
 
-        void next_char(boost::wave::util::file_position_t &pos)
+        void next_char(boost::wave::util::file_position_type &pos)
         {
             pos.set_column(pos.get_column() + 1);
         }
 
-        void tabulation(boost::wave::util::file_position_t &pos)   
+        void tabulation(boost::wave::util::file_position_type &pos)   
         {
             pos.set_column(pos.get_column() + m_CharsPerTab - 
                 (pos.get_column() - 1) % m_CharsPerTab);

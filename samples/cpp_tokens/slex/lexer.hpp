@@ -3,14 +3,12 @@
 
     Spirit based lexer
     
-    Copyright (c) 2001, Daniel C. Nuffer
-    Copyright (c) 2002-2004, Hartmut Kaiser
-
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001, Daniel C. Nuffer.
+    Copyright (c) 2001-2004 Hartmut Kaiser. 
+    Distributed under the Boost Software License, Version 1.0. (See accompanying 
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
     TODO List:
         X callback objects (called when a match is made.)
@@ -982,7 +980,7 @@ ccl_node::dump(std::ostream& out) const
 template <typename ScannerT>
 class make_concat
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
 
@@ -990,7 +988,7 @@ public:
         : m_stack(the_stack)
         {}
 
-    void operator()(iterator_t const &, iterator_t const &) const
+    void operator()(iterator_type const &, iterator_type const &) const
     {
         node* right = m_stack.top();
         m_stack.pop();
@@ -1063,11 +1061,11 @@ get_byte(CharT c, unsigned int byte)
 template <typename ScannerT>
 class make_star
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
     typedef
-        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_t>::value_type
+        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_type>::value_type
         char_t;
 
     make_star(std::stack<node*>& the_stack)
@@ -1088,7 +1086,7 @@ public:
 template <typename ScannerT>
 class make_or
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
 
@@ -1096,7 +1094,7 @@ public:
         : m_stack(the_stack)
         {}
 
-    void operator()(iterator_t const&, iterator_t const&) const
+    void operator()(iterator_type const&, iterator_type const&) const
     {
         node* right = m_stack.top();
         m_stack.pop();
@@ -1112,11 +1110,11 @@ public:
 template <typename ScannerT>
 class make_plus
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
     typedef
-        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_t>::value_type
+        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_type>::value_type
         char_t;
 
     make_plus(std::stack<node*>& the_stack)
@@ -1141,11 +1139,11 @@ public:
 template <typename ScannerT>
 class make_optional
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
     typedef
-        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_t>::value_type
+        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_type>::value_type
         char_t;
 
     make_optional(std::stack<node*>& the_stack)
@@ -1170,8 +1168,8 @@ template <typename CharT>
 inline utility::impl::range<CharT> const&
 full_range()
 {
-    static utility::impl::range<CharT> full(std::numeric_limits<CharT>::min(),
-        std::numeric_limits<CharT>::max());
+    static utility::impl::range<CharT> full((std::numeric_limits<CharT>::min)(),
+        (std::numeric_limits<CharT>::max)());
     return full;
 }
 
@@ -1487,23 +1485,23 @@ end_outer_for:
 template <typename ScannerT>
 class make_char
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
     typedef
-        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_t>::value_type
+        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_type>::value_type
         char_t;
 
     make_char(std::stack<node*>& the_stack)
         : m_stack(the_stack)
         {}
 
-    void operator()(iterator_t const& first, iterator_t const& last) const
+    void operator()(iterator_type const& first, iterator_type const& last) const
     {
         const escape_char_parser<lex_escapes, char_t> lex_escape_ch =
             escape_char_parser<lex_escapes, char_t>();
         char_t the_char;
-        iterator_t first_ = first;
+        iterator_type first_ = first;
         ScannerT scan(first_, last);
         lex_escape_ch[assign(the_char)].parse(scan);
         node* newnode = ccl_utils::create_mb_node_seq(the_char);
@@ -1517,19 +1515,19 @@ public:
 template <typename ScannerT>
 class make_ccl
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
     typedef
-        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_t>::value_type
+        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_type>::value_type
         char_t;
 
     make_ccl(std::stack<node*>& the_stack)
         : m_stack(the_stack)
         {}
 
-    static bool is_equal_to_string(iterator_t first,
-        iterator_t const & last, const char* str)
+    static bool is_equal_to_string(iterator_type first,
+        iterator_type const & last, const char* str)
     {
         while (first != last &&*str &&*first ==*str)
         {
@@ -1549,11 +1547,11 @@ public:
         }
     }
 
-    void operator()(iterator_t const& first_, iterator_t const& last) const
+    void operator()(iterator_type const& first_, iterator_type const& last) const
     {
         BOOST_SPIRIT_ASSERT(*first_ == '[');
 
-        iterator_t first = first_;
+        iterator_type first = first_;
         ++first; // skip over '['
         bool negated_ccl = false;
         if (*first == '^')
@@ -1662,11 +1660,11 @@ public:
 template <typename ScannerT>
 class make_any_char
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
     typedef
-        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_t>::value_type
+        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_type>::value_type
         char_t;
 
     std::stack<node*>& m_stack;
@@ -1695,11 +1693,11 @@ public:
 template <typename ScannerT>
 class make_string
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
     typedef
-        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_t>::value_type
+        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_type>::value_type
         char_t;
 
     std::stack<node*>& m_stack;
@@ -1708,11 +1706,11 @@ public:
         : m_stack(the_stack)
         {}
 
-    void operator()(iterator_t const& first, iterator_t const& last) const
+    void operator()(iterator_type const& first, iterator_type const& last) const
     {
         BOOST_SPIRIT_ASSERT(*first == '"');
 
-        iterator_t first_ = first;
+        iterator_type first_ = first;
         ScannerT scan(first_, last);
         ++scan.first; // skip over '"'
 
@@ -1759,11 +1757,11 @@ node* optional_node(node* n)
 template <typename ScannerT>
 class make_rep1
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
     typedef
-        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_t>::value_type
+        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_type>::value_type
         char_t;
 
     std::stack<node*>& m_stack;
@@ -1772,11 +1770,11 @@ public:
         : m_stack(the_stack)
         {}
 
-    void operator()(iterator_t const& first, iterator_t const& last) const
+    void operator()(iterator_type const& first, iterator_type const& last) const
     {
         BOOST_SPIRIT_ASSERT(*first == '{');
 
-        iterator_t first_ = first;
+        iterator_type first_ = first;
         ScannerT scan(first_, last);
         ++scan.first; // skip over '{'
 
@@ -1795,11 +1793,11 @@ public:
 template <typename ScannerT>
 class make_rep2
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
     typedef
-        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_t>::value_type
+        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_type>::value_type
         char_t;
 
     std::stack<node*>& m_stack;
@@ -1808,11 +1806,11 @@ public:
         : m_stack(the_stack)
         {}
 
-    void operator()(iterator_t const& first, iterator_t const& last) const
+    void operator()(iterator_type const& first, iterator_type const& last) const
     {
         BOOST_SPIRIT_ASSERT(*first == '{');
 
-        iterator_t first_ = first;
+        iterator_type first_ = first;
         ScannerT scan (first_, last);
         ++scan.first; // skip over '{'
 
@@ -1833,11 +1831,11 @@ public:
 template <typename ScannerT>
 class make_rep3
 {
-    typedef typename ScannerT::iterator_t iterator_t;
+    typedef typename ScannerT::iterator_t iterator_type;
 
 public:
     typedef
-        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_t>::value_type
+        typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_type>::value_type
         char_t;
 
     std::stack<node*>& m_stack;
@@ -1846,11 +1844,11 @@ public:
         : m_stack(the_stack)
         {}
 
-    void operator()(iterator_t const& first, iterator_t const& last) const
+    void operator()(iterator_type const& first, iterator_type const& last) const
     {
         BOOST_SPIRIT_ASSERT(*first == '{');
 
-        iterator_t first_ = first;
+        iterator_type first_ = first;
         ScannerT scan(first_, last);
         ++scan.first; // skip over '{'
 
@@ -1894,9 +1892,9 @@ public:
     struct definition
     {
         typedef rule<ScannerT> rule_t;
-        typedef typename ScannerT::iterator_t iterator_t;
+        typedef typename ScannerT::iterator_t iterator_type;
         typedef
-            typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_t>::value_type
+            typename BOOST_SPIRIT_IT_NS::iterator_traits<iterator_type>::value_type
             char_t;
 
         rule_t regex, re, series, singleton, singleton2, fullccl, ccl, string,
@@ -2108,7 +2106,7 @@ struct regex_match_helper<false> // single byte char
     {
         typedef std::basic_string<
             typename BOOST_SPIRIT_IT_NS::iterator_traits<IteratorT>::value_type
-        > string_t;
+        > string_type;
         
         node_id_t s = 0;
         node_id_t last_accepting_index = invalid_node;
@@ -2119,7 +2117,7 @@ struct regex_match_helper<false> // single byte char
             s = dfa.transition_table[s][(uchar)*p];
             if (s == invalid_node)
                 break;
-            if (token) token->append((string_t::size_type)1, *p);
+            if (token) token->append((string_type::size_type)1, *p);
             ++p;
             if (dfa.acceptance_index[s] != invalid_node)
             {
@@ -2157,7 +2155,7 @@ struct regex_match_helper<true> // wide char
         typedef
             typename BOOST_SPIRIT_IT_NS::iterator_traits<IteratorT>::value_type
             char_t;
-        typedef std::basic_string<char_t> string_t;
+        typedef std::basic_string<char_t> string_type;
 
         node_id_t s = 0;
         node_id_t last_accepting_index = invalid_node;
@@ -2174,7 +2172,7 @@ struct regex_match_helper<true> // wide char
                     goto break_while;
                 }
             }
-            if (token) token->append((string_t::size_type)1, *wp);
+            if (token) token->append((string_type::size_type)1, *wp);
             ++wp;
             if (dfa.acceptance_index[s] != invalid_node)
             {

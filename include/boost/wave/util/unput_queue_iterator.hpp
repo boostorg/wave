@@ -3,12 +3,11 @@
 
     Definition of the unput queue iterator
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 #if !defined(UNPUT_QUEUE_ITERATOR_HPP_76DA23D0_4893_4AD5_ABCC_6CED7CFB89BC_INCLUDED)
 #define UNPUT_QUEUE_ITERATOR_HPP_76DA23D0_4893_4AD5_ABCC_6CED7CFB89BC_INCLUDED
@@ -114,7 +113,7 @@ class unput_queue_iterator
         
 public:
     typedef ContainerT  container_t;
-    typedef IteratorT   iterator_t;
+    typedef IteratorT   iterator_type;
     
     unput_queue_iterator(IteratorT const &it, ContainerT &queue)
     :   base_t(it, policies_t(queue))
@@ -150,7 +149,7 @@ class unput_queue_iterator
         
 public:
     typedef ContainerT  container_t;
-    typedef IteratorT   iterator_t;
+    typedef IteratorT   iterator_type;
     
     unput_queue_iterator(IteratorT const &it, ContainerT &queue)
     :   base_t(it), unput_queue(queue)
@@ -259,10 +258,10 @@ namespace impl {
     struct assign_iterator<
         unput_queue_iterator<IteratorT, TokenT, ContainerT> > 
     {
-        typedef unput_queue_iterator<IteratorT, TokenT, ContainerT> iterator_t;
+        typedef unput_queue_iterator<IteratorT, TokenT, ContainerT> iterator_type;
         
         static void 
-        do_ (iterator_t &dest, iterator_t const &src)
+        do_ (iterator_type &dest, iterator_type const &src)
         {
             dest.base() = src.base();
             dest.policies() = src.policies();
@@ -305,19 +304,19 @@ namespace impl {
     struct next_token<
         unput_queue_iterator<IteratorT, TokenT, ContainerT> > {
         
-        typedef unput_queue_iterator<IteratorT, TokenT, ContainerT> iterator_t;
+        typedef unput_queue_iterator<IteratorT, TokenT, ContainerT> iterator_type;
         
         static boost::wave::token_id 
-        peek(iterator_t it, iterator_t end, bool skip_whitespace = true)
+        peek(iterator_type it, iterator_type end, bool skip_whitespace = true)
         {
             using namespace boost::wave;
             
-        typename iterator_t::container_t &queue = it.get_unput_queue();
+        typename iterator_type::container_t &queue = it.get_unput_queue();
         
         // first try to find it in the unput_queue
             if (0 != queue.size()) {
-            typename iterator_t::container_t::iterator cit = queue.begin();
-            typename iterator_t::container_t::iterator cend = queue.end();
+            typename iterator_type::container_t::iterator cit = queue.begin();
+            typename iterator_type::container_t::iterator cend = queue.end();
 
                 if (skip_whitespace) {            
                     for (++cit; cit != cend; ++cit) {
@@ -336,8 +335,8 @@ namespace impl {
             }
             
         // second try to move on into the base iterator stream
-        typename iterator_t::iterator_t base_it = it.get_base_iterator();
-        typename iterator_t::iterator_t base_end = end.get_base_iterator();
+        typename iterator_type::iterator_type base_it = it.get_base_iterator();
+        typename iterator_type::iterator_type base_end = end.get_base_iterator();
 
             if (0 == queue.size())
                 ++base_it;  // advance, if the unput queue is empty

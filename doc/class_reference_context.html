@@ -58,9 +58,9 @@
     {
     <span class="keyword">public</span>: 
 
-        <span class="keyword">typedef</span> pp_iterator&lt;context&gt; iterator_t; 
-        <span class="keyword">typedef</span> TokenT token_t;
-        <span class="keyword">typedef</span> <span class="keyword">typename</span> token_t::position_t position_t;
+        <span class="keyword">typedef</span> pp_iterator&lt;context&gt; iterator_type; 
+        <span class="keyword">typedef</span> TokenT token_type;
+        <span class="keyword">typedef</span> <span class="keyword">typename</span> token_type::position_type position_type;
 
     <span class="comment">// constructor</span>
         <a href="class_reference_context.html#constructor">context</a>(IteratorT <span class="keyword">const</span> &amp;first_, 
@@ -69,8 +69,8 @@
             TracePolicyT &amp;trace = TracePolicyT())
 
     <span class="comment">// iterator interface</span>
-        iterator_t <a href="class_reference_context.html#iterator_interface_begin">begin</a>() <span class="keyword">const</span>;
-        iterator_t <a href="class_reference_context.html#iterator_interface_end">end</a>() <span class="keyword">const</span>;
+        iterator_type <a href="class_reference_context.html#iterator_interface_begin">begin</a>() <span class="keyword">const</span>;
+        iterator_ty<!-- #BeginDate format:fcAm1m -->Saturday, August 21, 2004  20:01<!-- #EndDate -->lass="keyword">const</span>;
 
     <span class="comment">// maintain include paths</span>
         <span class="keyword">bool</span> <a href="class_reference_context.html#add_include_path">add_include_path</a>(<span class="keyword">char const</span> *path_);
@@ -88,8 +88,8 @@
         <span class="keyword">void</span> <a href="class_reference_context.html#reset_macro_definitions">reset_macro_definitions</a>();
 
     <span class="comment">// other options</span>
-        <span class="keyword">void</span> <a href="class_reference_context.html#language_support">set_language</a>(wave::language_support enable);
-        wave::language_support <a href="class_reference_context.html#language_support">get_language</a>() <span class="keyword">const</span>;<br>
+        <span class="keyword">void</span> <a href="class_reference_context.html#language_support">set_language</a>(language_support enable);
+        language_support <a href="class_reference_context.html#language_support">get_language</a>() <span class="keyword">const</span>;<br>
         <span class="keyword">void</span> <a href="class_reference_context.html#set_max_include_nesting_depth">set_max_include_nesting_depth</a>(size_t new_depth);<br>        size_t <a href="class_reference_context.html#set_max_include_nesting_depth">get_max_include_nesting_depth</a>() <span class="keyword">const</span>;<br>
     <span class="comment">// get the Wave version information </span>
         <span class="keyword">static std::string</span> <a href="class_reference_context.html#get_version">get_version</a>();
@@ -146,27 +146,27 @@
     <td colspan="2" class="table_title"><b>Public typedef's defined by the <tt>boost::wave::context</tt> class </b></td>
   </tr>
   <tr>
-    <td class="table_cells"><code>iterator_t</code></td>
+    <td class="table_cells"><code>iterator_type</code></td>
     <td class="table_cells"><p>The <tt>IteratorT</tt> template parameter provided, while the <tt>context</tt> class was instantiated. </p></td>
   </tr>
   <tr>
-    <td class="table_cells"><code>lex_t</code></td>
+    <td class="table_cells"><code>lex_type</code></td>
     <td class="table_cells"><p>The <tt>LexIteratorT</tt> template parameter provided, while the <tt>context</tt> class was instantiated. </p></td>
   </tr>
   <tr>
-    <td width="32%" class="table_cells"><code>token_t</code></td>
+    <td width="32%" class="table_cells"><code>token_type</code></td>
     <td width="68%" class="table_cells"><p>The token type, which is returned by the <tt>context</tt> generated iterators. This type is taken from the <tt>LexIteratorT</tt> template parameter provided, whicle the <tt>context</tt> class was instantiated.</p></td>
   </tr>
   <tr>
-    <td class="table_cells"><code>input_policy_t</code></td>
+    <td class="table_cells"><code>input_policy_type</code></td>
     <td class="table_cells"><p>The <tt>InputPolicyT</tt> template parameter provided, while the <tt>context</tt> class was instantiated. </p></td>
   </tr>
   <tr>
-    <td class="table_cells"><code>trace_policy_t</code></td>
-    <td class="table_cells">The <tt>TracePolicyT</tt> template parameter provided, while the <tt>context</tt> class was instantiated. </td>
+    <td class="table_cells"><code>trace_policy_type</code></td>
+    <td class="table_cells"><p>The <tt>TracePolicyT</tt> template parameter provided, while the <tt>context</tt> class was instantiated. </p></td>
   </tr>
   <tr>
-    <td class="table_cells"><code>position_t</code></td>
+    <td class="table_cells"><code>position_type</code></td>
     <td class="table_cells"><p>The type of the position information contained in every returned token, which describes the point, at which the given token was recognised. </p></td>
   </tr>
 </table>
@@ -201,14 +201,14 @@
   from the underlying input stream. The returned iterators are conceptually of 
   <tt>forward_iterator</tt> type.</p>
 <p><b><a name="iterator_interface_begin"></a></b><b>begin</b></p>
-<pre>    iterator_t begin();</pre>
+<pre>    iterator_type begin();</pre>
 <blockquote>
   <p>Initializes and returns the starting iterator for the preprocessed token 
     stream.</p>
   
 </blockquote>
 <p><b><a name="iterator_interface_end" id="iterator_interface_end"></a></b><b>end</b></p>
-<pre>    iterator_t end() <span class="keyword">const</span>;</pre>
+<pre>    iterator_type end() <span class="keyword">const</span>;</pre>
 <blockquote> 
   <p>Initializes and returns the end of stream iterator to compare with for detecting 
     the end of the preprocessed token stream.</p>
@@ -243,7 +243,7 @@
 </pre>
 <blockquote> 
   <p>Adds the given file system path to the user include search paths. After a 
-    call to the <a href="#set_sys_include_delimiter">set_sysinclude_delimiter()</a> 
+    call to the <a href="class_reference_context.html#set_sysinclude_delimiter">set_sysinclude_delimiter()</a> 
     this function adds the given file system path to the system include search 
     paths. Note though, that the given path is validated against the file system. 
   </p>
@@ -262,7 +262,7 @@
     item, the function returns <tt>false</tt>. If the given path was successfully 
     added to the system include search paths, the function returns <tt>true</tt>.</p>
 </blockquote>
-<p><a name="set_sysinclude_delimiter" id="set_sysinclude_delimiter"></a><b>set_sysinclude_delimiter</b></p>
+<p><a name="set_sysinclude_delimiter"></a><b>set_sysinclude_delimiter</b></p>
 <pre>    <span class="keyword">void</span> set_sysinclude_delimiter();</pre>
 <blockquote> 
   <p>Switches the mode, how the <a href="#add_include_path">add_include_path()</a> 
@@ -388,14 +388,14 @@
     predefined macro <tt>__WAVE_VERSION_STR__</tt> is expanded.</p>
 </blockquote>
 <h3>Control extended options</h3>
-<p><a name="support_variadics_and_placemarkers"></a>set_language<br>
+<p><a name="language_support"></a>set_language<br>
   get_language</p>
-<pre><span class="keyword">    void</span> set_language(<span class="keyword">wave::language_support</span> language);
-    <span class="keyword">wave::language_support</span> get_language() <span class="keyword">const</span>;</pre>
+<pre><span class="keyword">    void</span> set_language(<span class="keyword">language_support</span> language);
+    <span class="keyword">language_support</span> get_language() <span class="keyword">const</span>;</pre>
 <blockquote> 
   <p>This functions allow to specify the language mode, in which the <tt>Wave</tt> 
     library should work. The possible language modes are defined by the enumerated 
-    type <tt>wave::language_support</tt>:</p>
+    type <tt>language_support</tt>:</p>
   <pre>    <span class="keyword">enum</span> language_support {
     <span class="comment">// support flags for C++98</span>
         support_normal = 0x01,
@@ -404,16 +404,10 @@
     <span class="comment">// support flags for C99</span>
         support_variadics = 0x02,
         support_c99 = support_variadics,
-    
-    <span class="comment">// support flags for experimental C++0x features</span>
-        support_extensions = 0x04,
-        support_cpp0x = support_normal | 
-                        support_variadics | 
-                        support_extensions,
     };</pre>
   <p>When used with <tt>support_variadics</tt> the support for variadics, placemarkers 
     and the <tt>operator _Pragma()</tt> is enabled in normal C++ mode. The <tt>support_c99</tt> 
-    and <tt>support_cpp0x</tt> switch to the respective language support.</p>
+     switch to the C99 language support.</p>
 </blockquote>
 <p><a name="set_max_include_nesting_depth" id="set_max_include_nesting_depth"></a>set_max_include_nesting_depth<br>
   g et_max_include_nesting_depth</p>
@@ -436,12 +430,12 @@
 <hr size="1">
 <p class="copyright">Copyright &copy; 2003-2004 Hartmut Kaiser<br>
   <br>
-  <font size="2">Use, modification and distribution is subject to the Boost Software 
-  License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) 
-  </font> </p>
-<span class="updated">Last updated: 
-<!-- #BeginDate format:fcAm1m -->Thursday, January 29, 2004  9:04<!-- #EndDate -->
-</span>
+  <font size="2">Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) </font> </p>
+<span class="updated"></span>
+<p class="copyright"><span class="updated">Last updated: 
+  <!-- #BeginDate format:fcAm1m -->Saturday, August 21, 2004  19:52<!-- #EndDate -->
+  </span>
+</p>
 <p>&nbsp;</p>
 </body>
 </html>

@@ -3,12 +3,11 @@
 
     Sample: Re2C based IDL lexer
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost 
+    Software License, Version 1.0. (See accompanying file 
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(IDL_RE_HPP_BD62775D_1659_4684_872C_03C02543C9A5_INCLUDED)

@@ -3,12 +3,11 @@
 
     SLex (Spirit Lex) based C++ lexer
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost 
+    Software License, Version 1.0. (See accompanying file 
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(SLEX_LEXER_HPP_5E8E1DF0_BB41_4938_B7E5_A4BB68222FF6_INCLUDED)
@@ -55,11 +54,11 @@ class lexer
 public:
 
     typedef boost::wave::util::position_iterator<IteratorT, PositionT> 
-        iterator_t;
+        iterator_type;
     typedef typename std::iterator_traits<IteratorT>::value_type  char_t;
-    typedef boost::spirit::lexer<iterator_t>                      base_t;
+    typedef boost::spirit::lexer<iterator_type>                      base_t;
 
-    typedef boost::wave::cpp_token_sample::slex_token<PositionT>  token_t;
+    typedef boost::wave::cpp_token_sample::slex_token<PositionT>  token_type;
     
     lexer();
     void init_dfa(boost::wave::language_support language);
@@ -79,9 +78,6 @@ private:
     
     static lexer_data const init_data[];        // common patterns
     static lexer_data const init_data_cpp[];    // C++ only patterns
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-    static lexer_data const init_data_cpp0x[];  // C++0x only patterns
-#endif // BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
 
 // helper for calculation of the time of last compilation
     static boost::wave::util::time_conversion_helper compilation_time;
@@ -336,11 +332,6 @@ lexer<IteratorT, PositionT>::init_data[] =
     TOKEN_DATA(MSEXT_INLINE, "_?" "_inline"),
     TOKEN_DATA(MSEXT_ASM, "_?" "_asm"),
 #endif // BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-    TOKEN_DATA(PP_REGION, POUNDDEF PPSPACE BOOST_WAVE_PP_REGION),
-    TOKEN_DATA(PP_ENDREGION, POUNDDEF PPSPACE BOOST_WAVE_PP_ENDREGION),
-    TOKEN_DATA(PP_IMPORT, POUNDDEF PPSPACE BOOST_WAVE_PP_IMPORT),
-#endif // BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
     { token_id(0) }       // this should be the last entry
 };
 
@@ -366,20 +357,6 @@ lexer<IteratorT, PositionT>::init_data_cpp[] =
     TOKEN_DATA(COLON_COLON, "::"),
     { token_id(0) }       // this should be the last entry
 };
-
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-///////////////////////////////////////////////////////////////////////////////
-// C++0x only token definitions
-template <typename IteratorT, typename PositionT>
-typename lexer<IteratorT, PositionT>::lexer_data const 
-lexer<IteratorT, PositionT>::init_data_cpp0x[] = 
-{
-    TOKEN_DATA(COMMA_ALT, "__comma__"),
-    TOKEN_DATA(LEFTPAREN_ALT, "__lparen__"),
-    TOKEN_DATA(RIGHTPAREN_ALT, "__rparen__"),
-    { token_id(0) }       // this should be the last entry
-};
-#endif // BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
 
 ///////////////////////////////////////////////////////////////////////////////
 //  undefine macros, required for regular expression definitions
@@ -420,11 +397,6 @@ template <typename IteratorT, typename PositionT>
 inline void
 lexer<IteratorT, PositionT>::init_dfa(boost::wave::language_support lang)
 {
-// the modes are mutually exclusive
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-    BOOST_ASSERT(!boost::wave::need_c99(lang) || !boost::wave::need_cpp0x(lang));
-#endif // BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-    
     if (has_compiled_dfa())
         return;
         
@@ -441,17 +413,6 @@ lexer<IteratorT, PositionT>::init_dfa(boost::wave::language_support lang)
                 init_data_cpp[j].lexerstate);
         }
     }
-    
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-// C++0x mode has it's own new keywords
-    if (boost::wave::need_cpp0x(lang)) {
-        for (int k = 0; 0 != init_data_cpp0x[k].tokenid; ++k) {
-            this->register_regex(init_data_cpp0x[k].tokenregex, 
-                init_data_cpp0x[k].tokenid, init_data_cpp0x[k].tokencb, 
-                init_data_cpp0x[k].lexerstate);
-        }
-    }
-#endif // BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -506,17 +467,17 @@ ifstream dfa_in("wave_slex_lexer.dfa", ios::in|ios::binary);
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <typename IteratorT, typename PositionT = wave::util::file_position_t>
+template <typename IteratorT, typename PositionT = wave::util::file_position_type>
 class slex_functor 
-:   public slex_input_interface<typename lexer<IteratorT, PositionT>::token_t>
+:   public slex_input_interface<typename lexer<IteratorT, PositionT>::token_type>
 {
 public:
 
     typedef boost::wave::util::position_iterator<IteratorT, PositionT>
-          iterator_t;
+          iterator_type;
     typedef typename std::iterator_traits<IteratorT>::value_type    char_t;
-    typedef BOOST_WAVE_STRINGTYPE                                   string_t;
-    typedef typename lexer<IteratorT, PositionT>::token_t           token_t;
+    typedef BOOST_WAVE_STRINGTYPE                                   string_type;
+    typedef typename lexer<IteratorT, PositionT>::token_type           token_type;
 
     slex_functor(IteratorT const &first_, IteratorT const &last_, 
             PositionT const &pos_, boost::wave::language_support language)
@@ -528,9 +489,9 @@ public:
     virtual ~slex_functor() {}
 
 // get the next token from the input stream
-    token_t get()
+    token_type get()
     {
-        token_t token;
+        token_type token;
 
         if (!at_eof) {
             do {
@@ -542,7 +503,7 @@ public:
                 if ((token_id)(-1) == id)
                     id = T_EOF;     // end of input reached
 
-            string_t token_val(value.c_str());
+            string_type token_val(value.c_str());
             
                 if (T_CONTLINE != id) {
                     switch (id) {
@@ -568,7 +529,7 @@ public:
                     case T_PP_QHEADER:
                     case T_PP_INCLUDE:
                     // convert to the corresponding ..._next token, if appropriate
-                        if (string_t::npos != value.find("include_"))
+                        if (string_type::npos != value.find("include_"))
                             id = token_id(id | AltTokenType);
                         break;
 #endif // BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
@@ -579,7 +540,7 @@ public:
                         at_eof = true;
                         break;
                     }
-                    return token_t(id, token_val, pos);
+                    return token_type(id, token_val, pos);
                 }
             
             // skip the T_CONTLINE token
@@ -591,8 +552,8 @@ public:
     { first.set_position(pos); }
     
 private:
-    iterator_t first;
-    iterator_t last;
+    iterator_type first;
+    iterator_type last;
     static lexer<IteratorT, PositionT> lexer;   // needed only once
     
     bool at_eof;

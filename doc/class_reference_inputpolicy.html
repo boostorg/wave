@@ -62,7 +62,7 @@
             <span class="keyword">void</span> <a href="class_reference_inputpolicy.html#init_iterators">init_iterators</a>(IterContextT &iter_ctx, 
                 PositionT const &act_pos)
             {
-                <span class="keyword">typedef typename</span> IterContextT::iterator_t iterator_t;
+                <span class="keyword">typedef typename</span> IterContextT::iterator_type iterator_type;
                 
                 <span class="keyword">std::ifstream</span> instream(iter_ctx.filename.c_str());
                 if (!instream.is_open()) {
@@ -74,10 +74,10 @@
                     <span class="keyword">std::istreambuf_iterator</span><char>(instream.rdbuf()),
                     <span class="keyword">std::istreambuf_iterator</span><char>());
 
-                iter_ctx.first = iterator_t(iter_ctx.instring.begin(), 
+                iter_ctx.first = iterator_type(iter_ctx.instring.begin(), 
                     iter_ctx.instring.end(), 
                     PositionT(iter_ctx.filename));
-                iter_ctx.last = iterator_t();
+                iter_ctx.last = iterator_type();
             }
 
         <span class="keyword">private</span>:
@@ -95,7 +95,7 @@
   This embedded class should have the name <tt>inner</tt>.</p>
 <h3><a name="template_parameters"></a>Template Parameters</h3>
 <p>The <tt>inner</tt> class is instantiated with one template parameter, the iteration 
-  context type, from which the policy is a part of. The iterator type <tt>iterator_t</tt> 
+  context type, from which the policy is a part of. The iterator type <tt>iterator_type</tt> 
   which is used to access the underlying input stream has to be derived through 
   a typedef as shown. The iterator pair to initialize (which is accessible as 
   <tt>iter_ctx.first</tt> and <tt>iter_ctx.last</tt>) has to initialized from 
@@ -106,12 +106,11 @@
     <span class="keyword">static void</span> init_iterators(
         IterContextT iter_ctx, 
         PositionT const &act_pos);</pre>
-<blockquot<!-- #BeginDate format:fcAm1m -->Wednesday, January 28, 2004  17:00<!-- #EndDate -->
-    directive was found in the input token stream. The main rationale for this 
+
+    <p>directive was found in the input token stream. The main rationale for this 
     function is to initialize the pair of iterators <tt>iter_ctx.first</tt> and 
     <tt>iter_ctx.last</tt>, which are to be used to access the input stream corresponding 
-    to the include file to be inserted from inside the preprocessing engine.<br>
-  </p>
+  to the include file to be inserted from inside the preprocessing engine.</p>
 </blockquote>
 <table border="0">
   <tr> 
@@ -124,10 +123,10 @@
 <hr size="1">
 <p class="copyright">Copyright &copy; 2003-2004 Hartmut Kaiser<br>
   <br>
-  <font size="2">Use, modification and distribution is subject to the Boost Software 
-  License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) 
-  </font> </p>
-<span class="updated">Last updated: 
-  <!-- #BeginDate format:fcAm1m -->Wednesday, January 14, 2004  12:36<!-- #EndDate -->
-  </span></body>
+  <font size="2">Distributed under the Boost Software License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt) </font> </p>
+<span class="updated"></span>
+<p class="copyright"><span class="updated">Last updated: 
+  <!-- #BeginDate format:fcAm1m -->Friday, May 21, 2004  8:18<!-- #EndDate -->
+  </span></p>
+</body>
 </html>

@@ -3,12 +3,11 @@
 
     Global application configuration
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(WAVE_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED)
@@ -17,37 +16,6 @@
 #include <boost/config.hpp>
 #include <boost/version.hpp>
 #include <boost/spirit/version.hpp>
-
-///////////////////////////////////////////////////////////////////////////////
-//  Decide, whether to implement macro scopes (#scope/#endscope), variadics,
-//  placemarkers and well defined token pasting in C++ mode
-//
-//  To implement these features, uncomment the following
-//
-#if !defined(BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS)
-#define BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS 1
-#endif
-
-///////////////////////////////////////////////////////////////////////////////
-//  Define the macro scoping keywords to be used for the experimental macro 
-//  scoping support.
-//
-//  If the following macros aren't defined, the corresponding default value is 
-//  used.
-//
-//  Note, if you change this, you will have to change the corresponding entries 
-//  inside the wave/cpplexer/re2c/cpp.re file too.
-//
-#if !defined(BOOST_WAVE_PP_REGION)
-#define BOOST_WAVE_PP_REGION          "region"
-#define BOOST_WAVE_PP_REGION_UC       "REGION"      // uppercase of BOOST_WAVE_PP_REGION
-#endif
-#if !defined(BOOST_WAVE_PP_ENDREGION)
-#define BOOST_WAVE_PP_ENDREGION       "endregion"
-#endif
-#if !defined(BOOST_WAVE_PP_IMPORT)
-#define BOOST_WAVE_PP_IMPORT          "import"
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Define the maximal include nesting depth allowed. If this value isn't 
@@ -184,6 +152,11 @@
 #define BOOST_NO_MT
 #include <boost/pool/pool_alloc.hpp>
 
+//#define BOOST_WAVE_STRINGTYPE boost::const_string<char>
+//
+//#include <boost/const_string/const_string.hpp>
+//#include <boost/const_string/io.hpp>
+
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -264,13 +237,6 @@
 #if !defined(BOOST_WAVE_SEPARATE_GRAMMAR_INSTANTIATION)
 #define BOOST_WAVE_SEPARATE_GRAMMAR_INSTANTIATION 1
 #endif
-
-///////////////////////////////////////////////////////////////////////////////
-//  The experimental C++0x mode implies the variadics and placemarkers
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0 && \
-    !defined(BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS)
-#define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
-#endif 
 
 ///////////////////////////////////////////////////////////////////////////////
 //  configure Boost.Pool thread support (for now: no thread support at all)

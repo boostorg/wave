@@ -3,12 +3,11 @@
 
     Definition of the abstract lexer interface
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost 
+    Software License, Version 1.0. (See accompanying file 
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_LEX_INTERFACE_HPP_E83F52A4_90AC_4FBE_A9A7_B65F7F94C497_INCLUDED)
@@ -31,7 +30,7 @@ template <typename TokenT> struct lex_input_interface;
 
 template <
     typename IteratorT, 
-    typename PositionT = boost::wave::util::file_position_t
+    typename PositionT = boost::wave::util::file_position_type
 >
 struct new_lexer_gen
 {
@@ -56,10 +55,10 @@ struct new_lexer_gen
 template <typename TokenT>
 struct lex_input_interface 
 {
-    typedef typename TokenT::position_t position_t;
+    typedef typename TokenT::position_type position_type;
     
     virtual TokenT get() = 0;
-    virtual void set_position(position_t const &pos) = 0;
+    virtual void set_position(position_type const &pos) = 0;
 
     virtual ~lex_input_interface() {}
     
@@ -69,9 +68,9 @@ struct lex_input_interface
     template <typename IteratorT>
     static lex_input_interface *
     new_lexer(IteratorT const &first, IteratorT const &last, 
-        position_t const &pos, boost::wave::language_support language)
+        position_type const &pos, boost::wave::language_support language)
     { 
-        return new_lexer_gen<IteratorT, position_t>::new_lexer (first, last, 
+        return new_lexer_gen<IteratorT, position_type>::new_lexer (first, last, 
             pos, language); 
     }
 };

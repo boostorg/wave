@@ -4,36 +4,15 @@
     Sample: Print out the preprocessed tokens returned by the Wave iterator
             Configuration data
         
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost 
+    Software License, Version 1.0. (See accompanying file 
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_TOKENS_HPP_7C0F1F14_6ACA_4439_A073_32C61C0DB6C5_INCLUDED)
 #define CPP_TOKENS_HPP_7C0F1F14_6ACA_4439_A073_32C61C0DB6C5_INCLUDED
-
-///////////////////////////////////////////////////////////////////////////////
-//  Decide, whether to implement macro scopes (#scope/#endscope), variadics,
-//  placemarkers and well defined token pasting in C++ mode
-//
-//  To implement these features, uncomment the following
-//
-#define BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS 0
-
-///////////////////////////////////////////////////////////////////////////////
-//  Define the macro scoping keywords to be used for the experimental macro 
-//  scoping support.
-//
-//  If the following macros aren't defined, the corresponding default value is 
-//  used.
-//
-//#define BOOST_WAVE_PP_REGION          "region"
-//#define BOOST_WAVE_PP_REGION_UC       "REGION"      // uppercase of BOOST_WAVE_PP_REGION
-//#define BOOST_WAVE_PP_ENDREGION       "endregion"
-//#define BOOST_WAVE_PP_IMPORT          "import"
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Define the maximal include nesting depth allowed. If this value isn't 

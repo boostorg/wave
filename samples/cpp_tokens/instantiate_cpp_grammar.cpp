@@ -4,14 +4,11 @@
     Sample: prints out the preprocessed tokens returned by the pp iterator
             Explicit instantiation of the cpp_grammar parsing function
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
-
-    See Copyright.txt for full acknowledgements.
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost 
+    Software License, Version 1.0. (See accompanying file 
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #include "cpp_tokens.hpp"          // config data
@@ -38,8 +35,8 @@
 
 typedef boost::wave::cpp_token_sample::slex_iterator<
         boost::wave::cpp_token_sample::slex_token<> >
-    lex_t;
-template struct boost::wave::grammars::cpp_grammar_gen<lex_t>;
+    lexer_type;
+template struct boost::wave::grammars::cpp_grammar_gen<lexer_type>;
 
 #endif // #if BOOST_WAVE_SEPARATE_GRAMMAR_INSTANTIATION != 0
 

@@ -4,24 +4,15 @@
     Sample: IDL oriented preprocessor
             Global application configuration of the Wave driver command
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(IDL_CONFIG_HPP_012D7524_FF3F_482F_9123_91966C72F4EA_INCLUDED)
 #define IDL_CONFIG_HPP_012D7524_FF3F_482F_9123_91966C72F4EA_INCLUDED
-
-///////////////////////////////////////////////////////////////////////////////
-//  Decide, whether to implement macro scopes (#scope/#endscope), variadics,
-//  placemarkers and well defined token pasting in C++ mode
-//
-//  To implement these features, uncomment the following
-//
-#define BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS 0
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Define the maximal include nesting depth allowed. If this value isn't 

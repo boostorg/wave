@@ -1,12 +1,10 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
-
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #include <boost/wave/wave_config.hpp>
@@ -30,9 +28,9 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-typedef boost::wave::cpplexer::lex_token<> token_t;
+typedef boost::wave::cpplexer::lex_token<> token_type;
 
-template struct boost::wave::grammars::expression_grammar_gen<token_t>;
+template struct boost::wave::grammars::expression_grammar_gen<token_type>;
 
 #endif // #if BOOST_WAVE_SEPARATE_GRAMMAR_INSTANTIATION != 0
 

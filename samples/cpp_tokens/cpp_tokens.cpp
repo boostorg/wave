@@ -6,12 +6,11 @@
     This sample shows, how it is possible to use a custom lexer type and a 
     custom token type with the Wave library. 
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost 
+    Software License, Version 1.0. (See accompanying file 
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #include "cpp_tokens.hpp"                  // global configuration
@@ -74,22 +73,22 @@ main(int argc, char *argv[])
 //  'slex_token<>'. Our custom token type differs from the original one povided 
 //  by the Wave library only by defining an addition operator<<, which is used
 //  to dump the token information carried by a given token (see loop below).
-    typedef boost::wave::cpp_token_sample::slex_token<> token_t;
-    typedef boost::wave::cpp_token_sample::slex_iterator<token_t> 
+    typedef boost::wave::cpp_token_sample::slex_token<> token_type;
+    typedef boost::wave::cpp_token_sample::slex_iterator<token_type> 
         lex_iterator_t;
     typedef boost::wave::context<std::string::iterator, lex_iterator_t> 
-        context_t;
+        context_type;
 
 // The C++ preprocessor iterator shouldn't be constructed directly. It is to be
 // generated through a boost::wave::context<> object. This object is 
 // additionally to be used to initialize and define different parameters of 
 // the actual preprocessing.
 // The preprocessing of the input stream is done on the fly behind the scenes
-// during iteration over the context_t::iterator_t stream.
-    context_t ctx (teststr.begin(), teststr.end(), argv[1]);
-    context_t::iterator_t first = ctx.begin();
-    context_t::iterator_t last = ctx.end();
-    context_t::token_t current_token;
+// during iteration over the context_type::iterator_type stream.
+    context_type ctx (teststr.begin(), teststr.end(), argv[1]);
+    context_type::iterator_type first = ctx.begin();
+    context_type::iterator_type last = ctx.end();
+    context_type::token_type current_token;
 
     try {
     //  Traverse over the tokens generated from the input and dump the token

@@ -1,12 +1,11 @@
 /*=============================================================================
     A Standard compliant C++ preprocessor
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_PREDEF_MACROS_GEN_HPP_CADB6D2C_76A4_4988_83E1_EFFC6902B9A2_INCLUDED)
@@ -49,15 +48,15 @@ struct predefined_macros_grammar_rule_ids {
 template <typename LexIteratorT>
 struct predefined_macros_grammar_gen
 {
-    typedef LexIteratorT iterator_t;
+    typedef LexIteratorT iterator_type;
 
 //  the parser_id's of all rules of the cpp_grammar are stored here
 //  note: these are valid only after the first call to parse_cpp_grammar
     static predefined_macros_grammar_rule_ids rule_ids;
 
 //  parse the cpp_grammar and return the resulting parse tree    
-    static boost::spirit::tree_parse_info<iterator_t> 
-    parse_predefined_macro (iterator_t const &first, iterator_t const &last);
+    static boost::spirit::tree_parse_info<iterator_type> 
+    parse_predefined_macro (iterator_type const &first, iterator_type const &last);
 };
 
 ///////////////////////////////////////////////////////////////////////////////

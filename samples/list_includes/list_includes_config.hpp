@@ -3,39 +3,15 @@
 
     Global application configuration of the list_includes sample
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost 
+    Software License, Version 1.0. (See accompanying file 
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(LIST_INCLUDES_CONFIG_HPP_0DE80E47_8D50_4DFA_9C1C_0EECAA8A934A_INCLUDED)
 #define LIST_INCLUDES_CONFIG_HPP_0DE80E47_8D50_4DFA_9C1C_0EECAA8A934A_INCLUDED
-
-///////////////////////////////////////////////////////////////////////////////
-//  Decide, whether to implement macro scopes (#scope/#endscope), variadics,
-//  placemarkers and well defined token pasting in C++ mode
-//
-//  To implement these features, uncomment the following
-//
-#define BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS 0
-
-///////////////////////////////////////////////////////////////////////////////
-//  Define the macro scoping keywords to be used for the experimental macro 
-//  scoping support.
-//
-//  If the following macros aren't defined, the corresponding default value is 
-//  used.
-//
-//  Note, if you change this, you will have to change the corresponding entries 
-//  inside the wave/cpplexer/re2c/cpp.re file too.
-//
-//#define BOOST_WAVE_PP_REGION          "region"
-//#define BOOST_WAVE_PP_REGION_UC       "REGION"      // uppercase of BOOST_WAVE_PP_REGION
-//#define BOOST_WAVE_PP_ENDREGION       "endregion"
-//#define BOOST_WAVE_PP_IMPORT          "import"
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Define the maximal include nesting depth allowed. If this value isn't 

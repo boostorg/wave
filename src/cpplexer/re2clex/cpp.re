@@ -2,12 +2,9 @@
     Wave: A Standard compliant C++ preprocessor library
 
     Copyright (c) 2001 Daniel C. Nuffer
-    Copyright (c) 2001-2004 Hartmut Kaiser
-    http://spirit.sourceforge.net/
-
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. 
+    Distributed under the Boost Software License, Version 1.0. (See accompanying 
+    file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
     TODO: 
         It also may be necessary to add $ to identifiers, for asm. 
@@ -448,10 +445,6 @@ Pound              = "#" | "??=" | "%:";
     "_"? "_inline"  { RET(s->enable_ms_extensions ? T_MSEXT_INLINE : T_IDENTIFIER); }
     "_"? "_asm"     { RET(s->enable_ms_extensions ? T_MSEXT_ASM : T_IDENTIFIER); }
 
-    "__comma__"     { RET(s->act_in_cpp0x_mode ? T_COMMA_ALT : T_IDENTIFIER); }
-    "__lparen__"    { RET(s->act_in_cpp0x_mode ? T_LEFTPAREN_ALT : T_IDENTIFIER); }
-    "__rparen__"    { RET(s->act_in_cpp0x_mode ? T_RIGHTPAREN_ALT : T_IDENTIFIER); }
-    
     "{"             { RET(T_LEFTBRACE); }
     "??<"           { RET(T_LEFTBRACE_TRIGRAPH); }
     "<%"            { RET(T_LEFTBRACE_ALT); }
@@ -603,10 +596,6 @@ Pound              = "#" | "??=" | "%:";
 
     Pound PPSpace "warning"   { RET(T_PP_WARNING); }
     
-    Pound PPSpace "region"    { RET(T_PP_REGION); }
-    Pound PPSpace "endregion" { RET(T_PP_ENDREGION); }
-    Pound PPSpace "import"    { RET(T_PP_IMPORT); }
-
     [ \t\v\f]+
         { RET(T_SPACE); }
 

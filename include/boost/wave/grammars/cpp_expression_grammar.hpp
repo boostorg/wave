@@ -1,12 +1,11 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_EXPRESSION_GRAMMAR_HPP_099CD1A4_A6C0_44BE_8F24_0B00F5BE5674_INCLUDED)
@@ -173,8 +172,8 @@ struct expression_grammar :
     template <typename ScannerT>
     struct definition
     {
-        typedef closures::cpp_expr_closure closure_t;
-        typedef boost::spirit::rule<ScannerT, closure_t::context_t> rule_t;
+        typedef closures::cpp_expr_closure closure_type;
+        typedef boost::spirit::rule<ScannerT, closure_type::context_t> rule_t;
         typedef boost::spirit::rule<ScannerT> simple_rule_t;
 
         simple_rule_t pp_expression;
@@ -195,7 +194,7 @@ struct expression_grammar :
         rule_t add_exp_nocalc, multiply_exp_nocalc;
         rule_t unary_exp_nocalc, primary_exp_nocalc, constant_nocalc;
 
-        boost::spirit::subrule<0, closure_t::context_t> const_exp_subrule;
+        boost::spirit::subrule<0, closure_type::context_t> const_exp_subrule;
 
         definition(expression_grammar const &self)
         {
@@ -624,27 +623,27 @@ template <typename TokenT>
 BOOST_WAVE_EXPRGRAMMAR_GEN_INLINE 
 bool 
 expression_grammar_gen<TokenT>::evaluate(
-    typename token_sequence_t::const_iterator const &first, 
-    typename token_sequence_t::const_iterator const &last, 
-    typename token_t::position_t const &act_pos,
+    typename token_sequence_type::const_iterator const &first, 
+    typename token_sequence_type::const_iterator const &last, 
+    typename token_type::position_type const &act_pos,
     bool if_block_status)
 {
     using namespace boost::spirit;
     using namespace boost::wave;
     
-    typedef typename token_sequence_t::const_iterator iterator_t;
+    typedef typename token_sequence_type::const_iterator iterator_type;
     
 static expression_grammar g;                        // expression grammar
 boost::wave::grammars::closures::closure_value result;     // expression result
-parse_info<iterator_t> hit = parse (first, last, g[spirit_assign_actor(result)], 
+parse_info<iterator_type> hit = parse (first, last, g[spirit_assign_actor(result)], 
     ch_p(T_SPACE) | ch_p(T_CCOMMENT) | ch_p(T_CPPCOMMENT));
 
     if (!hit.hit) {
     // expression is illformed
         if (if_block_status) {
-            typedef typename token_sequence_t::value_type::string_t string_t;
+            typedef typename token_sequence_type::value_type::string_type string_type;
             BOOST_WAVE_THROW(preprocess_exception, ill_formed_expression, 
-                boost::wave::util::impl::as_string<string_t>(first, last), act_pos);
+                boost::wave::util::impl::as_string<string_type>(first, last), act_pos);
         }
         else {
         //  as the if_block_status is false any errors will not be reported
@@ -656,7 +655,7 @@ parse_info<iterator_t> hit = parse (first, last, g[spirit_assign_actor(result)],
     // The token list starts with a valid expression, but there remains 
     // something. If the remainder consists out of whitespace only, the 
     // expression is still valid.
-    iterator_t next = hit.stop;
+    iterator_type next = hit.stop;
     
         while (next != last) {
             switch (token_id(*next)) {
@@ -673,10 +672,10 @@ parse_info<iterator_t> hit = parse (first, last, g[spirit_assign_actor(result)],
             default:
             // expression is illformed
                 if (if_block_status) {
-                    typedef typename token_sequence_t::value_type::string_t 
-                        string_t;
+                    typedef typename token_sequence_type::value_type::string_type 
+                        string_type;
                     BOOST_WAVE_THROW(preprocess_exception, ill_formed_expression, 
-                        boost::wave::util::impl::as_string<string_t>(first, last), 
+                        boost::wave::util::impl::as_string<string_type>(first, last), 
                         act_pos);
                 }
                 else {
@@ -691,9 +690,9 @@ parse_info<iterator_t> hit = parse (first, last, g[spirit_assign_actor(result)],
 
     if (!result.is_valid()) {
     // division by zero occured
-        typedef typename token_sequence_t::value_type::string_t string_t;
+        typedef typename token_sequence_type::value_type::string_type string_type;
         BOOST_WAVE_THROW(preprocess_exception, division_by_zero, 
-            boost::wave::util::impl::as_string<string_t>(first, last), 
+            boost::wave::util::impl::as_string<string_type>(first, last), 
             act_pos);
     }
     

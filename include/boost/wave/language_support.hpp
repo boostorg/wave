@@ -1,14 +1,12 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
-
     Definition of the various language support constants
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 #if !defined(LANGUAGE_SUPPORT_HPP_93EDD057_2DEF_44BC_BC9F_FDABB9F51AFA_INCLUDED)
 #define LANGUAGE_SUPPORT_HPP_93EDD057_2DEF_44BC_BC9F_FDABB9F51AFA_INCLUDED
@@ -28,12 +26,6 @@ enum language_support {
 //  support flags for C99
     support_variadics = 0x02,
     support_c99 = support_variadics,
-    
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-//  support flags for the experimental C++0x features
-    support_extensions = 0x04,
-    support_cpp0x = support_normal | support_variadics | support_extensions,
-#endif 
 #endif 
 };
 
@@ -105,52 +97,6 @@ enable_c99(bool enable = true)
 {
     return enable ? support_c99 : support_cpp;
 }
-
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-///////////////////////////////////////////////////////////////////////////////
-//  
-//  need_cpp0x
-//
-//      Extract, if the language to support is C++0x
-//
-///////////////////////////////////////////////////////////////////////////////
-inline bool
-need_cpp0x(language_support language) 
-{
-    return language == support_cpp0x;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//  
-//  enable_c99
-//
-//      Set, whether to support the C++0x features (alternatively C++98 is 
-//      supported)
-//
-///////////////////////////////////////////////////////////////////////////////
-inline language_support
-enable_cpp0x(bool enable = true)
-{
-    return enable ? support_cpp0x : support_cpp;
-}
-
-#else // BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-
-///////////////////////////////////////////////////////////////////////////////
-inline bool
-need_cpp0x(language_support language) 
-{
-    return false;
-}
-
-//////////////////////////////////////////////////////////////////////////////
-inline language_support
-enable_cpp0x(bool enable = true)
-{
-    return support_cpp;
-}
-
-#endif // BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
 
 #else  // BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
 

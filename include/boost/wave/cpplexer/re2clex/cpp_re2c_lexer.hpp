@@ -3,12 +3,11 @@
 
     Re2C based C++ lexer
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_RE2C_LEXER_HPP_B81A2629_D5B1_4944_A97D_60254182B9A8_INCLUDED)
@@ -50,15 +49,15 @@ namespace re2clex {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-template <typename IteratorT, typename PositionT = boost::wave::util::file_position_t>
+template <typename IteratorT, typename PositionT = boost::wave::util::file_position_type>
 class lexer 
 {
 public:
 
     typedef char                        char_t;
     typedef Scanner                     base_t;
-    typedef lex_token<PositionT>        token_t;
-    typedef typename token_t::string_t  string_t;
+    typedef lex_token<PositionT>        token_type;
+    typedef typename token_type::string_type  string_type;
     
     lexer(IteratorT const &first, IteratorT const &last, 
         PositionT const &pos, boost::wave::language_support language);
@@ -79,11 +78,11 @@ private:
     static char const *tok_names[];
     
     Scanner scanner;
-    string_t filename;
-    string_t value;
+    string_type filename;
+    string_type value;
     bool at_eof;
     
-    token_cache<string_t> token_cache;
+    token_cache<string_type> token_cache;
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,9 +111,6 @@ lexer<IteratorT, PositionT>::lexer(IteratorT const &first,
 
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
     scanner.act_in_c99_mode = boost::wave::need_c99(language);
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-    scanner.act_in_cpp0x_mode = boost::wave::need_cpp0x(language);
-#endif
 #endif
 
     boost::ignore_unused_variable_warning(language);
@@ -142,14 +138,14 @@ lexer<IteratorT, PositionT>::get()
     switch (id) {
     case T_IDENTIFIER:
     // test identifier characters for validity (throws if invalid chars found)
-        value = string_t((char const *)scanner.tok, scanner.cur-scanner.tok);
+        value = string_type((char const *)scanner.tok, scanner.cur-scanner.tok);
         impl::validate_identifier_name(value, scanner.line, -1, filename); 
         break;
     
     case T_STRINGLIT:
     case T_CHARLIT:
     // test literal characters for validity (throws if invalid chars found)
-        value = string_t((char const *)scanner.tok, scanner.cur-scanner.tok);
+        value = string_type((char const *)scanner.tok, scanner.cur-scanner.tok);
         impl::validate_literal(value, scanner.line, -1, filename); 
         break;
 
@@ -158,8 +154,8 @@ lexer<IteratorT, PositionT>::get()
     case T_PP_QHEADER:
     case T_PP_INCLUDE:
     // convert to the corresponding ..._next token, if appropriate
-        value = string_t((char const *)scanner.tok, scanner.cur-scanner.tok);
-        if (string_t::npos != value.find("include_"))
+        value = string_type((char const *)scanner.tok, scanner.cur-scanner.tok);
+        if (string_type::npos != value.find("include_"))
             id = token_id(id | AltTokenType);
         break;
 #endif
@@ -175,7 +171,7 @@ lexer<IteratorT, PositionT>::get()
     case T_SPACE:
     case T_SPACE2:
     case T_ANY:
-        value = string_t((char const *)scanner.tok, scanner.cur-scanner.tok);
+        value = string_type((char const *)scanner.tok, scanner.cur-scanner.tok);
         break;
         
     case T_EOF:
@@ -188,7 +184,7 @@ lexer<IteratorT, PositionT>::get()
         if (CATEGORY_FROM_TOKEN(id) != EXTCATEGORY_FROM_TOKEN(id) ||
             IS_CATEGORY(id, UnknownTokenType))
         {
-            value = string_t((char const *)scanner.tok, scanner.cur-scanner.tok);
+            value = string_type((char const *)scanner.tok, scanner.cur-scanner.tok);
         }
         else {
             value = token_cache.get_token_value(id);
@@ -226,13 +222,13 @@ lexer<IteratorT, PositionT>::report_error(Scanner *s, char *msg, ...)
 //   
 ///////////////////////////////////////////////////////////////////////////////
      
-template <typename IteratorT, typename PositionT = boost::wave::util::file_position_t>
+template <typename IteratorT, typename PositionT = boost::wave::util::file_position_type>
 class lex_functor 
-:   public lex_input_interface<typename lexer<IteratorT, PositionT>::token_t>
+:   public lex_input_interface<typename lexer<IteratorT, PositionT>::token_type>
 {    
 public:
 
-    typedef typename lexer<IteratorT, PositionT>::token_t   token_t;
+    typedef typename lexer<IteratorT, PositionT>::token_type   token_type;
     
     lex_functor(IteratorT const &first, IteratorT const &last, 
             PositionT const &pos, boost::wave::language_support language)
@@ -241,7 +237,7 @@ public:
     virtual ~lex_functor() {}
     
 // get the next token from the input stream
-    token_t get() { return lexer.get(); }
+    token_type get() { return lexer.get(); }
     void set_position(PositionT const &pos) 
     { lexer.set_position(pos); }
 
@@ -253,7 +249,7 @@ private:
 
 ///////////////////////////////////////////////////////////////////////////////
 //  
-//  The new_lexer_gen<>::new_lexer function (declared in cpp_slex_token.hpp)
+//  The new_lexer_gen<>::new_lexer function (declared in cpp_lex_interface.hpp)
 //  should be defined inline, if the lex_functor shouldn't be instantiated 
 //  separately from the lex_iterator.
 //

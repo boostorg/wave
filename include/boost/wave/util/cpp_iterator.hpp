@@ -3,12 +3,11 @@
 
     Definition of the preprocessor iterator
     
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_ITERATOR_HPP_175CA88F_7273_43FA_9039_BCF7459E1F29_INCLUDED)
@@ -61,7 +60,7 @@ retrieve_macroname(ParseNodeT const &node, boost::spirit::parser_id id,
 {
 ParseNodeT const *name_node = 0;
 
-    typedef boost::wave::grammars::cpp_grammar_gen<TokenT> cpp_grammar_t;
+    typedef boost::wave::grammars::cpp_grammar_gen<TokenT> cpp_grammar_type;
     using boost::spirit::find_node;
     if (!find_node(node, id, &name_node)) 
     {
@@ -134,11 +133,11 @@ template <typename ContextT>
 bool add_macro_definition(ContextT &ctx, std::string macrostring,
     bool is_predefined, boost::wave::language_support language)
 {
-    typedef typename ContextT::token_t token_t;
-    typedef typename ContextT::lex_t lex_t;
-    typedef typename token_t::position_t position_t;
-    typedef boost::wave::grammars::predefined_macros_grammar_gen<lex_t> 
-        predef_macros_t;
+    typedef typename ContextT::token_type token_type;
+    typedef typename ContextT::lexer_type lexer_type;
+    typedef typename token_type::position_type position_type;
+    typedef boost::wave::grammars::predefined_macros_grammar_gen<lexer_type> 
+        predef_macros_type;
 
     using namespace boost::wave;
     using namespace std;    // isspace is in std namespace for some systems
@@ -151,10 +150,10 @@ std::string::iterator end = macrostring.end();
         ++begin;
         
 // parse the macr definition
-position_t act_pos("command line", 0);
-boost::spirit::tree_parse_info<lex_t> hit = 
-    predef_macros_t::parse_predefined_macro(
-        lex_t(begin, end, position_t(), language), lex_t());
+position_type act_pos("command line", 0);
+boost::spirit::tree_parse_info<lexer_type> hit = 
+    predef_macros_type::parse_predefined_macro(
+        lexer_type(begin, end, position_type(), language), lexer_type());
 
     if (!hit.match || (!hit.full && T_EOF != token_id(*hit.stop))) {
         BOOST_WAVE_THROW(preprocess_exception, bad_macro_definition, macrostring, 
@@ -162,26 +161,26 @@ boost::spirit::tree_parse_info<lex_t> hit =
     }
     
 // retrieve the macro definition from the parse tree
-token_t macroname;
-std::vector<token_t> macroparameters;
-typename ContextT::token_sequence_t macrodefinition;
+token_type macroname;
+std::vector<token_type> macroparameters;
+typename ContextT::token_sequence_type macrodefinition;
 bool has_parameters = false;
 
     boost::wave::util::retrieve_macroname(*hit.trees.begin(), 
-        predef_macros_t::rule_ids.plain_define_id, macroname, act_pos);
+        predef_macros_type::rule_ids.plain_define_id, macroname, act_pos);
     has_parameters = boost::wave::util::retrieve_macrodefinition(*hit.trees.begin(), 
-        predef_macros_t::rule_ids.macro_parameters_id, macroparameters, 
-        token_t());
+        predef_macros_type::rule_ids.macro_parameters_id, macroparameters, 
+        token_type());
     boost::wave::util::retrieve_macrodefinition(*hit.trees.begin(), 
-        predef_macros_t::rule_ids.macro_definition_id, macrodefinition,
-        token_t());
+        predef_macros_type::rule_ids.macro_definition_id, macrodefinition,
+        token_type());
 
 //  If no macrodefinition is given, and the macro string does not end with a 
 //  '=', then the macro should be defined with the value '1'
     if (0 == macrodefinition.size() && 
         '=' != macrostring[macrostring.size()-1])
     {
-        macrodefinition.push_back(token_t(T_INTLIT, "1", act_pos));
+        macrodefinition.push_back(token_type(T_INTLIT, "1", act_pos));
     }
     
 // add the new macro to the macromap
@@ -209,21 +208,22 @@ class pp_iterator_functor {
 
 public:
 // interface to the boost::spirit::multi_pass_policies::functor_input policy
-    typedef typename ContextT::token_t              result_type;
+    typedef typename ContextT::token_type               result_type;
 
 //  eof token
     static result_type const eof;
 
 private:
-    typedef typename ContextT::lex_t                lex_t;
-    typedef typename result_type::string_t          string_t;
-    typedef boost::wave::grammars::cpp_grammar_gen<lex_t> cpp_grammar_t;
+    typedef typename ContextT::lexer_type               lexer_type;
+    typedef typename result_type::string_type           string_type;
+    typedef boost::wave::grammars::cpp_grammar_gen<lexer_type> 
+        cpp_grammar_type;
 
 //  iteration context related types (an iteration context represents a current
 //  position in an included file)
-    typedef base_iteration_context<lex_t>           base_iteration_context_t;
+    typedef base_iteration_context<lexer_type>    base_iteration_context_type;
     typedef 
-        iteration_context<lex_t, typename ContextT::input_policy_t>
+        iteration_context<lexer_type, typename ContextT::input_policy_type>
         iteration_context_t;
 
 // parse tree related types
@@ -231,23 +231,23 @@ private:
         boost::spirit::node_val_data_factory<boost::spirit::nil_t> 
         node_factory_t;
     typedef 
-        boost::spirit::tree_match<lex_t, node_factory_t> 
+        boost::spirit::tree_match<lexer_type, node_factory_t> 
         parse_tree_match_t;
-    typedef typename parse_tree_match_t::node_t         parse_node_t;       // tree_node<node_val_data<> >
-    typedef typename parse_tree_match_t::parse_node_t   parse_node_value_t; // node_val_data<>
-    typedef typename parse_tree_match_t::container_t    parse_tree_t;       // parse_node_t::children_t
+    typedef typename parse_tree_match_t::node_t         parse_node_type;       // tree_node<node_val_data<> >
+    typedef typename parse_tree_match_t::parse_node_t   parse_node_value_type; // node_val_data<>
+    typedef typename parse_tree_match_t::container_t    parse_tree_type;       // parse_node_type::children_t
 
 // type of a token sequence
-    typedef typename ContextT::token_sequence_t         token_sequence_t;
+    typedef typename ContextT::token_sequence_type           token_sequence_type;
     
 public:
     template <typename IteratorT>
     pp_iterator_functor(ContextT &ctx_, IteratorT const &first_, 
-            IteratorT const &last_, typename ContextT::position_t const &pos_,
+            IteratorT const &last_, typename ContextT::position_type const &pos_,
             boost::wave::language_support language)
     :   ctx(ctx_), 
-        iter_ctx(new base_iteration_context_t(
-                lex_t(first_, last_, pos_, language), lex_t(), 
+        iter_ctx(new base_iteration_context_type(
+                lexer_type(first_, last_, pos_, language), lexer_type(), 
                 pos_.get_file().c_str()
             )), 
         seen_newline(true), must_emit_line_directive(false),
@@ -274,64 +274,56 @@ protected:
     result_type const &pp_token(bool consider_emitting_line_directive = false);
 
     bool pp_directive();
-    bool dispatch_directive(boost::spirit::tree_parse_info<lex_t> const &hit);
+    bool dispatch_directive(boost::spirit::tree_parse_info<lexer_type> const &hit);
 
-    void on_include(string_t const &s, bool is_system, bool include_next);
-    void on_include(typename parse_tree_t::const_iterator const &begin,
-        typename parse_tree_t::const_iterator const &end, bool include_next);
+    void on_include(string_type const &s, bool is_system, bool include_next);
+    void on_include(typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end, bool include_next);
 
-    void on_define(parse_node_t const &node);
+    void on_define(parse_node_type const &node);
     void on_undefine(result_type const &t);
     
-    void on_ifdef(typename parse_tree_t::const_iterator const &begin,
-        typename parse_tree_t::const_iterator const &end);
-    void on_ifndef(typename parse_tree_t::const_iterator const &begin,
-        typename parse_tree_t::const_iterator const &end);
+    void on_ifdef(typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end);
+    void on_ifndef(typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end);
     void on_else();
     void on_endif();
-    void on_illformed(typename result_type::string_t const &s);
+    void on_illformed(typename result_type::string_type const &s);
         
-    void on_line(typename parse_tree_t::const_iterator const &begin,
-        typename parse_tree_t::const_iterator const &end);
-    void on_if(typename parse_tree_t::const_iterator const &begin,
-        typename parse_tree_t::const_iterator const &end);
-    void on_elif(typename parse_tree_t::const_iterator const &begin,
-        typename parse_tree_t::const_iterator const &end);
-    void on_error(typename parse_tree_t::const_iterator const &begin,
-        typename parse_tree_t::const_iterator const &end);
+    void on_line(typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end);
+    void on_if(typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end);
+    void on_elif(typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end);
+    void on_error(typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end);
 #if BOOST_WAVE_SUPPORT_WARNING_DIRECTIVE != 0
-    void on_warning(typename parse_tree_t::const_iterator const &begin,
-        typename parse_tree_t::const_iterator const &end);
+    void on_warning(typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end);
 #endif
-    bool on_pragma(typename parse_tree_t::const_iterator const &begin,
-        typename parse_tree_t::const_iterator const &end);
-
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-    void on_region(typename parse_tree_t::const_iterator const &begin,
-        typename parse_tree_t::const_iterator const &end);
-    void on_endregion();
-    void on_import(typename parse_tree_t::const_iterator const &begin,
-        typename parse_tree_t::const_iterator const &end);
-#endif
+    bool on_pragma(typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end);
 
     result_type const &emit_line_directive();
     bool returned_from_include();
 
-    bool interpret_pragma(token_sequence_t const &pragma_body,
-        token_sequence_t &result);
+    bool interpret_pragma(token_sequence_type const &pragma_body,
+        token_sequence_type &result);
 
 private:
     ContextT &ctx;              // context, this iterator is associated with
-    boost::shared_ptr<base_iteration_context_t> iter_ctx;
+    boost::shared_ptr<base_iteration_context_type> iter_ctx;
     
     bool seen_newline;              // needed for recognizing begin of line
     bool must_emit_line_directive;  // must emit a line directive
     result_type act_token;          // current token
-    typename result_type::position_t &act_pos;   // current fileposition (references the macromap)
+    typename result_type::position_type &act_pos;   // current fileposition (references the macromap)
     int last_line;                  // line number of the previous token
         
-    token_sequence_t unput_queue;     // tokens to be preprocessed again
-    token_sequence_t pending_queue;   // tokens already preprocessed
+    token_sequence_type unput_queue;     // tokens to be preprocessed again
+    token_sequence_type pending_queue;   // tokens already preprocessed
     
     // detect whether to insert additional whitespace in between two adjacent 
     // tokens, which otherwise would form a different token type, if 
@@ -444,26 +436,6 @@ token_id id = token_id(act_token);
         seen_newline = true;
         break;
 
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-    //  The special pp-tokens __comma__, __lparen__ and __rparen__ are to be
-    //  converted to their respective 'normal' tokens just before returning
-    //  them to the caller.
-    case T_COMMA_ALT:
-        act_token.set_token_id(T_COMMA);
-        act_token.set_value(",");
-        break;
-
-    case T_LEFTPAREN_ALT:
-        act_token.set_token_id(T_LEFTPAREN);
-        act_token.set_value("(");
-        break;
-
-    case T_RIGHTPAREN_ALT:
-        act_token.set_token_id(T_RIGHTPAREN);
-        act_token.set_value(")");
-        break;
-#endif
-
     default:
         break;
     }
@@ -474,7 +446,7 @@ token_id id = token_id(act_token);
         whitespace.shift_tokens(T_SPACE);
         pending_queue.push_front(act_token);        // push this token back
         return act_token = result_type(T_SPACE, 
-            typename result_type::string_t(" "), 
+            typename result_type::string_type(" "), 
             act_token.get_position());
     }
     whitespace.shift_tokens(id);
@@ -573,8 +545,8 @@ bool returned_from_include_file = returned_from_include();
         
         whitespace.shift_tokens(T_NEWLINE);  // whitespace controller
         return act_token = result_type(T_NEWLINE, 
-            typename result_type::string_t("\n"), 
-            cpp_grammar_t::pos_of_newline);
+            typename result_type::string_type("\n"), 
+            cpp_grammar_type::pos_of_newline);
     }
     
 // overall eof reached
@@ -598,7 +570,7 @@ pp_iterator_functor<ContextT>::emit_line_directive()
 {
     using namespace boost::wave;
     
-typename ContextT::position_t pos = act_token.get_position();
+typename ContextT::position_type pos = act_token.get_position();
 
     if (must_emit_line_directive || 
         iter_ctx->emitted_lines != act_pos.get_line()) 
@@ -676,11 +648,8 @@ token_id id = token_id(*iter_ctx->first);
             pending_queue.pop_front();
         }
         else if (!unput_queue.empty() 
-            || T_IDENTIFIER == id || IS_CATEGORY(id, KeywordTokenType) 
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-            || (T_COLON_COLON == id && boost::wave::need_cpp0x(ctx.get_language()))
-#endif
-            ) 
+            || T_IDENTIFIER == id 
+            || IS_CATEGORY(id, KeywordTokenType)) 
         {
         //  call the lexer, preprocess the required number of tokens, put them
         //  into the unput queue
@@ -767,7 +736,7 @@ pp_iterator_functor<ContextT>::pp_directive()
     using namespace cpplexer;
     
 // test, if the next non-whitespace token is a pp directive
-lex_t it = iter_ctx->first;
+lexer_type it = iter_ctx->first;
 
     if (!next_token_is_pp_directive(it, iter_ctx->last)) {
     // eventually skip null pp directive (no need to do it via the parser)
@@ -799,8 +768,8 @@ lex_t it = iter_ctx->first;
 
 // found a pp directive, so try to identify it, start with the pp_token
 bool found_eof = false;
-boost::spirit::tree_parse_info<lex_t> hit = 
-    cpp_grammar_t::parse_cpp_grammar(it, iter_ctx->last, found_eof, act_pos);
+boost::spirit::tree_parse_info<lexer_type> hit = 
+    cpp_grammar_type::parse_cpp_grammar(it, iter_ctx->last, found_eof, act_pos);
 
     if (hit.match) {
     // position the iterator past the matched sequence to allow 
@@ -831,25 +800,25 @@ boost::spirit::tree_parse_info<lex_t> hit =
 template <typename ContextT> 
 inline bool
 pp_iterator_functor<ContextT>::dispatch_directive(
-    boost::spirit::tree_parse_info<lex_t> const &hit)
+    boost::spirit::tree_parse_info<lexer_type> const &hit)
 {
     using namespace cpplexer;
     using namespace boost::spirit;
     
-    typedef typename parse_tree_t::const_iterator const_child_iterator_t;
+    typedef typename parse_tree_type::const_iterator const_child_iterator_t;
     
 // this iterator points to the root node of the parse tree
 const_child_iterator_t begin = hit.trees.begin();
 
 // decide, which preprocessor directive was found
-parse_tree_t const &root = (*begin).children;
-parse_node_value_t const &nodeval = get_first_leaf(*root.begin()).value;
+parse_tree_type const &root = (*begin).children;
+parse_node_value_type const &nodeval = get_first_leaf(*root.begin()).value;
 //long node_id = nodeval.id().to_long();
 
 const_child_iterator_t begin_child_it = (*root.begin()).children.begin();
 const_child_iterator_t end_child_it = (*root.begin()).children.end();
 
-token_id id = cpp_grammar_t::found_directive;
+token_id id = cpp_grammar_type::found_directive;
 
     switch (id) {
     case T_PP_QHEADER:      // #include "..."
@@ -924,44 +893,6 @@ token_id id = cpp_grammar_t::found_directive;
     case T_PP_PRAGMA:       // #pragma
         return on_pragma(begin_child_it, end_child_it);
 
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-    case T_PP_REGION:       // #region
-        if (boost::wave::need_cpp0x(ctx.get_language())) {
-        // C++0x mode is enabled
-        const_child_iterator_t begin_it = (*begin_child_it).children.begin();
-        const_child_iterator_t end_it = (*begin_child_it).children.end();
-        
-            on_region(begin_it, end_it);
-        }
-        else {
-            on_illformed("#" BOOST_WAVE_PP_REGION);
-        }
-        break;
-        
-    case T_PP_ENDREGION:    // #endregion
-        if (boost::wave::need_cpp0x(ctx.get_language())) {
-        // C++0x mode is enabled
-            on_endregion();
-        }
-        else {
-            on_illformed("#" BOOST_WAVE_PP_ENDREGION);
-        }
-        break;
-
-    case T_PP_IMPORT:       // #import
-        if (boost::wave::need_cpp0x(ctx.get_language())) {
-        // C++0x mode is enabled
-        const_child_iterator_t begin_it = (*begin_child_it).children.begin();
-        const_child_iterator_t end_it = (*begin_child_it).children.end();
-        
-            on_import(begin_it, end_it);
-        }
-        else {
-            on_illformed("#" BOOST_WAVE_PP_IMPORT);
-        }
-        break;
-#endif 
-
     default:                // #something else
         on_illformed((*nodeval.begin()).get_value());
         break;
@@ -976,22 +907,22 @@ token_id id = cpp_grammar_t::found_directive;
 ///////////////////////////////////////////////////////////////////////////////
 template <typename ContextT> 
 inline void  
-pp_iterator_functor<ContextT>::on_include (string_t const &s, bool is_system,
+pp_iterator_functor<ContextT>::on_include (string_type const &s, bool is_system,
     bool include_next) 
 {
     BOOST_ASSERT(ctx.get_if_block_status());
 
 // strip quotes first, extract filename
-typename string_t::size_type pos_end = s.find_last_of(is_system ? '>' : '\"');
+typename string_type::size_type pos_end = s.find_last_of(is_system ? '>' : '\"');
 
-    if (string_t::npos == pos_end) {
+    if (string_type::npos == pos_end) {
         BOOST_WAVE_THROW(preprocess_exception, bad_include_statement, s, act_pos);
     }
 
-typename string_t::size_type pos_begin = 
+typename string_type::size_type pos_begin = 
     s.find_last_of(is_system ? '<' : '\"', pos_end-1);
 
-    if (string_t::npos == pos_begin) {
+    if (string_type::npos == pos_begin) {
         BOOST_WAVE_THROW(preprocess_exception, bad_include_statement, s, act_pos);
     }
 
@@ -1035,7 +966,7 @@ fs::path native_path(file_path, fs::native);
         ctx.set_current_directory(file_path.c_str());
         
     // preprocess the opened file
-    boost::shared_ptr<base_iteration_context_t> new_iter_ctx (
+    boost::shared_ptr<base_iteration_context_type> new_iter_ctx (
         new iteration_context_t(native_path.native_file_string().c_str(), 
             act_pos, ctx.get_language()));
 
@@ -1073,26 +1004,26 @@ fs::path native_path(file_path, fs::native);
 template <typename ContextT> 
 inline void  
 pp_iterator_functor<ContextT>::on_include(
-    typename parse_tree_t::const_iterator const &begin,
-    typename parse_tree_t::const_iterator const &end, bool include_next)
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end, bool include_next)
 {
     BOOST_ASSERT(ctx.get_if_block_status());
 
 // preprocess the given token sequence (the body of the #include directive)
-get_token_value<result_type, parse_node_t> get_value;
-token_sequence_t expanded;
-token_sequence_t toexpand;
+get_token_value<result_type, parse_node_type> get_value;
+token_sequence_type expanded;
+token_sequence_type toexpand;
 
     std::copy(make_ref_transform_iterator(begin, get_value), 
         make_ref_transform_iterator(end, get_value),
         std::inserter(toexpand, toexpand.end()));
 
-    typename token_sequence_t::iterator begin2 = toexpand.begin();
+    typename token_sequence_type::iterator begin2 = toexpand.begin();
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded, 
         false);
 
 // now, include the file
-string_t s (trim_whitespace(boost::wave::util::impl::as_string(expanded)));
+string_type s (trim_whitespace(boost::wave::util::impl::as_string(expanded)));
 bool is_system = '<' == s[0] && '>' == s[s.size()-1];
 
     if (!is_system && !('\"' == s[0] && '\"' == s[s.size()-1])) {
@@ -1111,23 +1042,23 @@ bool is_system = '<' == s[0] && '>' == s[s.size()-1];
 
 template <typename ContextT> 
 inline void  
-pp_iterator_functor<ContextT>::on_define (parse_node_t const &node) 
+pp_iterator_functor<ContextT>::on_define (parse_node_type const &node) 
 {
     BOOST_ASSERT(ctx.get_if_block_status());
 
 // retrieve the macro definition from the parse tree
 result_type macroname;
 std::vector<result_type> macroparameters;
-token_sequence_t macrodefinition;
+token_sequence_type macrodefinition;
 bool has_parameters = false;
 
     boost::wave::util::retrieve_macroname(node, 
-        cpp_grammar_t::rule_ids.plain_define_id, macroname, 
+        cpp_grammar_type::rule_ids.plain_define_id, macroname, 
         act_token.get_position());
     has_parameters = boost::wave::util::retrieve_macrodefinition(node, 
-        cpp_grammar_t::rule_ids.macro_parameters_id, macroparameters, act_token);
+        cpp_grammar_type::rule_ids.macro_parameters_id, macroparameters, act_token);
     boost::wave::util::retrieve_macrodefinition(node, 
-        cpp_grammar_t::rule_ids.macro_definition_id, macrodefinition, act_token);
+        cpp_grammar_type::rule_ids.macro_definition_id, macrodefinition, act_token);
 
     if (has_parameters) {
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
@@ -1155,7 +1086,7 @@ bool has_parameters = false;
         // if there wasn't an ellipsis, then there shouldn't be a __VA_ARGS__ 
         // placeholder in the definition too [C99 Standard 6.10.3.5]
             if (!seen_ellipses) {
-                typedef typename token_sequence_t::iterator definition_iterator_t;
+                typedef typename token_sequence_type::iterator definition_iterator_t;
 
                 bool seen_va_args = false;
                 definition_iterator_t end = macrodefinition.end();
@@ -1224,10 +1155,10 @@ pp_iterator_functor<ContextT>::on_undefine (result_type const &token)
 template <typename ContextT> 
 inline void  
 pp_iterator_functor<ContextT>::on_ifdef(
-    typename parse_tree_t::const_iterator const &begin,
-    typename parse_tree_t::const_iterator const &end)
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end)
 {
-get_token_value<result_type, parse_node_t> get_value;
+get_token_value<result_type, parse_node_type> get_value;
 bool is_defined = ctx.is_defined_macro(
         make_ref_transform_iterator((*begin).children.begin(), get_value), 
         make_ref_transform_iterator((*begin).children.end(), get_value));
@@ -1243,10 +1174,10 @@ bool is_defined = ctx.is_defined_macro(
 template <typename ContextT> 
 inline void  
 pp_iterator_functor<ContextT>::on_ifndef(
-    typename parse_tree_t::const_iterator const &begin,
-    typename parse_tree_t::const_iterator const &end)
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end)
 {
-get_token_value<result_type, parse_node_t> get_value;
+get_token_value<result_type, parse_node_type> get_value;
 bool is_defined = ctx.is_defined_macro(
         make_ref_transform_iterator((*begin).children.begin(), get_value), 
         make_ref_transform_iterator((*begin).children.end(), get_value));
@@ -1294,24 +1225,24 @@ pp_iterator_functor<ContextT>::on_endif()
 template <typename ContextT> 
 inline void  
 pp_iterator_functor<ContextT>::on_if(
-    typename parse_tree_t::const_iterator const &begin,
-    typename parse_tree_t::const_iterator const &end)
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end)
 {
 // preprocess the given sequence into the provided list
-get_token_value<result_type, parse_node_t> get_value;
-token_sequence_t expanded;
-token_sequence_t toexpand;
+get_token_value<result_type, parse_node_type> get_value;
+token_sequence_type expanded;
+token_sequence_type toexpand;
 
     std::copy(make_ref_transform_iterator(begin, get_value), 
         make_ref_transform_iterator(end, get_value),
         std::inserter(toexpand, toexpand.end()));
 
-    typename token_sequence_t::iterator begin2 = toexpand.begin();
+    typename token_sequence_type::iterator begin2 = toexpand.begin();
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded);
 
 // replace all remaining (== undefined) identifiers with a integer lliteral '0'
-    typename token_sequence_t::iterator exp_end = expanded.end();
-    for (typename token_sequence_t::iterator exp_it = expanded.begin();
+    typename token_sequence_type::iterator exp_end = expanded.end();
+    for (typename token_sequence_type::iterator exp_it = expanded.begin();
          exp_it != exp_end; ++exp_it)
     {
         using namespace boost::wave;
@@ -1327,15 +1258,15 @@ token_sequence_t toexpand;
     
 #if BOOST_WAVE_DUMP_CONDITIONAL_EXPRESSIONS != 0
     {
-        string_t outstr(boost::wave::util::impl::as_string(toexpand));
+        string_type outstr(boost::wave::util::impl::as_string(toexpand));
         outstr += "(" + boost::wave::util::impl::as_string(expanded) + ")";
         WAVE_DUMP_CONDITIONAL_EXPRESSIONS_OUT << "#if " << outstr << std::endl;
     }
 #endif
 
 // parse the expression and enter the #if block
-    typedef typename ContextT::token_t token_t;
-    ctx.enter_if_block(grammars::expression_grammar_gen<token_t>::
+    typedef typename ContextT::token_type token_type;
+    ctx.enter_if_block(grammars::expression_grammar_gen<token_type>::
             evaluate(expanded.begin(), expanded.end(), act_pos,
                 ctx.get_if_block_status()));
 }
@@ -1348,8 +1279,8 @@ token_sequence_t toexpand;
 template <typename ContextT> 
 inline void  
 pp_iterator_functor<ContextT>::on_elif(
-    typename parse_tree_t::const_iterator const &begin,
-    typename parse_tree_t::const_iterator const &end)
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end)
 {
     if (ctx.get_if_block_status()) {
         if (!ctx.enter_elif_block(false)) {
@@ -1361,20 +1292,20 @@ pp_iterator_functor<ContextT>::on_elif(
     }
             
 // preprocess the given sequence into the provided list
-get_token_value<result_type, parse_node_t> get_value;
-token_sequence_t expanded;
-token_sequence_t toexpand;
+get_token_value<result_type, parse_node_type> get_value;
+token_sequence_type expanded;
+token_sequence_type toexpand;
 
     std::copy(make_ref_transform_iterator(begin, get_value), 
         make_ref_transform_iterator(end, get_value),
         std::inserter(toexpand, toexpand.end()));
 
-    typename token_sequence_t::iterator begin2 = toexpand.begin();
+    typename token_sequence_type::iterator begin2 = toexpand.begin();
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded);
     
 // replace all remaining (== undefined) identifiers with a integer lliteral '0'
-    typename token_sequence_t::iterator exp_end = expanded.end();
-    for (typename token_sequence_t::iterator exp_it = expanded.begin();
+    typename token_sequence_type::iterator exp_end = expanded.end();
+    for (typename token_sequence_type::iterator exp_it = expanded.begin();
          exp_it != exp_end; ++exp_it)
     {
         using namespace boost::wave;
@@ -1390,15 +1321,15 @@ token_sequence_t toexpand;
 
 #if BOOST_WAVE_DUMP_CONDITIONAL_EXPRESSIONS != 0
     {
-        string_t outstr(boost::wave::util::impl::as_string(toexpand));
+        string_type outstr(boost::wave::util::impl::as_string(toexpand));
         outstr += "(" + boost::wave::util::impl::as_string(expanded) + ")";
         BOOST_WAVE_DUMP_CONDITIONAL_EXPRESSIONS_OUT << "#elif " << outstr << std::endl;
     }
 #endif
 
 // parse the expression and enter the #elif block
-    typedef typename ContextT::token_t token_t;
-    ctx.enter_elif_block(grammars::expression_grammar_gen<token_t>::
+    typedef typename ContextT::token_type token_type;
+    ctx.enter_elif_block(grammars::expression_grammar_gen<token_type>::
             evaluate(expanded.begin(), expanded.end(), act_pos,
                 ctx.get_if_block_status()));
 }
@@ -1411,7 +1342,7 @@ token_sequence_t toexpand;
 template <typename ContextT> 
 inline void  
 pp_iterator_functor<ContextT>::on_illformed(
-    typename result_type::string_t const &s)
+    typename result_type::string_type const &s)
 {
     BOOST_ASSERT(ctx.get_if_block_status());
     BOOST_WAVE_THROW(preprocess_exception, ill_formed_directive, s, act_pos);
@@ -1459,20 +1390,20 @@ namespace {
 template <typename ContextT> 
 inline void  
 pp_iterator_functor<ContextT>::on_line(
-    typename parse_tree_t::const_iterator const &begin,
-    typename parse_tree_t::const_iterator const &end)
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end)
 {
     BOOST_ASSERT(ctx.get_if_block_status());
 
 // Try to extract the line number and file name from the given token list
 // directly. If that fails, preprocess the whole token sequence and try again 
 // to extract this information.
-token_sequence_t expanded;
-get_token_value<result_type, parse_node_t> get_value;
+token_sequence_type expanded;
+get_token_value<result_type, parse_node_type> get_value;
 
     typedef typename ref_transform_iterator_generator<
-            get_token_value<result_type, parse_node_t>, 
-            typename parse_tree_t::const_iterator
+            get_token_value<result_type, parse_node_type>, 
+            typename parse_tree_type::const_iterator
         >::type const_tree_iterator_t;
         
 const_tree_iterator_t first = make_ref_transform_iterator(begin, get_value);
@@ -1481,16 +1412,16 @@ const_tree_iterator_t last = make_ref_transform_iterator(end, get_value);
 // try to interpret the #line body as a number followed by an optional
 // string literal
 int line = 0;
-string_t file_name;
+string_type file_name;
 
     if (!retrieve_line_info(first, last, line, file_name)) {
     // preprocess the body of this #line message
-    token_sequence_t toexpand;
+    token_sequence_type toexpand;
 
         std::copy(first, make_ref_transform_iterator(end, get_value),
             std::inserter(toexpand, toexpand.end()));
 
-        typename token_sequence_t::iterator begin2 = toexpand.begin();
+        typename token_sequence_type::iterator begin2 = toexpand.begin();
         ctx.expand_whole_tokensequence(begin2, toexpand.end(), 
             expanded, false);
             
@@ -1539,28 +1470,28 @@ namespace {
 template <typename ContextT> 
 inline void 
 pp_iterator_functor<ContextT>::on_error(
-    typename parse_tree_t::const_iterator const &begin,
-    typename parse_tree_t::const_iterator const &end)
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end)
 {
     BOOST_ASSERT(ctx.get_if_block_status());
 
 // preprocess the given sequence into the provided list
-token_sequence_t expanded;
-get_token_value<result_type, parse_node_t> get_value;
+token_sequence_type expanded;
+get_token_value<result_type, parse_node_type> get_value;
 
 typename ref_transform_iterator_generator<
-        get_token_value<result_type, parse_node_t>, 
-        typename parse_tree_t::const_iterator
+        get_token_value<result_type, parse_node_type>, 
+        typename parse_tree_type::const_iterator
     >::type first = make_ref_transform_iterator(begin, get_value);
     
 #if BOOST_WAVE_PREPROCESS_ERROR_MESSAGE_BODY != 0
 // preprocess the body of this #error message
-token_sequence_t toexpand;
+token_sequence_type toexpand;
 
     std::copy(first, make_ref_transform_iterator(end, get_value),
         std::inserter(toexpand, toexpand.end()));
 
-    typename token_sequence_t::iterator begin2 = toexpand.begin();
+    typename token_sequence_type::iterator begin2 = toexpand.begin();
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded, 
         false);
 #else
@@ -1584,28 +1515,28 @@ token_sequence_t toexpand;
 template <typename ContextT> 
 inline void 
 pp_iterator_functor<ContextT>::on_warning(
-    typename parse_tree_t::const_iterator const &begin,
-    typename parse_tree_t::const_iterator const &end)
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end)
 {
     BOOST_ASSERT(ctx.get_if_block_status());
 
 // preprocess the given sequence into the provided list
-token_sequence_t expanded;
-get_token_value<result_type, parse_node_t> get_value;
+token_sequence_type expanded;
+get_token_value<result_type, parse_node_type> get_value;
 
 typename ref_transform_iterator_generator<
-        get_token_value<result_type, parse_node_t>, 
-        typename parse_tree_t::const_iterator
+        get_token_value<result_type, parse_node_type>, 
+        typename parse_tree_type::const_iterator
     >::type first = make_ref_transform_iterator(begin, get_value);
     
 #if BOOST_WAVE_PREPROCESS_ERROR_MESSAGE_BODY != 0
 // preprocess the body of this #warning message
-token_sequence_t toexpand;
+token_sequence_type toexpand;
 
     std::copy(first, make_ref_transform_iterator(end, get_value),
         std::inserter(toexpand, toexpand.end()));
 
-    typename token_sequence_t::iterator begin2 = toexpand.begin();
+    typename token_sequence_type::iterator begin2 = toexpand.begin();
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded, 
         false);
 #else
@@ -1629,8 +1560,8 @@ token_sequence_t toexpand;
 template <typename ContextT> 
 inline bool
 pp_iterator_functor<ContextT>::on_pragma(
-    typename parse_tree_t::const_iterator const &begin,
-    typename parse_tree_t::const_iterator const &end)
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end)
 {
     using namespace boost::wave;
     
@@ -1639,12 +1570,12 @@ pp_iterator_functor<ContextT>::on_pragma(
 // Look at the pragma token sequence and decide, if the first token is STDC
 // (see C99 standard [6.10.6.2]), if it is, the sequence must _not_ be
 // preprocessed.
-token_sequence_t expanded;
-get_token_value<result_type, parse_node_t> get_value;
+token_sequence_type expanded;
+get_token_value<result_type, parse_node_type> get_value;
 
     typedef typename ref_transform_iterator_generator<
-            get_token_value<result_type, parse_node_t>, 
-            typename parse_tree_t::const_iterator
+            get_token_value<result_type, parse_node_type>, 
+            typename parse_tree_type::const_iterator
         >::type const_tree_iterator_t;
         
 const_tree_iterator_t first = make_ref_transform_iterator(begin, get_value);
@@ -1667,11 +1598,11 @@ const_tree_iterator_t last = make_ref_transform_iterator(end, get_value);
         else {
 #if BOOST_WAVE_PREPROCESS_PRAGMA_BODY != 0
         // preprocess the given tokensequence
-        token_sequence_t toexpand;
+        token_sequence_type toexpand;
 
             std::copy(first, last, std::inserter(toexpand, toexpand.end()));
 
-            typename token_sequence_t::iterator begin2 = toexpand.begin();
+            typename token_sequence_type::iterator begin2 = toexpand.begin();
             ctx.expand_whole_tokensequence(begin2, toexpand.end(), 
                 expanded, false);
 #else
@@ -1687,7 +1618,7 @@ const_tree_iterator_t last = make_ref_transform_iterator(end, get_value);
     BOOST_ASSERT(pending_queue.empty());
 
 // try to interpret the expanded #pragma body 
-    token_sequence_t pending;
+    token_sequence_type pending;
     if (interpret_pragma(expanded, pending)) {
     // if there is some replacement text, insert it into the pending queue
         if (pending.size() > 0)
@@ -1708,12 +1639,12 @@ const_tree_iterator_t last = make_ref_transform_iterator(end, get_value);
 template <typename ContextT> 
 inline bool
 pp_iterator_functor<ContextT>::interpret_pragma(
-    token_sequence_t const &pragma_body, token_sequence_t &result)
+    token_sequence_type const &pragma_body, token_sequence_type &result)
 {
     using namespace cpplexer;
     
-    typename token_sequence_t::const_iterator end = pragma_body.end();
-    typename token_sequence_t::const_iterator it = pragma_body.begin();
+    typename token_sequence_type::const_iterator end = pragma_body.end();
+    typename token_sequence_type::const_iterator it = pragma_body.begin();
     for (++it; it != end && IS_CATEGORY(*it, WhiteSpaceTokenType); ++it) 
         /**/;   // skip whitespace
     
@@ -1723,73 +1654,6 @@ pp_iterator_functor<ContextT>::interpret_pragma(
     return boost::wave::util::interpret_pragma(ctx, act_token, it, end, result,
         ctx.get_language());
 }
-
-#if BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
-///////////////////////////////////////////////////////////////////////////////
-//  
-//  on_region(): handle #region directives
-//
-///////////////////////////////////////////////////////////////////////////////
-template <typename ContextT> 
-inline void
-pp_iterator_functor<ContextT>::on_region(
-    typename parse_tree_t::const_iterator const &begin,
-    typename parse_tree_t::const_iterator const &end)
-{
-    BOOST_ASSERT(ctx.get_if_block_status());
-
-//  if there is a name given, start a named region
-    if (begin != end) {
-    // (re-)open named region
-    get_token_value<result_type, parse_node_t> get_value;
-    
-        ctx.begin_scope(
-            make_ref_transform_iterator((*begin).children.begin(), get_value),
-            make_ref_transform_iterator((*begin).children.end(), get_value));
-    }
-    else {
-    // (re-)open unnamed region
-        ctx.begin_unnamed_scope();
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//  
-//  on_endregion(): handle #endregion directives
-//
-///////////////////////////////////////////////////////////////////////////////
-template <typename ContextT> 
-inline void
-pp_iterator_functor<ContextT>::on_endregion()
-{
-    BOOST_ASSERT(ctx.get_if_block_status());
-    ctx.end_scope();
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//  
-//  on_import(): handle #import directives
-//
-///////////////////////////////////////////////////////////////////////////////
-template <typename ContextT> 
-inline void
-pp_iterator_functor<ContextT>::on_import(
-    typename parse_tree_t::const_iterator const &begin,
-    typename parse_tree_t::const_iterator const &end)
-{
-    BOOST_ASSERT(ctx.get_if_block_status());
-
-// import all given macro names/scope names
-    get_token_value<result_type, parse_node_t> get_value;
-    for (typename parse_tree_t::const_iterator it = begin; it != end; ++it) {
-    // import every single of the listed names    
-        ctx.import_name(
-            make_ref_transform_iterator((*it).children.begin(), get_value), 
-            make_ref_transform_iterator((*it).children.end(), get_value));
-    }
-}
-
-#endif // BOOST_WAVE_ENABLE_CPP0X_EXTENSIONS != 0
 
 ///////////////////////////////////////////////////////////////////////////////
 }   // namespace impl
@@ -1811,13 +1675,13 @@ class pp_iterator
     >
 {
 public:
-    typedef boost::wave::impl::pp_iterator_functor<ContextT> input_policy_t;
+    typedef boost::wave::impl::pp_iterator_functor<ContextT> input_policy_type;
 
 private:
     typedef 
-        boost::spirit::multi_pass<input_policy_t, boost::wave::util::functor_input>
+        boost::spirit::multi_pass<input_policy_type, boost::wave::util::functor_input>
         base_t;
-    typedef pp_iterator<ContextT> self_t;
+    typedef pp_iterator<ContextT> self_type;
     typedef boost::wave::util::functor_input functor_input_t;
     
 public:
@@ -1826,9 +1690,9 @@ public:
     
     template <typename IteratorT>
     pp_iterator(ContextT &ctx, IteratorT const &first, IteratorT const &last,
-        typename ContextT::position_t const &pos, 
+        typename ContextT::position_type const &pos, 
         boost::wave::language_support language)
-    :   base_t(input_policy_t(ctx, first, last, pos, language))
+    :   base_t(input_policy_type(ctx, first, last, pos, language))
     {}
     
     void force_include(char const *path_, bool is_last)
@@ -1836,7 +1700,7 @@ public:
         get_functor().on_include_helper(path_, false, false); 
         if (is_last) {
             this->functor_input_t::
-                template inner<input_policy_t>::advance_input();
+                template inner<input_policy_type>::advance_input();
         }
     }
 };

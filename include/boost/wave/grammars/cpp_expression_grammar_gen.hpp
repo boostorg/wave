@@ -1,12 +1,11 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_EXPRESSION_GRAMMAR_GEN_HPP_42399258_6CDC_4101_863D_5C7D95B5A6CA_INCLUDED)
@@ -35,14 +34,14 @@ namespace grammars {
 template <typename TokenT>
 struct expression_grammar_gen {
 
-    typedef TokenT token_t;
-    typedef std::list<token_t, boost::fast_pool_allocator<token_t> >
-        token_sequence_t;
+    typedef TokenT token_type;
+    typedef std::list<token_type, boost::fast_pool_allocator<token_type> >
+        token_sequence_type;
         
     static bool evaluate(
-        typename token_sequence_t::const_iterator const &first, 
-        typename token_sequence_t::const_iterator const &last, 
-        typename token_t::position_t const &tok,
+        typename token_sequence_type::const_iterator const &first, 
+        typename token_sequence_type::const_iterator const &last, 
+        typename token_type::position_type const &tok,
         bool if_block_status);
 };
 

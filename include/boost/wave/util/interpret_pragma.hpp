@@ -1,12 +1,11 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(INTERPRET_PRAGMA_HPP_B1F2315E_C5CE_4ED1_A343_0EF548B7942A_INCLUDED)
@@ -60,15 +59,15 @@ namespace impl {
 template <typename ContextT, typename ContainerT>
 inline bool 
 interpret_pragma_trace(ContextT &ctx, ContainerT const &values,
-    typename ContextT::token_t const &act_token)
+    typename ContextT::token_type const &act_token)
 {
-    typedef typename ContextT::token_t token_t;
-    typedef typename token_t::string_t string_t;
+    typedef typename ContextT::token_type token_type;
+    typedef typename token_type::string_type string_type;
 
 bool valid_option = false;
 
     if (1 == values.size()) {
-    token_t const &value = values.front();
+    token_type const &value = values.front();
     
         using namespace boost::wave::trace_policies;
         if (value.get_value() == "enable" ||
@@ -90,7 +89,7 @@ bool valid_option = false;
     }
     if (!valid_option) {
     // unknown option value
-    string_t option_str ("trace");
+    string_type option_str ("trace");
 
         if (values.size() > 0) {
             option_str += "(";
@@ -106,26 +105,26 @@ bool valid_option = false;
 template <typename ContextT, typename ContainerT>
 inline bool
 interpret_pragma_system(ContextT &/*ctx*/, ContainerT &pending,
-    ContainerT const &values, typename ContextT::token_t const &act_token,
+    ContainerT const &values, typename ContextT::token_type const &act_token,
     boost::wave::language_support language)
 {
-    typedef typename ContextT::token_t token_t;
-    typedef typename token_t::string_t string_t;
+    typedef typename ContextT::token_type token_type;
+    typedef typename token_type::string_type string_type;
 
     if (0 == values.size()) {
         BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option,
             "system", act_token.get_position());
     }
     
-string_t stdout_file(std::tmpnam(0));
-string_t stderr_file(std::tmpnam(0));
-string_t system_str(impl::as_string(values));
-string_t native_cmd(system_str);
+string_type stdout_file(std::tmpnam(0));
+string_type stderr_file(std::tmpnam(0));
+string_type system_str(impl::as_string(values));
+string_type native_cmd(system_str);
 
     system_str += " >" + stdout_file + " 2>" + stderr_file;
     if (0 != std::system(system_str.c_str())) {
     // unable to spawn the command
-    string_t error_str("unable to spawn command: ");
+    string_type error_str("unable to spawn command: ");
     
         error_str += native_cmd;
         BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option,
@@ -134,9 +133,9 @@ string_t native_cmd(system_str);
     
 // rescan the content of the stdout_file and insert it as the 
 // _Pragma replacement
-    typedef typename ContextT::lex_t lex_t;
-    typedef typename ContextT::input_policy_t input_policy_t;
-    typedef boost::wave::iteration_context<lex_t, input_policy_t> iteration_context_t;
+    typedef typename ContextT::lexer_type lexer_type;
+    typedef typename ContextT::input_policy_type input_policy_type;
+    typedef boost::wave::iteration_context<lexer_type, input_policy_type> iteration_context_t;
 
 iteration_context_t iter_ctx(stdout_file.c_str(), act_token.get_position(), 
     language);
@@ -166,12 +165,12 @@ ContainerT pragma;
 ///////////////////////////////////////////////////////////////////////////////
 template <typename ContextT, typename IteratorT, typename ContainerT>
 inline bool 
-interpret_pragma(ContextT &ctx, typename ContextT::token_t const &act_token,
+interpret_pragma(ContextT &ctx, typename ContextT::token_type const &act_token,
     IteratorT it, IteratorT const &end, ContainerT &pending,
     boost::wave::language_support language)
 {
-    typedef typename ContextT::token_t token_t;
-    typedef typename token_t::string_t string_t;
+    typedef typename ContextT::token_type token_type;
+    typedef typename token_type::string_type string_type;
     
     using namespace cpplexer;
     if (T_IDENTIFIER == token_id(*it) && "wave" == (*it).get_value()) {
@@ -186,7 +185,7 @@ interpret_pragma(ContextT &ctx, typename ContextT::token_t const &act_token,
     //      wave system(command)
     
         using namespace boost::spirit;
-        token_t option;
+        token_type option;
         ContainerT values;
         
         if (!parse (++it, end, 
@@ -239,7 +238,7 @@ interpret_pragma(ContextT &ctx, typename ContextT::token_t const &act_token,
             pending, option, values, act_token, language)) 
         {
         // unknown #pragma option 
-        string_t option_str (option.get_value());
+        string_type option_str (option.get_value());
 
             if (values.size() > 0) {
                 option_str += "(";

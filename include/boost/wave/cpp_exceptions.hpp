@@ -1,12 +1,11 @@
 /*=============================================================================
     Wave: A Standard compliant C++ preprocessor library
 
-    Copyright (c) 2001-2004 Hartmut Kaiser
     http://spirit.sourceforge.net/
 
-    Use, modification and distribution is subject to the Boost Software
-    License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
-    http://www.boost.org/LICENSE_1_0.txt)
+    Copyright (c) 2001-2004 Hartmut Kaiser. Distributed under the Boost
+    Software License, Version 1.0. (See accompanying file
+    LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
 #if !defined(CPP_EXCEPTIONS_HPP_5190E447_A781_4521_A275_5134FF9917D7_INCLUDED)
@@ -150,8 +149,6 @@ public:
         ill_formed_pragma_option,
         include_nesting_too_deep,
         misplaced_operator,
-        unexpected_endregion,
-        illegal_global_region,
         alreadydefined_name,
         undefined_macroname,
         invalid_macroname,
@@ -217,13 +214,10 @@ public:
             "unknown or illformed pragma option",       // ill_formed_pragma_option
             "include files nested too deep",            // include_nesting_too_deep
             "misplaced operator defined()",             // misplaced_operator
-            "unexpected " BOOST_WAVE_PP_ENDREGION " at global scope", // unexpected_endregion
-            "a global " BOOST_WAVE_PP_REGION " may not be opened "
-            "inside a nameless " BOOST_WAVE_PP_REGION,        // illegal_global_region
             "the name is already used in this scope as "
             "a macro or scope name",                    // alreadydefined_name
             "undefined macro or scope name may not be imported", // undefined_macroname
-            "ill formed macro name or " BOOST_WAVE_PP_REGION " name",  // invalid_macroname
+            "ill formed macro name",                    // invalid_macroname
             "qualified names are supported in C++0x mode only",   // unexpected_qualified_name
             "division by zero in preprocessor expression"   // division_by_zero
         };
@@ -261,8 +255,6 @@ public:
             util::severity_warning,            // ill_formed_pragma_option
             util::severity_fatal,              // include_nesting_too_deep
             util::severity_error,              // misplaced_operator
-            util::severity_error,              // unexpected_endregion
-            util::severity_error,              // illegal_global_region
             util::severity_error,              // alreadydefined_name
             util::severity_error,              // undefined_macroname
             util::severity_error,              // invalid_macroname
