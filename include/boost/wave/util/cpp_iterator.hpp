@@ -1557,23 +1557,30 @@ pp_iterator_functor<ContextT>::on_elif(
     typename parse_tree_type::const_iterator const &begin,
     typename parse_tree_type::const_iterator const &end)
 {
+// preprocess the given sequence into the provided list
+get_token_value<result_type, parse_node_type> get_value;
+token_sequence_type toexpand;
+
+    std::copy(make_ref_transform_iterator(begin, get_value), 
+        make_ref_transform_iterator(end, get_value),
+        std::inserter(toexpand, toexpand.end()));
+
+// check current if block status
     if (ctx.get_if_block_some_part_status()) {
         if (!ctx.enter_elif_block(false)) {
         // #else without matching #if
             BOOST_WAVE_THROW(preprocess_exception, missing_matching_if, "#elif", 
                 act_pos);
         }
+
+    typename token_sequence_type::iterator begin2 = toexpand.begin();
+
+        skip_to_eol(ctx, begin2, toexpand.end());
         return;     // one of previous #if/#elif was true, so don't enter this #elif 
     }
             
 // preprocess the given sequence into the provided list
-get_token_value<result_type, parse_node_type> get_value;
 token_sequence_type expanded;
-token_sequence_type toexpand;
-
-    std::copy(make_ref_transform_iterator(begin, get_value), 
-        make_ref_transform_iterator(end, get_value),
-        std::inserter(toexpand, toexpand.end()));
 
     typename token_sequence_type::iterator begin2 = toexpand.begin();
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded);
