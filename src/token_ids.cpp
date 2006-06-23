@@ -13,6 +13,7 @@
 #define BOOST_WAVE_SOURCE 1
 #include <string>
 #include <boost/assert.hpp>
+#include <boost/static_assert.hpp>
 
 #include <boost/wave/wave_config.hpp>
 #include <boost/wave/token_ids.hpp>
@@ -204,8 +205,13 @@ static char const *tok_names[] = {
     /* 419 */   "MSEXT_ASM",
     /* 420 */   "MSEXT_REGION",
     /* 421 */   "MSEXT_ENDREGION",
-    };   
-     
+    };
+
+    // make sure, I have not forgotten any commas (as I did more than once)
+    BOOST_STATIC_ASSERT(
+        sizeof(tok_names)/sizeof(tok_names[0]) == T_LAST_TOKEN-T_FIRST_TOKEN
+    );
+    
     unsigned int id = BASEID_FROM_TOKEN(tokid)-T_FIRST_TOKEN;
     return (id < T_LAST_TOKEN-T_FIRST_TOKEN) ? tok_names[id] : "<UnknownToken>";
 }
@@ -219,7 +225,7 @@ get_token_value(token_id tokid)
 //
 //      Please note that the sequence of token names must match the sequence of
 //      token id's defined in then enum token_id above.
-static char const *tok_names[] = {
+static char const *tok_values[] = {
     /* 256 */   "&",
     /* 257 */   "&&",
     /* 258 */   "=",
@@ -390,8 +396,13 @@ static char const *tok_names[] = {
     /* 421 */   "#endregion",
     };   
      
+    // make sure, I have not forgotten any commas (as I did more than once)
+    BOOST_STATIC_ASSERT(
+        sizeof(tok_values)/sizeof(tok_values[0]) == T_LAST_TOKEN-T_FIRST_TOKEN
+    );
+
     unsigned int id = BASEID_FROM_TOKEN(tokid)-T_FIRST_TOKEN;
-    return (id < T_LAST_TOKEN-T_FIRST_TOKEN) ? tok_names[id] : "<UnknownToken>";
+    return (id < T_LAST_TOKEN-T_FIRST_TOKEN) ? tok_values[id] : "<UnknownToken>";
 }
 
 ///////////////////////////////////////////////////////////////////////////////
