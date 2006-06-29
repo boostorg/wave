@@ -383,8 +383,8 @@ new_lexer_gen<IteratorT, PositionT>::new_lexer(IteratorT const &first,
     IteratorT const &last, PositionT const &pos, 
     boost::wave::language_support language)
 {
-    return new re2clex::lex_functor<IteratorT, PositionT>(first, last, pos,
-        language);
+    using re2clex::lex_functor;
+    return new lex_functor<IteratorT, PositionT>(first, last, pos, language);
 }
 
 #undef BOOST_WAVE_RE2C_NEW_LEXER_INLINE
