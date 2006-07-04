@@ -144,6 +144,8 @@ Boost V1.34.0
 - Fixed the Re2C lexer not to segfault on empty files anymore.
 - Stripped leading and trailing whitespace for all lines in a config file (Wave
   driver tool).
+- Fixed RTTI build issue for VC7.1/bjam --v2 (thanks to Rene Rivera for 
+  submitting a patch for the Wave Jamfile.v2).
 
 Sat Feb 18 2005
 - Version 1.2.3
@@ -374,7 +376,7 @@ Version 1.1.16
   for this compiler.
 - Renamed files to comply with the Boost rules.
 - Added the first part of the MCPP validation suite to the Wave unit tests.
-- Added even more missing "using namespace std;" staements for functions from
+- Added even more missing "using namespace std;" statements for functions from
   the C runtime library. The Wave test suite now contains more than 100 unit
   tests.
 - Added the $P/$P(basename) replacement string to the testwave application 
