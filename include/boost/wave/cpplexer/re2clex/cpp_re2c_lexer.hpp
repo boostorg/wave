@@ -50,9 +50,7 @@
 namespace boost {
 namespace wave {
 namespace cpplexer {
-#if !BOOST_WORKAROUND(__SUNPRO_CC, <= 0x580)
 namespace re2clex {
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // 
@@ -343,9 +341,7 @@ token_cache<typename lexer<IteratorT, PositionT>::string_type> const
     lexer<IteratorT, PositionT>::cache = 
         token_cache<typename lexer<IteratorT, PositionT>::string_type>();
     
-#if !BOOST_WORKAROUND(__SUNPRO_CC, <= 0x580)
 }   // namespace re2clex
-#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //  
@@ -387,9 +383,7 @@ new_lexer_gen<IteratorT, PositionT>::new_lexer(IteratorT const &first,
     IteratorT const &last, PositionT const &pos, 
     boost::wave::language_support language)
 {
-#if !BOOST_WORKAROUND(__SUNPRO_CC, <= 0x580)
     using re2clex::lex_functor;
-#endif
     return new lex_functor<IteratorT, PositionT>(first, last, pos, language);
 }
 
