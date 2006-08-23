@@ -638,29 +638,18 @@ bool returned_from_include_file = returned_from_include();
             
         } while ((iter_ctx->first != iter_ctx->last) || 
                  (returned_from_include_file = returned_from_include()));
+
+    // overall eof reached
+        if (ctx.get_if_block_depth() > 0) {
+        // missing endif directive(s)
+            BOOST_WAVE_THROW(preprocess_exception, missing_matching_endif, "", 
+                act_pos);
+        }
     }
     else {
         act_token = eof;            // this is the last token
     }
     
-//    if (returned_from_include_file) {
-//    // if there was an '#include' statement on the last line of the main file 
-//    // we have to return an additional newline token
-//        seen_newline = true;
-//        
-//        whitespace.shift_tokens(T_NEWLINE);  // whitespace controller
-//        return act_token = result_type(T_NEWLINE, 
-//            typename result_type::string_type("\n"), 
-//            cpp_grammar_type::pos_of_newline);
-//    }
-    
-// overall eof reached
-    if (ctx.get_if_block_depth() > 0) {
-    // missing endif directive(s)
-        BOOST_WAVE_THROW(preprocess_exception, missing_matching_endif, "", 
-            act_pos);
-    }
-
     whitespace.shift_tokens(T_EOF);     // whitespace controller
     return act_token;                   // return eof token
 }
@@ -902,13 +891,13 @@ pp_iterator_functor<ContextT>::can_ignore_pp_directive(IteratorT &it)
                 string_type value ((*it).get_value());
                 if (!impl::pp_is_last_on_line(ctx, it, iter_ctx->last)) {
                 // enable error recovery (start over with the next line)
-                    seen_newline = true;
                     impl::skip_to_eol(ctx, it, iter_ctx->last);
+                    seen_newline = true;
                     iter_ctx->first = it;
                 
                 // report an invalid #else directive
-                    BOOST_WAVE_THROW(preprocess_exception, ill_formed_directive, 
-                        value, act_pos);
+                    on_illformed(value);
+                    break;
                 }
 
             // we skipped to the end of this line already
@@ -918,8 +907,28 @@ pp_iterator_functor<ContextT>::can_ignore_pp_directive(IteratorT &it)
             return true;
               
         case T_PP_ENDIF:        // #endif
-            on_endif();
-            break;
+            {
+            // handle this directive
+                on_endif();
+
+            // make sure, there are no (non-whitespace) tokens left on this line                
+                string_type value ((*it).get_value());
+                if (!impl::pp_is_last_on_line(ctx, it, iter_ctx->last)) {
+                // enable error recovery (start over with the next line)
+                    impl::skip_to_eol(ctx, it, iter_ctx->last);
+                    seen_newline = true;
+                    iter_ctx->first = it;
+                
+                // report an invalid #else directive
+                    on_illformed(value);
+                    break;
+                }
+
+            // we skipped to the end of this line already
+                seen_newline = true;
+                iter_ctx->first = it;
+            }
+            return true;
 
         default:                // #something else
             on_illformed((*it).get_value());
@@ -1016,6 +1025,15 @@ tree_parse_info_type hit = cpp_grammar_type::parse_cpp_grammar(
                 act_pos);
         }
         return result;
+    }
+    else if (token_id(found_directive) != T_EOF) {
+    // recognized invalid directive
+        impl::skip_to_eol(ctx, it, iter_ctx->last);
+        seen_newline = true;
+        iter_ctx->first = it;
+
+    // report the ill formed directive
+        on_illformed(found_directive.get_value());
     }
     return false;
 }
@@ -1542,11 +1560,38 @@ token_sequence_type toexpand;
 #endif
 
 // parse the expression and enter the #if block
+grammars::value_error status = grammars::error_noerror;
 bool if_status = grammars::expression_grammar_gen<result_type>::
             evaluate(expanded.begin(), expanded.end(), act_pos,
-                ctx.get_if_block_status());
+                ctx.get_if_block_status(), status);
                 
     ctx.get_hooks().evaluated_conditional_expression(toexpand, if_status);
+    if (grammars::error_noerror != status) {
+    // division or other error by zero occurred
+        string_type expression = util::impl::as_string(expanded);
+        if (0 == expression.size()) 
+            expression = "<empty expression>";
+            
+        if (grammars::error_division_by_zero & status) {
+            BOOST_WAVE_THROW(preprocess_exception, division_by_zero, 
+                expression.c_str(), act_pos);
+        }
+        if (grammars::error_integer_overflow & status) {
+        // we may validly continue 
+            ctx.enter_if_block(if_status);
+            BOOST_WAVE_THROW(preprocess_exception, integer_overflow, 
+                expression.c_str(), act_pos);
+            return;
+        }
+        if (grammars::error_character_overflow & status) {
+        // we may validly continue 
+            ctx.enter_if_block(if_status);
+            BOOST_WAVE_THROW(preprocess_exception, 
+                character_literal_out_of_range, expression.c_str(), act_pos);
+            return;
+        }
+    }
+
     ctx.enter_if_block(if_status);
 }
 
@@ -1618,11 +1663,46 @@ token_sequence_type expanded;
 #endif
 
 // parse the expression and enter the #elif block
+grammars::value_error status = grammars::error_noerror;
 bool if_status = grammars::expression_grammar_gen<result_type>::
             evaluate(expanded.begin(), expanded.end(), act_pos,
-                ctx.get_if_block_status());
+                ctx.get_if_block_status(), status);
                 
     ctx.get_hooks().evaluated_conditional_expression(toexpand, if_status);
+    if (grammars::error_noerror != status) {
+    // division or other error by zero occurred
+        string_type expression = util::impl::as_string(expanded);
+        if (0 == expression.size()) 
+            expression = "<empty expression>";
+            
+        if (grammars::error_division_by_zero & status) {
+            BOOST_WAVE_THROW(preprocess_exception, division_by_zero, 
+                expression.c_str(), act_pos);
+        }
+        if (grammars::error_integer_overflow & status) {
+        // we validly may continue
+            if (!ctx.enter_elif_block(if_status)) { 
+            // #else without matching #if
+                BOOST_WAVE_THROW(preprocess_exception, missing_matching_if, 
+                    "#elif", act_pos);
+            }
+            BOOST_WAVE_THROW(preprocess_exception, integer_overflow,
+                expression.c_str(), act_pos);
+            return;
+        }
+        if (grammars::error_character_overflow & status) {
+        // we validly may continue
+            if (!ctx.enter_elif_block(if_status)) { 
+            // #else without matching #if
+                BOOST_WAVE_THROW(preprocess_exception, missing_matching_if, 
+                    "#elif", act_pos);
+            }
+            BOOST_WAVE_THROW(preprocess_exception, 
+                character_literal_out_of_range, expression.c_str(), act_pos);
+            return;
+        }
+    }
+
     if (!ctx.enter_elif_block(if_status)) { 
     // #else without matching #if
         BOOST_WAVE_THROW(preprocess_exception, missing_matching_if, "#elif", 
