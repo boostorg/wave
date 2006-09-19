@@ -884,6 +884,20 @@ int error_count = 0;
                         throw;      // re-throw for non-recoverable errors
                     }
                 }
+                catch (boost::wave::cpplexer::lexing_exception const &e) {
+                // some preprocessing error
+                    if (is_interactive || 
+                        boost::wave::cpplexer::is_recoverable(e)) 
+                    {
+                        cerr 
+                            << e.file_name() << ":" << e.line_no() << ":" 
+                            << e.column_no() << ": " << e.description() << endl;
+                        ++error_count;
+                    }
+                    else {
+                        throw;      // re-throw for non-recoverable errors
+                    }
+                }
             } while (!finished);
         } while (input_is_stdin);
 
@@ -1024,14 +1038,40 @@ main (int argc, char *argv[])
         po::store(opts, vm);
         po::notify(vm);
 
-    // Try to find a wave.cfg in the same directory as the executable was 
-    // started from. If this exists, treat it as a wave config file
-    fs::path filename(argv[0], fs::native);
+//     // Try to find a wave.cfg in the same directory as the executable was 
+//     // started from. If this exists, treat it as a wave config file
+//     fs::path filename(argv[0], fs::native);
+// 
+//         filename = filename.branch_path() / "wave.cfg";
+//         cmd_line_utils::read_config_file_options(filename.string(), 
+//             desc_overall_cfgfile, vm, true);
 
-        filename = filename.branch_path() / "wave.cfg";
-        cmd_line_utils::read_config_file_options(filename.string(), 
-            desc_overall_cfgfile, vm, true);
+    // extract the arguments from the parsed command line
+    vector<po::option> arguments;
+    
+        std::remove_copy_if(opts.options.begin(), opts.options.end(), 
+            back_inserter(arguments), cmd_line_utils::is_argument());
+            
+    // try to find a config file somewhere up the filesystem hierarchy 
+    // starting with the input file path. This allows to use a general wave.cfg 
+    // file for all files in a certain project.
+        if (arguments.size() > 0 && arguments[0].value[0] != "-") {
+        // construct full path of input file
+            fs::path input_dir (fs::complete(fs::path(arguments[0].value[0], fs::native)));
+            input_dir = input_dir.normalize().branch_path();    // chop of file name
 
+        // walk up the hierarchy, trying to find a file wave.cfg 
+            while (!input_dir.empty()) {
+                fs::path filename = input_dir / "wave.cfg";
+                if (cmd_line_utils::read_config_file_options(filename.string(), 
+                    desc_overall_cfgfile, vm, true))
+                {
+                    break;    // break on the first cfg file found
+                }
+                input_dir = input_dir.branch_path();
+            }
+        }
+        
     // if there is specified at least one config file, parse it and add the 
     // options to the main variables_map
         if (vm.count("config-file")) {
@@ -1066,12 +1106,6 @@ main (int argc, char *argv[])
             return print_copyright();
         }
 
-    // extract the arguments from the parsed command line
-    vector<po::option> arguments;
-    
-        std::remove_copy_if(opts.options.begin(), opts.options.end(), 
-            back_inserter(arguments), cmd_line_utils::is_argument());
-            
     // if there is no input file given, then take input from stdin
         if (0 == arguments.size() || 0 == arguments[0].value.size() ||
             arguments[0].value[0] == "-") 

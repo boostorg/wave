@@ -69,10 +69,6 @@ namespace wave {
 //                      defaults to the
 //                          context_policies::default_preprocessing_hooks
 //                      type.
-//      WhitespaceT     The is the whitespace handling policy. This template 
-//                      parameter is optional and defaults to the
-//                          context_policies::eat_whitespace<token_type>
-//                      type.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -140,7 +136,11 @@ public:
         macros.init_predefined_macros(fname);
         includes.init_initial_path();
     }
-
+    
+// default copy constructor
+// default assignment operator
+// default destructor
+    
 // iterator interface
     iterator_type begin() 
     { 
@@ -211,9 +211,6 @@ public:
                 token_type(T_IDENTIFIER, name, macros.get_main_pos()), 
                 even_predefined); 
         }
-//     bool remove_macro_definition(token_type const &token, 
-//             bool even_predefined = false)
-//         { return macros.remove_macro(token, even_predefined); }
     void reset_macro_definitions() 
         { macros.reset_macromap(); macros.init_predefined_macros(); }
 
