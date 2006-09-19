@@ -217,7 +217,7 @@ namespace cmd_line_utils {
 
     // Read all options from a given config file, parse and add them to the
     // given variables_map
-    void read_config_file_options(string const &filename, 
+    bool read_config_file_options(string const &filename, 
         po::options_description const &desc, po::variables_map &vm,
         bool may_fail = false)
     {
@@ -229,7 +229,7 @@ namespace cmd_line_utils {
                     << ": command line warning: config file not found"
                     << endl;
             }
-            return;
+            return false;
         }
         
     vector<string> options;
@@ -256,6 +256,7 @@ namespace cmd_line_utils {
                 .options(desc).style(unix_style).run(), vm);
             po::notify(vm);
         }
+        return true;
     }
 
     // predicate to extract all positional arguments from the command line
