@@ -478,6 +478,7 @@ token_id id = T_UNKNOWN;
     }
     
 // cleanup of certain tokens required
+    seen_newline = false;
     switch (static_cast<unsigned int>(id)) {
     case T_NONREPLACABLE_IDENTIFIER:
         act_token.set_token_id(T_IDENTIFIER);
