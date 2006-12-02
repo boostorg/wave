@@ -267,6 +267,16 @@ namespace cmd_line_utils {
         }
     };
 
+    // trim quotes from path names, if any
+    std::string trim_quotes(std::string const& file)
+    {
+        if (('"' == file[0] || '\'' == file[0]) && file[0] == file[file.size()-1])
+        {
+            return file.substr(1, file.size()-2);
+        }
+        return file;
+    }
+    
 ///////////////////////////////////////////////////////////////////////////////
 }
 
@@ -679,9 +689,16 @@ int error_count = 0;
         
     // control the generation of #line directives
         if (vm.count("line")) {
+            int lineopt = vm["line"].as<int>();
+            if (0 != lineopt && 1 != lineopt) {
+                cerr << "wave: bogus value for --line command line option: " 
+                    << lineopt << endl;
+                return -1;
+            }
             ctx.set_language(
                 boost::wave::enable_emit_line_directives(ctx.get_language(), 
-                    vm["line"].as<int>() != 0));
+                    lineopt != 0));
+
         }
 
     // add include directories to the system include search paths
@@ -692,7 +709,7 @@ int error_count = 0;
             for (vector<string>::const_iterator cit = syspaths.begin(); 
                  cit != end; ++cit)
             {
-                ctx.add_sysinclude_path((*cit).c_str());
+                ctx.add_sysinclude_path(cmd_line_utils::trim_quotes(*cit).c_str());
             }
         }
         
@@ -705,10 +722,10 @@ int error_count = 0;
             for (vector<string>::const_iterator cit = ip.paths.begin(); 
                  cit != end; ++cit)
             {
-                ctx.add_include_path((*cit).c_str());
+                ctx.add_include_path(cmd_line_utils::trim_quotes(*cit).c_str());
             }
 
-        // if -I- was goven on the command line, this has to be propagated
+        // if -I- was given on the command line, this has to be propagated
             if (ip.seen_separator) 
                 ctx.set_sysinclude_delimiter();
                  
@@ -717,7 +734,7 @@ int error_count = 0;
             for (vector<string>::const_iterator syscit = ip.syspaths.begin(); 
                  syscit != sysend; ++syscit)
             {
-                ctx.add_sysinclude_path((*syscit).c_str());
+                ctx.add_sysinclude_path(cmd_line_utils::trim_quotes(*syscit).c_str());
             }
         }
     
@@ -777,6 +794,7 @@ int error_count = 0;
                 default_outfile = "-";
             }
             else {
+                out_file = fs::complete(out_file);
                 fs::create_directories(out_file.branch_path());
                 output.open(out_file.string().c_str());
                 if (!output.is_open()) {
@@ -1018,7 +1036,7 @@ main (int argc, char *argv[])
                             "2: all whitespace is preserved")
             ("line,L", po::value<int>()->default_value(1), 
                 "control the generation of #line directives\n"
-                            "0: no #line directives are generated\n"
+                            "0: no #line directives are generated,\n"
                             "1: #line directives will be emitted (default)")
             ("extended,x", "enable the #pragma wave system() directive")
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
