@@ -190,6 +190,9 @@ public:
             bool is_predefined = false)
         { return macros.add_macro(name, has_params, parameters, definition, 
             is_predefined); }
+    template <typename StringT>
+    bool is_defined_macro(StringT const &str) 
+        { return macros.is_defined(str.begin(), str.end()); }
     template <typename IteratorT2>
     bool is_defined_macro(IteratorT2 const &begin, IteratorT2 const &end) 
         { return macros.is_defined(begin, end); }
@@ -214,12 +217,13 @@ public:
     void reset_macro_definitions() 
         { macros.reset_macromap(); macros.init_predefined_macros(); }
 
-// get the pp-iterator version information 
+// get the Wave version information 
     static std::string get_version()  
         { return boost::wave::util::predefined_macros::get_fullversion(false); }
     static std::string get_version_string()  
         { return boost::wave::util::predefined_macros::get_versionstr(false); }
 
+// access current language options
     void set_language(boost::wave::language_support language_,
                       bool reset_macros = true) 
     { 
@@ -285,7 +289,7 @@ protected:
 //  expand_tokensequence(): 
 //      expands all macros contained in a given token sequence, handles '##' 
 //      and '#' pp operators and re-scans the resulting sequence 
-//      (essentially preprocesses the token sequence).
+//      (essentially pre-processes the token sequence).
 //
 //      The expand_undefined parameter is true during macro expansion inside
 //      a C++ expression given for a #if or #elif statement. 
