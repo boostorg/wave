@@ -375,7 +375,7 @@ token_id id = token_id(*begin);
     }
 
 IteratorT it = begin;
-string_type name ((*it).get_value().c_str());
+string_type name ((*it).get_value());
 typename defined_macros_type::iterator cit(current_macros -> find(name));
 
     if (++it != end) {
