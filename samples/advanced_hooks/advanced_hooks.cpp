@@ -82,10 +82,6 @@ boost::wave::util::file_position_type current_position;
     // scenes during iteration over the context_type::iterator_type stream.
     context_type ctx (instring.begin(), instring.end(), argv[1]);
 
-    ctx.set_language(boost::wave::enable_long_long(ctx.get_language()));
-    ctx.set_language(boost::wave::enable_preserve_comments(ctx.get_language()));
-    ctx.set_language(boost::wave::enable_prefer_pp_numbers(ctx.get_language()));
-
     // analyze the input file, print out the preprocessed tokens
     context_type::iterator_type first = ctx.begin();
     context_type::iterator_type last = ctx.end();
@@ -96,14 +92,14 @@ boost::wave::util::file_position_type current_position;
             ++first;
         }
     }
-    catch (boost::wave::cpp_exception const& e) {
+    catch (boost::wave::cpp_exception &e) {
     // some preprocessing error
         std::cerr 
             << e.file_name() << "(" << e.line_no() << "): "
             << e.description() << std::endl;
         return 2;
     }
-    catch (std::exception const& e) {
+    catch (std::exception &e) {
     // use last recognized token to retrieve the error position
         std::cerr 
             << current_position.get_file() 

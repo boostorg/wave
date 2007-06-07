@@ -9,7 +9,6 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#define BOOST_WAVE_SOURCE 1
 #include <boost/preprocessor/stringize.hpp>
 
 #include <boost/wave/wave_config.hpp>
@@ -21,7 +20,7 @@ namespace boost { namespace wave {
     ///////////////////////////////////////////////////////////////////////////
     //  Call this function to test the configuration of the calling application
     //  against the configuration of the linked library.
-    BOOST_WAVE_DECL bool 
+    bool 
     test_configuration(unsigned int config, char const* pragma_keyword, 
         char const* string_type_str)
     {

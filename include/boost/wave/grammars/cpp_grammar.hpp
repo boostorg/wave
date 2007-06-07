@@ -90,31 +90,6 @@ namespace impl {
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  store_found_eoltokens
-//
-//      The store_found_eoltokens functor stores the token sequence of the 
-//      line ending for a particular pp directive
-//
-///////////////////////////////////////////////////////////////////////////////
-
-    template <typename ContainerT>
-    struct store_found_eoltokens {
-
-        store_found_eoltokens(ContainerT &found_eoltokens_) 
-        :   found_eoltokens(found_eoltokens_) {}
-        
-        template <typename IteratorT>
-        void operator()(IteratorT const &first, IteratorT const& last) const
-        {
-            std::copy(first, last, 
-                std::inserter(found_eoltokens, found_eoltokens.end()));
-        }
-        
-        ContainerT &found_eoltokens;
-    };
-
-///////////////////////////////////////////////////////////////////////////////
-//
 //  flush_underlying_parser
 //
 //      The flush_underlying_parser flushes the underlying
@@ -151,15 +126,14 @@ namespace impl {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Encapsulation of the C++ preprocessor grammar.
-template <typename TokenT, typename ContainerT>
+template <typename TokenT>
 struct cpp_grammar : 
-    public boost::spirit::grammar<cpp_grammar<TokenT, ContainerT> >
+    public boost::spirit::grammar<cpp_grammar<TokenT> >
 {
     typedef typename TokenT::position_type  position_type;
-    typedef cpp_grammar<TokenT, ContainerT> grammar_type;
+    typedef cpp_grammar<position_type>      grammar_type;
     typedef impl::store_found_eof           store_found_eof_type;
-    typedef impl::store_found_directive<TokenT>     store_found_directive_type;
-    typedef impl::store_found_eoltokens<ContainerT> store_found_eoltokens_type;
+    typedef impl::store_found_directive<TokenT> store_found_directive_type;
     
     template <typename ScannerT>
     struct definition
@@ -273,7 +247,6 @@ struct cpp_grammar :
                     |   illformed
                     )
                     >> eol_tokens
-                       [ store_found_eoltokens_type(self.found_eoltokens) ]
 //  In parser debug mode it is useful not to flush the underlying stream
 //  to allow its investigation in the debugger and to see the correct
 //  output in the printed debug log..
@@ -331,7 +304,6 @@ struct cpp_grammar :
                         |   pattern_p(KeywordTokenType, TokenTypeMask)
                         |   pattern_p(OperatorTokenType|AltExtTokenType, 
                                 ExtTokenTypeMask)   // and, bit_and etc.
-                        |   pattern_p(BoolLiteralTokenType, TokenTypeMask)  // true/false
                         )
                     >>  (   (   no_node_d[eps_p(ch_p(T_LEFTPAREN))]
                                 >>  macro_parameters
@@ -353,7 +325,6 @@ struct cpp_grammar :
                             |   pattern_p(KeywordTokenType, TokenTypeMask)
                             |   pattern_p(OperatorTokenType|AltExtTokenType, 
                                     ExtTokenTypeMask)   // and, bit_and etc.
-                            |   pattern_p(BoolLiteralTokenType, TokenTypeMask)  // true/false
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
                             |   ch_p(T_ELLIPSIS)
 #endif
@@ -384,7 +355,6 @@ struct cpp_grammar :
                         |   pattern_p(KeywordTokenType, TokenTypeMask)
                         |   pattern_p(OperatorTokenType|AltExtTokenType, 
                                 ExtTokenTypeMask)   // and, bit_and etc.
-                        |   pattern_p(BoolLiteralTokenType, TokenTypeMask)  // true/false
                         )
                 ;
 
@@ -546,7 +516,6 @@ struct cpp_grammar :
                         |   pattern_p(KeywordTokenType, TokenTypeMask)
                         |   pattern_p(OperatorTokenType|AltExtTokenType, 
                                 ExtTokenTypeMask)   // and, bit_and etc.
-                        |   pattern_p(BoolLiteralTokenType, TokenTypeMask)  // true/false
                         ) 
                 ;
 
@@ -603,13 +572,9 @@ struct cpp_grammar :
 
     bool &found_eof;
     TokenT &found_directive;
-    ContainerT &found_eoltokens;
     
-    cpp_grammar(bool &found_eof_, TokenT &found_directive_, 
-            ContainerT &found_eoltokens_)
-    :   found_eof(found_eof_), 
-        found_directive(found_directive_),
-        found_eoltokens(found_eoltokens_)
+    cpp_grammar(bool &found_eof_, TokenT &found_directive_)
+    :   found_eof(found_eof_), found_directive(found_directive_)
     { 
         BOOST_SPIRIT_DEBUG_TRACE_GRAMMAR_NAME(*this, "cpp_grammar", 
             TRACE_CPP_GRAMMAR); 
@@ -710,21 +675,20 @@ parsetree_parse(IteratorT const& first_, IteratorT const& last,
 #define BOOST_WAVE_GRAMMAR_GEN_INLINE inline
 #endif 
 
-template <typename LexIteratorT, typename TokenContainerT>
+template <typename LexIteratorT>
 BOOST_WAVE_GRAMMAR_GEN_INLINE 
 boost::spirit::tree_parse_info<
-    LexIteratorT, 
-    typename cpp_grammar_gen<LexIteratorT, TokenContainerT>::node_factory_type
+    LexIteratorT, typename cpp_grammar_gen<LexIteratorT>::node_factory_type
 >
-cpp_grammar_gen<LexIteratorT, TokenContainerT>::parse_cpp_grammar (
+cpp_grammar_gen<LexIteratorT>::parse_cpp_grammar (
     LexIteratorT const &first, LexIteratorT const &last,
     position_type const &act_pos, bool &found_eof,
-    token_type &found_directive, token_container_type &found_eoltokens)
+    token_type &found_directive)
 {
     using namespace boost::spirit;
     using namespace boost::wave;
     
-    cpp_grammar<token_type, TokenContainerT> g(found_eof, found_directive, found_eoltokens);
+    cpp_grammar<token_type> g(found_eof, found_directive);
     tree_parse_info<LexIteratorT, node_factory_type> hit = 
         parsetree_parse<node_factory_type>(first, last, g);
     

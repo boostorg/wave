@@ -38,8 +38,7 @@ namespace util {
 //      This functor input policy template is essentially the same as the 
 //      predefined multi_pass functor_input policy. The difference is, 
 //      that the first token is not read at initialization time, but only 
-//      just before returning the first token. Additionally it does not
-//      call operator new() twice but only once.
+//      just before returning the first token. 
 //
 ///////////////////////////////////////////////////////////////////////////////
 struct functor_input {

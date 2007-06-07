@@ -199,8 +199,8 @@ protected:
     
 #if BOOST_WAVE_SERIALIZATION != 0
 public:
-    BOOST_STATIC_CONSTANT(unsigned int, version = 0x10);
-    BOOST_STATIC_CONSTANT(unsigned int, version_mask = 0x0f);
+    BOOST_STATIC_CONSTANT(unsigned int, version = 0x100);
+    BOOST_STATIC_CONSTANT(unsigned int, version_mask = 0xff);
 
 private:
     friend class boost::serialization::access;
@@ -212,10 +212,10 @@ private:
     template<typename Archive>
     void load(Archive &ar, const unsigned int loaded_version)
     {
-        if (version != (loaded_version & ~version_mask)) {
-            BOOST_WAVE_THROW(preprocess_exception, incompatible_config, 
-                "cpp_context state version", get_main_pos());
-        }
+//         if (version != (loaded_version & ~version_mask)) {
+//             BOOST_WAVE_THROW(preprocess_exception, incompatible_config, 
+//                 "cpp_include_path state version", main_pos);
+//         }
         ar & defined_macros;
         current_macros = defined_macros.get();
     }
@@ -318,15 +318,9 @@ typename defined_macros_type::iterator it = current_scope->find(name.get_value()
     std::swap((*p.first).second->macrodefinition, definition);
     
 // call the context supplied preprocessing hook
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
     ctx.get_hooks().defined_macro(name, has_parameters, 
         (*p.first).second->macroparameters, 
         (*p.first).second->macrodefinition, is_predefined);
-#else
-    ctx.get_hooks().defined_macro(ctx, name, has_parameters, 
-        (*p.first).second->macroparameters, 
-        (*p.first).second->macrodefinition, is_predefined);
-#endif
     return true;
 }
 
@@ -366,8 +360,7 @@ token_id id = token_id(*begin);
 
     if (T_IDENTIFIER != id && 
         !IS_CATEGORY(id, KeywordTokenType) &&
-        !IS_EXTCATEGORY(id, OperatorTokenType|AltExtTokenType) &&
-        !IS_CATEGORY(id, BoolLiteralTokenType)) 
+        !IS_EXTCATEGORY(id, OperatorTokenType|AltExtTokenType)) 
     {
         BOOST_WAVE_THROW(preprocess_exception, invalid_macroname, 
             impl::get_full_name(begin, end).c_str(), main_pos);
@@ -435,11 +428,7 @@ macromap<ContextT>::remove_macro(token_type const &token,
         current_macros->erase(it);
         
     // call the context supplied preprocessing hook function
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
         ctx.get_hooks().undefined_macro(token);
-#else
-        ctx.get_hooks().undefined_macro(ctx, token);
-#endif
         return true;
     }
     else if (impl::is_special_macroname(name)) {
@@ -529,8 +518,7 @@ macromap<ContextT>::expand_tokensequence_worker(
         }
             
         if (T_IDENTIFIER == id || IS_CATEGORY(id, KeywordTokenType) ||
-            IS_EXTCATEGORY(id, OperatorTokenType|AltExtTokenType) ||
-            IS_CATEGORY(id, BoolLiteralTokenType)) 
+            IS_EXTCATEGORY(id, OperatorTokenType|AltExtTokenType)) 
         {
         // try to replace this identifier as a macro
             if (expand_operator_defined && (*first).get_value() == "defined") {
@@ -783,13 +771,23 @@ iterator_type first_it = gen_type::generate(first);
 iterator_type last_it = gen_type::generate(last);
 
 on_exit::assign<IteratorT, iterator_type> on_exit(first, first_it);
+// bool was_whitespace = false;
 ContainerT pending_queue;
     
     while (!pending_queue.empty() || first_it != last_it) {
-        token_type t = expand_tokensequence_worker(pending_queue, first_it, 
+    token_type t = expand_tokensequence_worker(pending_queue, first_it, 
                     last_it, expand_operator_defined);
-
-        expanded.push_back(t);
+//     bool is_whitespace = IS_CATEGORY(t, WhiteSpaceTokenType) &&
+//         T_PLACEHOLDER != token_id(t);
+// 
+//         if (!was_whitespace || !is_whitespace) {
+//             if (is_whitespace && T_SPACE != token_id(t)) {
+//                 t.set_token_id(T_SPACE);
+//                 t.set_value(" ");
+//             }
+            expanded.push_back(t);
+//         }
+//         was_whitespace = is_whitespace;
     }
 
 // should have returned all expanded tokens
@@ -935,8 +933,7 @@ bool adjacent_stringize = false;
             // stringize the current argument
                 BOOST_ASSERT(!arguments[i].empty());
                 
-            // safe a copy of the first tokens position (not a reference!)
-            position_type pos ((*arguments[i].begin()).get_position());
+            position_type const &pos = (*arguments[i].begin()).get_position();
 
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
                 if (is_ellipsis && boost::wave::need_variadics(ctx.get_language())) {
@@ -1075,8 +1072,7 @@ macromap<ContextT>::expand_macro(ContainerT &expanded,
     
     BOOST_ASSERT(T_IDENTIFIER == token_id(curr_token) ||
         IS_CATEGORY(token_id(curr_token), KeywordTokenType) ||
-        IS_EXTCATEGORY(token_id(curr_token), OperatorTokenType|AltExtTokenType) ||
-        IS_CATEGORY(token_id(curr_token), BoolLiteralTokenType));
+        IS_EXTCATEGORY(token_id(curr_token), OperatorTokenType|AltExtTokenType));
         
     if (it == scope->end()) {
         ++first;    // advance
@@ -1124,10 +1120,6 @@ ContainerT replacement_list;
     // called as a function-like macro 
         impl::skip_to_token(first, last, T_LEFTPAREN);
         
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS == 0
-        IteratorT seqstart = first;
-#endif
-
         if (macro_def.is_functionlike) {
         // defined as a function-like macro
         
@@ -1169,30 +1161,18 @@ ContainerT replacement_list;
             }
                 
         // inject tracing support
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
             ctx.get_hooks().expanding_function_like_macro(
                 macro_def.macroname, macro_def.macroparameters, 
                 macro_def.macrodefinition, curr_token, arguments);
-#else
-            ctx.get_hooks().expanding_function_like_macro(
-                ctx, macro_def.macroname, macro_def.macroparameters, 
-                macro_def.macrodefinition, curr_token, arguments,
-                seqstart, first);
-#endif
-
+        
         // expand the replacement list of this macro
             expand_replacement_list(macro_def, arguments, expand_operator_defined,
                 replacement_list);
         }
         else {
         // defined as an object-like macro
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
             ctx.get_hooks().expanding_object_like_macro(
                 macro_def.macroname, macro_def.macrodefinition, curr_token);
-#else
-            ctx.get_hooks().expanding_object_like_macro(
-                ctx, macro_def.macroname, macro_def.macrodefinition, curr_token);
-#endif
 
         bool found = false;
         impl::find_concat_operator concat_tag(found);
@@ -1223,13 +1203,8 @@ ContainerT replacement_list;
         }
         else {
         // defined as an object-like macro (expand it)
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
             ctx.get_hooks().expanding_object_like_macro(
                 macro_def.macroname, macro_def.macrodefinition, curr_token);
-#else
-            ctx.get_hooks().expanding_object_like_macro(
-                ctx, macro_def.macroname, macro_def.macrodefinition, curr_token);
-#endif
 
         bool found = false;
         impl::find_concat_operator concat_tag(found);
@@ -1250,20 +1225,12 @@ ContainerT replacement_list;
 // rescan the replacement list
 ContainerT expanded_list;
 
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
     ctx.get_hooks().expanded_macro(replacement_list);
-#else
-    ctx.get_hooks().expanded_macro(ctx, replacement_list);
-#endif
     
     rescan_replacement_list(curr_token, macro_def, replacement_list, 
         expanded_list, expand_operator_defined, first, last);
     
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
     ctx.get_hooks().rescanned_macro(expanded_list);  
-#else
-    ctx.get_hooks().rescanned_macro(ctx, expanded_list);  
-#endif
     expanded.splice(expanded.end(), expanded_list);
     return true;        // rescan is required
 }
@@ -1366,7 +1333,7 @@ on_exit::pop_front<definition_container_type> pop_front_token(pending);
 //
 //      This function returns true, if the pragma was correctly interpreted. 
 //      The iterator 'first' is positioned behind the closing ')'.
-//      This function returns false, if the _Pragma was not known, the 
+//      This function returnes false, if the _Pragma was not known, the 
 //      preprocessed token sequence is pushed back to the 'pending' sequence.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -1674,7 +1641,7 @@ macromap<ContextT>::init_predefined_macros(char const *fname,
 defined_macros_type *current_scope = scope ? scope : current_macros;
 
 // first, add the static macros
-position_type pos("<built-in>");
+position_type pos;
 
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
     if (boost::wave::need_c99(ctx.get_language())) {
@@ -1734,7 +1701,7 @@ position_type pos("<built-in>");
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-//  reset_macromap(): initialize the internal macro symbol namespace
+//  reset_macro_map(): initialise the internal macro symbol namespace
 //
 ///////////////////////////////////////////////////////////////////////////////
 template <typename ContextT>
@@ -1762,7 +1729,7 @@ struct version<boost::wave::util::macromap<ContextT> >
     BOOST_STATIC_CONSTANT(unsigned int, value = version::type::value);
 };
 
-}}    // namespace boost::serialization
+}}    // namepsace boost::serialization
 #endif
 
 // the suffix header occurs after all of the code

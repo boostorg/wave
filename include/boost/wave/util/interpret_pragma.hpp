@@ -100,10 +100,6 @@ interpret_pragma(ContextT &ctx, typename ContextT::token_type const &act_token,
                                 [
                                     spirit_assign_actor(option)
                                 ] 
-                            |   pattern_p(BoolLiteralTokenType, TokenTypeMask)
-                                [
-                                    spirit_assign_actor(option)
-                                ] 
                             )
                         >> !(   ch_p(T_LEFTPAREN) 
                             >>  lexeme_d[
@@ -113,22 +109,24 @@ interpret_pragma(ContextT &ctx, typename ContextT::token_type const &act_token,
                             ),
                     pattern_p(WhiteSpaceTokenType, TokenTypeMask)).hit)
             {
-                BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option,
-                    impl::as_string<string_type>(it, end).c_str(), 
-                    act_token.get_position());
+                return false;
             }
         
         // remove the falsely matched closing parenthesis
             if (values.size() > 0) {
-                BOOST_ASSERT(T_RIGHTPAREN == values.back());
+                if (T_RIGHTPAREN == values.back()) {
                 typename ContainerT::reverse_iterator rit = values.rbegin();
-                values.erase((++rit).base());
+                
+                    values.erase((++rit).base());
+                }
+                else {
+                    BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_option,
+                        "missing matching ')'", act_token.get_position());
+                }
             }
             
         // decode the option (call the context_policy hook)
-            if (!ctx.get_hooks().interpret_pragma(
-                  ctx, pending, option, values, act_token)) 
-            {
+            if (!ctx.interpret_pragma(pending, option, values, act_token)) {
             // unknown #pragma option 
             string_type option_str ((*it).get_value());
 
@@ -149,44 +147,6 @@ interpret_pragma(ContextT &ctx, typename ContextT::token_type const &act_token,
             return ctx.add_pragma_once_header(ctx.get_current_filename());
         }
 #endif 
-#if BOOST_WAVE_SUPPORT_PRAGMA_MESSAGE != 0
-        else if ((*it).get_value() == "message") {
-        // #pragma message(...) or #pragma message ...
-            using namespace boost::spirit;
-            ContainerT values;
-            
-            if (!parse (++it, end, 
-                            (   (   ch_p(T_LEFTPAREN) 
-                                >>  lexeme_d[
-                                        *(anychar_p[spirit_append_actor(values)] - ch_p(T_RIGHTPAREN))
-                                    ]
-                                >>  ch_p(T_RIGHTPAREN)
-                                )
-                            |   lexeme_d[
-                                    *(anychar_p[spirit_append_actor(values)] - ch_p(T_NEWLINE))
-                                ]
-                            ),
-                            pattern_p(WhiteSpaceTokenType, TokenTypeMask)
-                       ).hit
-               )
-            {
-                BOOST_WAVE_THROW(preprocess_exception, ill_formed_pragma_message,
-                    impl::as_string<string_type>(it, end).c_str(), 
-                    act_token.get_position());
-            }
-        
-        // remove the falsely matched closing parenthesis/newline
-            if (values.size() > 0) {
-                BOOST_ASSERT(T_RIGHTPAREN == values.back() || T_NEWLINE == values.back());
-                typename ContainerT::reverse_iterator rit = values.rbegin();
-                values.erase((++rit).base());
-            }
-
-        // output the message itself
-            BOOST_WAVE_THROW(preprocess_exception, pragma_message_directive, 
-                impl::as_string(values).c_str(), act_token.get_position());
-        }
-#endif
     }
     return false;
 }

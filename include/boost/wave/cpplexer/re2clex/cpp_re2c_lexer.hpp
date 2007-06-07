@@ -116,10 +116,8 @@ lexer<IteratorT, PositionT>::lexer(IteratorT const &first,
     memset(&scanner, '\0', sizeof(Scanner));
     scanner.fd = -1;
     scanner.eol_offsets = aq_create();
-    if (first != last) {
-        scanner.first = scanner.act = (uchar *)&(*first);
-        scanner.last = scanner.first + std::distance(first, last);  
-    }
+    scanner.first = scanner.act = (uchar *)&(*first);
+    scanner.last = scanner.first + std::distance(first, last);  
     scanner.line = pos.get_line();
     scanner.column = scanner.curr_column = pos.get_column();
     scanner.error_proc = report_error;
@@ -135,12 +133,6 @@ lexer<IteratorT, PositionT>::lexer(IteratorT const &first,
     scanner.act_in_c99_mode = boost::wave::need_c99(language);
 #endif
 
-#if BOOST_WAVE_SUPPORT_IMPORT_KEYWORD != 0
-    scanner.enable_import_keyword = boost::wave::need_c99(language) ? 0 : 1;
-#else
-    scanner.enable_import_keyword = 0;
-#endif
-
     scanner.detect_pp_numbers = boost::wave::need_prefer_pp_numbers(language);
 }
 
@@ -148,7 +140,7 @@ template <typename IteratorT, typename PositionT>
 inline
 lexer<IteratorT, PositionT>::~lexer() 
 {
-    using namespace std;        // some systems have free in std
+    using namespace std;        // some systems have memset in std
     aq_terminate(scanner.eol_offsets);
     free(scanner.bot);
 }

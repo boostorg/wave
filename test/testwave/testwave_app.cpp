@@ -492,12 +492,14 @@ namespace {
     std::string const& trim_whitespace(std::string& value)
     {
         std::string::size_type first = value.find_first_not_of(" \t");
+        std::string::size_type last = std::string::npos;
+        
         if (std::string::npos == first) 
             value.clear();
         else {
-            std::string::size_type last = last = value.find_last_not_of(" \t");
+            last = value.find_last_not_of(" \t")+1;
             assert(std::string::npos != last);
-            value = value.substr(first, last-first+1);
+            value = value.substr(first, last-first);
         }
         return value;
     }

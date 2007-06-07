@@ -149,45 +149,23 @@ public:
     //  The function 'expanding_function_like_macro' is called, whenever a 
     //  function-like macro is to be expanded.
     //
-    //  The parameter 'ctx' is a reference to the context object used for 
-    //  instantiating the preprocessing iterators by the user.
-    //
-    //  The parameter 'macrodef' marks the position, where the macro to expand 
+    //  The 'macrodef' parameter marks the position, where the macro to expand 
     //  is defined.
-    //
-    //  The parameter 'formal_args' holds the formal arguments used during the
+    //  The 'formal_args' parameter holds the formal arguments used during the
     //  definition of the macro.
-    //
-    //  The parameter 'definition' holds the macro definition for the macro to 
+    //  The 'definition' parameter holds the macro definition for the macro to 
     //  trace.
     //
-    //  The parameter 'macro_call' marks the position, where this macro invoked.
-    //
-    //  The parameter 'arguments' holds the macro arguments used during the 
+    //  The 'macrocall' parameter marks the position, where this macro invoked.
+    //  The 'arguments' parameter holds the macro arguments used during the 
     //  invocation of the macro
     //
-    //  The parameters 'seqstart' and 'seqend' point into the input token 
-    //  stream allowing to access the whole token sequence comprising the macro
-    //  invocation (starting with the opening parenthesis and ending after the
-    //  closing one).
-    //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
     template <typename ContainerT>
     void expanding_function_like_macro(
         TokenT const &macrodef, std::vector<TokenT> const &formal_args, 
         ContainerT const &definition,
         TokenT const &macrocall, std::vector<ContainerT> const &arguments) 
-#else
-    // new signature
-    template <typename ContextT, typename ContainerT, typename IteratorT>
-    void expanding_function_like_macro(ContextT const& ctx,
-        TokenT const &macrodef, std::vector<TokenT> const &formal_args, 
-        ContainerT const &definition,
-        TokenT const &macrocall, std::vector<ContainerT> const &arguments,
-        IteratorT const& seqstart, IteratorT const& seqend) 
-#endif
     {
         if (!enabled_macro_tracing()) return;
         
@@ -269,30 +247,17 @@ public:
     //  The function 'expanding_object_like_macro' is called, whenever a 
     //  object-like macro is to be expanded .
     //
-    //  The parameter 'ctx' is a reference to the context object used for 
-    //  instantiating the preprocessing iterators by the user.
-    //
-    //  The parameter 'macrodef' marks the position, where the macro to expand 
+    //  The 'macrodef' parameter marks the position, where the macro to expand 
     //  is defined.
-    //
-    //  The definition 'definition' holds the macro definition for the macro to 
+    //  The 'definition' parameter holds the macro definition for the macro to 
     //  trace.
     //
-    //  The parameter 'macrocall' marks the position, where this macro invoked.
+    //  The 'macrocall' parameter marks the position, where this macro invoked.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
     template <typename ContainerT>
     void expanding_object_like_macro(TokenT const &macrodef, 
         ContainerT const &definition, TokenT const &macrocall)
-#else
-    // new signature
-    template <typename ContextT, typename ContainerT>
-    void expanding_object_like_macro(ContextT const& ctx,
-        TokenT const &macrodef, ContainerT const &definition, 
-        TokenT const &macrocall)
-#endif
     {
         if (!enabled_macro_tracing()) return;
         
@@ -324,22 +289,12 @@ public:
     //  The function 'expanded_macro' is called, whenever the expansion of a 
     //  macro is finished but before the rescanning process starts.
     //
-    //  The parameter 'ctx' is a reference to the context object used for 
-    //  instantiating the preprocessing iterators by the user.
-    //
     //  The parameter 'result' contains the token sequence generated as the 
     //  result of the macro expansion.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
     template <typename ContainerT>
     void expanded_macro(ContainerT const &result)
-#else
-    // new signature
-    template <typename ContextT, typename ContainerT>
-    void expanded_macro(ContextT const& ctx,ContainerT const &result)
-#endif
     {
         if (!enabled_macro_tracing()) return;
         
@@ -355,22 +310,12 @@ public:
     //  The function 'rescanned_macro' is called, whenever the rescanning of a 
     //  macro is finished.
     //
-    //  The parameter 'ctx' is a reference to the context object used for 
-    //  instantiating the preprocessing iterators by the user.
-    //
     //  The parameter 'result' contains the token sequence generated as the 
     //  result of the rescanning.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
     template <typename ContainerT>
     void rescanned_macro(ContainerT const &result)
-#else
-    // new signature
-    template <typename ContextT, typename ContainerT>
-    void rescanned_macro(ContextT const& ctx,ContainerT const &result)
-#endif
     {
         if (!enabled_macro_tracing() || get_level() == 0) 
             return;
@@ -387,17 +332,15 @@ public:
 
     ///////////////////////////////////////////////////////////////////////////
     //  
-    //  The function 'interpret_pragma' is called, whenever a #pragma command 
-    //  directive is found which isn't known to the core Wave library, where
-    //  command is the value defined as the BOOST_WAVE_PRAGMA_KEYWORD constant
-    //  which defaults to "wave".
+    //  The function 'interpret_pragma' is called, whenever a #pragma wave 
+    //  directive is found, which isn't known to the core Wave library. 
     //
     //  The parameter 'ctx' is a reference to the context object used for 
     //  instantiating the preprocessing iterators by the user.
     //
     //  The parameter 'pending' may be used to push tokens back into the input 
     //  stream, which are to be used as the replacement text for the whole 
-    //  #pragma directive.
+    //  #pragma wave() directive.
     //
     //  The parameter 'option' contains the name of the interpreted pragma.
     //
@@ -472,9 +415,6 @@ public:
     //  The function 'opened_include_file' is called, whenever a file referred 
     //  by an #include directive was successfully located and opened.
     //
-    //  The parameter 'ctx' is a reference to the context object used for 
-    //  instantiating the preprocessing iterators by the user.
-    //
     //  The parameter 'filename' contains the file system path of the 
     //  opened file (this is relative to the directory of the currently 
     //  processed file or a absolute path depending on the paths given as the
@@ -486,21 +426,10 @@ public:
     //  found as a result of a #include <...> directive.
     //  
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
     void 
     opened_include_file(std::string const &relname, std::string const &absname, 
         std::size_t include_depth, bool is_system_include) 
     {
-#else
-    // new signature
-    template <typename ContextT>
-    void 
-    opened_include_file(ContextT const& ctx, std::string const &relname, 
-        std::string const &absname, bool is_system_include) 
-    {
-        std::size_t include_depth = ctx.get_max_include_nesting_depth();
-#endif
         if (enabled_include_tracing()) {
             // print indented filename
             for (std::size_t i = 0; i < include_depth; ++i)
@@ -541,8 +470,7 @@ public:
     //
     ///////////////////////////////////////////////////////////////////////////
     template <typename ContextT>
-    bool may_skip_whitespace(ContextT const &ctx, TokenT &token, 
-        bool &skipped_newline)
+    bool may_skip_whitespace(ContextT const &ctx, TokenT &token, bool &skipped_newline)
     {
         return this->base_type::may_skip_whitespace(ctx, token, skipped_newline) ?
             !preserve_whitespace : false;
@@ -672,7 +600,6 @@ protected:
         IteratorT end, typename ContextT::token_type const &act_token)
     {
         using namespace boost::wave;
-        namespace fs = boost::filesystem;
         
         typedef typename ContextT::token_type token_type;
         typedef typename token_type::string_type string_type;

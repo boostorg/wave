@@ -55,15 +55,12 @@
 #define YYCURSOR  cursor
 #define YYLIMIT   limit
 #define YYMARKER  marker
-#define YYFILL(n)                                                             \
-    {                                                                         \
-        cursor = uchar_wrapper(fill(s, cursor), cursor.column);               \
-        limit = uchar_wrapper (s->lim);                                       \
-    }                                                                         \
-    /**/
+#define YYFILL(n) {cursor = uchar_wrapper(fill(s, cursor), cursor.column);}
+#define YYDEBUG(state, c)  std::cerr << "state: " << state << ", current char: " << char(c) << std::endl;
 
 #include <iostream>
 
+//#define BOOST_WAVE_RET(i)    {s->cur = cursor; return (i);}
 #define BOOST_WAVE_RET(i)                                                     \
     {                                                                         \
         s->line += count_backslash_newlines(s, cursor);                       \
@@ -71,8 +68,6 @@
         s->cur = cursor;                                                      \
         s->lim = limit;                                                       \
         s->ptr = marker;                                                      \
-        if (s->cur > s->lim)                                                  \
-            return T_EOF;     /* may happen for empty files */                \
         return (i);                                                           \
     }                                                                         \
     /**/
@@ -199,7 +194,7 @@ uchar *fill(Scanner *s, uchar *cursor)
         {
             if (NULL == s->lim)
                 s->lim = s->top;
-            memmove(s->bot, s->tok, s->lim - s->tok);
+            memcpy(s->bot, s->tok, s->lim - s->tok);
             s->tok = s->cur = s->bot;
             s->ptr -= cnt;
             cursor -= cnt;
@@ -223,7 +218,7 @@ uchar *fill(Scanner *s, uchar *cursor)
                 return cursor;
             }
 
-            memmove(buf, s->tok, s->lim - s->tok);
+            memcpy(buf, s->tok, s->lim - s->tok);
             s->tok = s->cur = buf;
             s->ptr = &buf[s->ptr - s->bot];
             cursor = &buf[cursor - s->bot];
@@ -243,7 +238,7 @@ uchar *fill(Scanner *s, uchar *cursor)
             cnt = s->last - s->act;
             if (cnt > BOOST_WAVE_BSIZE)
                 cnt = BOOST_WAVE_BSIZE;
-            memmove(s->lim, s->act, cnt);
+            memcpy(s->lim, s->act, cnt);
             s->act += cnt;
             if (cnt != BOOST_WAVE_BSIZE) 
             {

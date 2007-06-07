@@ -283,10 +283,7 @@ enum token_id {
 
     T_MSEXT_PP_REGION    = TOKEN_FROM_ID(420, PPTokenType),
     T_MSEXT_PP_ENDREGION = TOKEN_FROM_ID(421, PPTokenType),
-
-// import is needed to be a keyword for the C++ module Standards proposal
-    T_IMPORT       = TOKEN_FROM_ID(422, KeywordTokenType),
-
+    
     T_LAST_TOKEN_ID,
     T_LAST_TOKEN = ID_FROM_TOKEN(T_LAST_TOKEN_ID),
     
@@ -310,17 +307,17 @@ enum token_id {
 #undef BASEID_FROM_TOKEN
 #define BASEID_FROM_TOKEN(tok)                                                \
     boost::wave::token_id(((tok) & ~boost::wave::ExtTokenTypeMask))           \
-    /**/
+  /**/
 #define BASE_TOKEN(tok)                                                       \
     boost::wave::token_id((tok) & boost::wave::MainTokenMask)                 \
-    /**/
+  /**/
 #define CATEGORY_FROM_TOKEN(tok) ((tok) & boost::wave::TokenTypeMask)
 #define EXTCATEGORY_FROM_TOKEN(tok) ((tok) & boost::wave::ExtTokenTypeMask)
-#define IS_CATEGORY(tok, cat)                                                 \
-    ((CATEGORY_FROM_TOKEN(tok) == (cat)) ? true : false)                      \
+#define IS_CATEGORY(tok, cat)    \
+    ((CATEGORY_FROM_TOKEN(tok) == (cat)) ? true : false) \
     /**/
-#define IS_EXTCATEGORY(tok, cat)                                              \
-    ((EXTCATEGORY_FROM_TOKEN(tok) == (cat)) ? true : false)                   \
+#define IS_EXTCATEGORY(tok, cat)    \
+    ((EXTCATEGORY_FROM_TOKEN(tok) == (cat)) ? true : false) \
     /**/
 
 ///////////////////////////////////////////////////////////////////////////////

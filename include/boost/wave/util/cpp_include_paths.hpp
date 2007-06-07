@@ -211,8 +211,8 @@ private:
 
 #if BOOST_WAVE_SERIALIZATION != 0
 public:
-    BOOST_STATIC_CONSTANT(unsigned int, version = 0x10);
-    BOOST_STATIC_CONSTANT(unsigned int, version_mask = 0x0f);
+    BOOST_STATIC_CONSTANT(unsigned int, version = 0x100);
+    BOOST_STATIC_CONSTANT(unsigned int, version_mask = 0xff);
 
 private:
     friend class boost::serialization::access;
@@ -229,10 +229,10 @@ private:
     template<typename Archive>
     void load(Archive & ar, const unsigned int loaded_version)
     {
-        if (version != (loaded_version & ~version_mask)) {
-            BOOST_WAVE_THROW(preprocess_exception, incompatible_config, 
-                "cpp_include_path state version", load_filepos());
-        }
+//         if (version != (loaded_version & ~version_mask)) {
+//             BOOST_WAVE_THROW(preprocess_exception, incompatible_config, 
+//                 "cpp_include_path state version", load_filepos());
+//         }
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
         ar & pragma_once_files;
@@ -424,8 +424,7 @@ template<class Archive>
 inline void save (Archive & ar, boost::filesystem::path const& p, 
     const unsigned int /* file_version */)
 {
-    std::string path_str(p.native_file_string());
-    ar & path_str;
+    ar & p.native_file_string();
 }
 
 template<class Archive>

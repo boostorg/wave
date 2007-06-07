@@ -90,8 +90,8 @@ namespace impl {
                 else {
                 // calculate the new value (avoiding a warning regarding 
                 // shifting count >= size of the type)
-                    value <<= CHAR_BIT * (sizeof(wchar_t)-1);
-                    value <<= CHAR_BIT;  
+                    value <<= 8 * (sizeof(wchar_t)-1);
+                    value <<= 8;  
                     value |= character & masks[sizeof(wchar_t)-1];
                 }
             }
@@ -102,7 +102,7 @@ namespace impl {
                 }
                 else {
                 // calculate the new value
-                    value <<= CHAR_BIT * sizeof(char);
+                    value <<= 8 * sizeof(char);
                     value |= character & masks[sizeof(char)-1];
                 }
             }

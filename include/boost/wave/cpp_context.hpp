@@ -18,7 +18,6 @@
 
 #include <boost/concept_check.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/filesystem/path.hpp>
 
 #include <boost/wave/wave_config.hpp>
 #if BOOST_WAVE_SERIALIZATION != 0
@@ -142,30 +141,23 @@ public:
     }
 
 // iterator interface
-    iterator_type begin() 
+    iterator_type begin(
+        target_iterator_type const &first_ = target_iterator_type(), 
+        target_iterator_type const &last_ = target_iterator_type()) 
     { 
         std::string fname(filename);
         if (filename != "<Unknown>" && filename != "<stdin>") {
             using namespace boost::filesystem;
             path fpath(complete(path(filename)));
+
             fname = fpath.string();
             includes.set_current_directory(fname.c_str());
         }
+        if (first_ != target_iterator_type())
+            return iterator_type(*this, first_, last_, position_type(fname.c_str())); 
+            
         return iterator_type(*this, first, last, position_type(fname.c_str())); 
     }
-	  iterator_type begin(
-		  target_iterator_type const &first_, 
-		  target_iterator_type const &last_) 
-	  { 
-		    std::string fname(filename);
-		    if (filename != "<Unknown>" && filename != "<stdin>") {
-			      using namespace boost::filesystem;
-			      path fpath(complete(path(filename)));
-			      fname = fpath.string();
-			      includes.set_current_directory(fname.c_str());
-		    }
-		    return iterator_type(*this, first_, last_, position_type(fname.c_str())); 
-	  }
     iterator_type end() const 
         { return iterator_type(); }
 
@@ -211,6 +203,9 @@ public:
                 token_type(T_IDENTIFIER, name, macros.get_main_pos()), 
                 even_predefined); 
         }
+//     bool remove_macro_definition(token_type const &token, 
+//             bool even_predefined = false)
+//         { return macros.remove_macro(token, even_predefined); }
     void reset_macro_definitions() 
         { macros.reset_macromap(); macros.init_predefined_macros(); }
 
@@ -328,10 +323,18 @@ public:
         { return includes.add_pragma_once_header(filename, guard_name); }
 #endif 
 
+// forwarding functions for the context policy hooks    
+    template <typename ContainerT>
+    bool interpret_pragma(ContainerT &pending, token_type const &option, 
+        ContainerT const &values, token_type const &act_token)
+    {
+        return hooks.interpret_pragma(*this, pending, option, values, act_token);
+    }
+    
 #if BOOST_WAVE_SERIALIZATION != 0
 public:
-    BOOST_STATIC_CONSTANT(unsigned int, version = 0x10);
-    BOOST_STATIC_CONSTANT(unsigned int, version_mask = 0x0f);
+    BOOST_STATIC_CONSTANT(unsigned int, version = 0x100);
+    BOOST_STATIC_CONSTANT(unsigned int, version_mask = 0xff);
 
 private:
     friend class boost::serialization::access;
@@ -340,12 +343,9 @@ private:
     {
         typedef typename token_type::string_type string_type;
         
-        string_type cfg(BOOST_PP_STRINGIZE(BOOST_WAVE_CONFIG));
-        string_type kwd(BOOST_WAVE_PRAGMA_KEYWORD);
-        string_type strtype(BOOST_PP_STRINGIZE((BOOST_WAVE_STRINGTYPE)));
-        ar & cfg;
-        ar & kwd;
-        ar & strtype;
+        ar & string_type(BOOST_PP_STRINGIZE(BOOST_WAVE_CONFIG));
+        ar & string_type(BOOST_WAVE_PRAGMA_KEYWORD);
+        ar & string_type(BOOST_PP_STRINGIZE((BOOST_WAVE_STRINGTYPE)));
         
         ar & language;
         ar & macros;
@@ -354,10 +354,10 @@ private:
     template<class Archive>
     void load(Archive & ar, const unsigned int loaded_version)
     {
-        if (version != (loaded_version & ~version_mask)) {
-            BOOST_WAVE_THROW(preprocess_exception, incompatible_config, 
-                "cpp_context state version", get_main_pos());
-        }
+//         if (version != (loaded_version & ~version_mask)) {
+//             BOOST_WAVE_THROW(preprocess_exception, incompatible_config, 
+//                 "cpp_context state version", get_main_pos());
+//         }
         
         // check compatibility of the stored information
         typedef typename token_type::string_type string_type;
