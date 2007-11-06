@@ -67,7 +67,7 @@ public:
     typedef typename token_type::string_type  string_type;
     
     lexer(IteratorT const &first, IteratorT const &last, 
-        PositionT const &pos, boost::wave::language_support language);
+        PositionT const &pos, boost::wave::language_support language_);
     ~lexer();
 
     lex_token<PositionT> get();
@@ -87,7 +87,7 @@ public:
 #endif
     
 // error reporting from the re2c generated lexer
-    static int report_error(Scanner const* s, char const *, ...);
+    static int report_error(Scanner const* s, int code, char const *, ...);
 
 private:
     static char const *tok_names[];
@@ -110,8 +110,8 @@ template <typename IteratorT, typename PositionT>
 inline
 lexer<IteratorT, PositionT>::lexer(IteratorT const &first, 
         IteratorT const &last, PositionT const &pos, 
-        boost::wave::language_support language) 
-:   filename(pos.get_file()), at_eof(false), language(language)
+        boost::wave::language_support language_) 
+:   filename(pos.get_file()), at_eof(false), language(language_)
 {
     using namespace std;        // some systems have memset in std
     memset(&scanner, '\0', sizeof(Scanner));
@@ -132,17 +132,17 @@ lexer<IteratorT, PositionT>::lexer(IteratorT const &first,
 #endif
 
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
-    scanner.act_in_c99_mode = boost::wave::need_c99(language);
+    scanner.act_in_c99_mode = boost::wave::need_c99(language_);
 #endif
 
 #if BOOST_WAVE_SUPPORT_IMPORT_KEYWORD != 0
-    scanner.enable_import_keyword = !boost::wave::need_c99(language);
+    scanner.enable_import_keyword = !boost::wave::need_c99(language_);
 #else
     scanner.enable_import_keyword = false;
 #endif
 
-    scanner.detect_pp_numbers = boost::wave::need_prefer_pp_numbers(language);
-    scanner.single_line_only = boost::wave::need_single_line(language);
+    scanner.detect_pp_numbers = boost::wave::need_prefer_pp_numbers(language_);
+    scanner.single_line_only = boost::wave::need_single_line(language_);
 }
 
 template <typename IteratorT, typename PositionT>
@@ -291,7 +291,8 @@ lexer<IteratorT, PositionT>::get()
 
 template <typename IteratorT, typename PositionT>
 inline int 
-lexer<IteratorT, PositionT>::report_error(Scanner const *s, char const *msg, ...)
+lexer<IteratorT, PositionT>::report_error(Scanner const *s, int errcode, 
+    char const *msg, ...)
 {
     BOOST_ASSERT(0 != s);
     BOOST_ASSERT(0 != msg);
@@ -304,8 +305,8 @@ lexer<IteratorT, PositionT>::report_error(Scanner const *s, char const *msg, ...
     vsprintf(buffer, msg, params);
     va_end(params);
     
-    BOOST_WAVE_LEXER_THROW(lexing_exception, generic_lexing_error, buffer, 
-        s->line, s->column, s->file_name);
+    BOOST_WAVE_LEXER_THROW_VAR(lexing_exception, errcode, buffer, s->line, 
+        s->column, s->file_name);
 //    BOOST_UNREACHABLE_RETURN(0);
     return 0;
 }

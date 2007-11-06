@@ -33,6 +33,7 @@ lib boost_wave
     $(SOURCES)
     ../../filesystem/build//boost_filesystem
     ../../thread/build//boost_thread
+    ../../date_time/build//boost_date_time
     ;
 
 for local source in $(SOURCES)
@@ -50,12 +51,4 @@ for local source in $(SOURCES)
     obj $(source) : $(source).cpp : $(requirements) ;
 }
 
-install dist-lib
-    :
-    boost_wave
-    :
-    <install-type>LIB
-    <location>../../../dist/lib
-    ;
-
-explicit dist-lib ;
+boost-install boost_wave ;
