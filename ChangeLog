@@ -25,7 +25,11 @@ TODO (known issues):
 CHANGELOG
 
 - Wave Version 1.4
-
+- Added the BOOST_WAVE_SUPPORT_THREADING allowing to explicitelz control 
+  whether the Wave library is built with threading support enabled. If not 
+  defined the build settings will be picked up from the Boost build environment
+  (BOOST_HAS_THREADS).
+  
 Boost V1.35.0
 - Wave Version 1.3
 - Changed the return value of the 'evaluated_conditional_expression()' pp hook
@@ -157,7 +161,11 @@ Boost V1.35.0
 - Applied patch provided by Jens Seidel making sure every header compiles on 
   its own.
 - Updates to the documentation.
-
+- Fixed a problem in flex_string::compare() (#include_next was non-functional).
+- Fixed a bug in the pp hook expanding_function_like_macro(), where the seqend
+  parameter was set to the first token after the closing parenthesis instead of
+  pointing at it.
+  
 Boost V1.34.0
 - Wave Version 1.2.4
 - Added the possibility to explicitly enable/disable the generation of #line 
