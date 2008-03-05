@@ -5,7 +5,7 @@
     
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost 
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost 
     Software License, Version 1.0. (See accompanying file 
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -271,7 +271,6 @@ lexer<IteratorT, PositionT>::init_data[INIT_DATA_SIZE] =
     TOKEN_DATA(CONSTCAST, "const_cast"),
     TOKEN_DATA(CONTINUE, "continue"),
     TOKEN_DATA(DEFAULT, "default"),
-//    TOKEN_DATA(DEFINED, "defined"),
     TOKEN_DATA(DELETE, "delete"),
     TOKEN_DATA(DO, "do"),
     TOKEN_DATA(DOUBLE, "double"),

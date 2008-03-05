@@ -5,7 +5,7 @@
     
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -199,7 +199,29 @@ namespace impl {
         }
         return false;
     }
-    
+
+    inline bool 
+    handle_parens(boost::wave::token_id prev)
+    {
+        switch (static_cast<unsigned int>(prev)) {
+        case T_LEFTPAREN:
+        case T_RIGHTPAREN:
+        case T_LEFTBRACKET:
+        case T_RIGHTBRACKET:
+        case T_LEFTBRACE:
+        case T_RIGHTBRACE:
+        case T_SEMICOLON:
+        case T_COMMA:
+        case T_COLON:
+            // no insertion between parens/brackets/braces and operators
+            return false;   
+
+        default:
+            break;
+        }
+        return true;
+    }
+        
 }   // namespace impl
 
 class insert_whitespace_detection 
@@ -260,6 +282,8 @@ public:
                 return false;   // no insertion between parens/brackets/braces
 
             default:
+                if (IS_CATEGORY(prev, OperatorTokenType))
+                    return false;
                 break;
             }        
             break;
@@ -281,6 +305,8 @@ public:
             case T_QUESTION_MARK:
                 if (T_QUESTION_MARK == beforeprev)
                     return true;
+                if (IS_CATEGORY(prev, OperatorTokenType))
+                    return false;
                 break;
                 
             default:
@@ -290,20 +316,113 @@ public:
                             
         case T_MINUS:
         case T_MINUSMINUS:
-        case T_LESS:
+        case T_MINUSASSIGN:
+            if (T_MINUS == prev || T_MINUSMINUS == prev)
+                return true;
+            if (!impl::handle_parens(prev))
+                return false;
+            if (T_QUESTION_MARK == prev && T_QUESTION_MARK == beforeprev)
+                return true;
+            break;
+            
+        case T_PLUS:
+        case T_PLUSPLUS:
+        case T_PLUSASSIGN:
+            if (T_PLUS == prev || T_PLUSPLUS == prev)
+                return true;
+            if (!impl::handle_parens(prev))
+                return false;
+            if (T_QUESTION_MARK == prev && T_QUESTION_MARK == beforeprev)
+                return true;
+            break;
+            
+        case T_DIVIDE:
+        case T_DIVIDEASSIGN:
+            if (T_DIVIDE == prev)
+                return true;
+            if (!impl::handle_parens(prev))
+                return false;
+            if (T_QUESTION_MARK == prev && T_QUESTION_MARK == beforeprev)
+                return true;
+            break;
+        
         case T_EQUAL:
         case T_ASSIGN:
+            switch (static_cast<unsigned int>(prev)) {
+            case T_PLUSASSIGN:
+            case T_MINUSASSIGN:
+            case T_DIVIDEASSIGN:
+            case T_STARASSIGN:
+            case T_SHIFTRIGHTASSIGN:
+            case T_SHIFTLEFTASSIGN:
+            case T_EQUAL:
+            case T_NOTEQUAL:
+            case T_LESSEQUAL:
+            case T_GREATEREQUAL:
+            case T_LESS:
+            case T_GREATER:
+            case T_PLUS:
+            case T_MINUS:
+            case T_STAR:
+            case T_DIVIDE:
+            case T_ORASSIGN:
+            case T_ANDASSIGN:
+            case T_XORASSIGN:
+            case T_OR:
+            case T_AND:
+            case T_XOR:
+            case T_OROR:
+            case T_ANDAND:
+                return true;
+
+            case T_QUESTION_MARK:
+                if (T_QUESTION_MARK == beforeprev)
+                    return true;
+                break;
+                
+            default:
+                if (!impl::handle_parens(prev))
+                    return false;
+                break;
+            }
+            break;
+
         case T_GREATER:
-        case T_DIVIDE:
+            if (T_MINUS == prev)
+                return true;    // prevent ->
+            // fall through
+        case T_LESS:
         case T_CHARLIT:
         case T_NOT:
         case T_NOTEQUAL:
-        case T_DIVIDEASSIGN:
-        case T_MINUSASSIGN:
+            if (!impl::handle_parens(prev))
+                return false;
             if (T_QUESTION_MARK == prev && T_QUESTION_MARK == beforeprev)
-                return true;    // ??{op}
+                return true;
             break;
 
+        case T_AND:
+        case T_ANDAND:
+            if (!impl::handle_parens(prev))
+                return false;
+            if (T_AND == prev || T_ANDAND == prev)
+                return true;
+            break;
+            
+        case T_OR:
+            if (!impl::handle_parens(prev))
+                return false;
+            if (T_OR == prev)
+                return true;
+            break;
+            
+        case T_XOR:
+            if (!impl::handle_parens(prev))
+                return false;
+            if (T_XOR == prev)
+                return true;
+            break;
+            
         case T_COMPL_ALT:
         case T_OR_ALT:
         case T_AND_ALT:
@@ -313,23 +432,50 @@ public:
         case T_ORASSIGN_ALT:
         case T_XORASSIGN_ALT:
         case T_NOTEQUAL_ALT:
-            if (T_IDENTIFIER == prev || T_NONREPLACABLE_IDENTIFIER == prev ||
-                IS_CATEGORY(prev, KeywordTokenType))
-                return true;
+            switch (static_cast<unsigned int>(prev)) {
+            case T_LEFTPAREN:
+            case T_RIGHTPAREN:
+            case T_LEFTBRACKET:
+            case T_RIGHTBRACKET:
+            case T_LEFTBRACE:
+            case T_RIGHTBRACE:
+            case T_SEMICOLON:
+            case T_COMMA:
+            case T_COLON:
+                // no insertion between parens/brackets/braces and operators
+                return false;   
+
+            case T_IDENTIFIER:
+                if (T_NONREPLACABLE_IDENTIFIER == prev ||
+                    IS_CATEGORY(prev, KeywordTokenType))
+                {
+                    return true;
+                }
+                break;
+                
+            default:
+                break;
+            }
             break;
             
         case T_STAR:
             if (T_STAR == prev)
                 return false;     // '*****' do not need to be separated
+            if (T_GREATER== prev && 
+                (T_MINUS == beforeprev || T_MINUSMINUS == beforeprev)
+               )
+            {
+                return true;    // prevent ->*
+            }
             break;
         }
 
-    // else, handle operators separately
-        if (IS_CATEGORY(current, OperatorTokenType) && 
-            IS_CATEGORY(prev, OperatorTokenType))
-        {
-            return true;    // operators must be delimited always
-        }
+    // FIXME: else, handle operators separately (will catch to many cases)
+//         if (IS_CATEGORY(current, OperatorTokenType) && 
+//             IS_CATEGORY(prev, OperatorTokenType))
+//         {
+//             return true;    // operators must be delimited always
+//         }
         return false;
     }
     void shift_tokens (boost::wave::token_id next_id)

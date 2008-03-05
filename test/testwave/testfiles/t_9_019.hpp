@@ -7,15 +7,5 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-// Tests empty __VA_ARGS__ expansion
-
-//O --variadics
-
-#define MACRO1(x, ...)  x -> __VA_ARGS__
-#define MACRO2(...)     __VA_ARGS__
-#define STR(...)        #__VA_ARGS__
-
-//R #line 19 "t_1_034.cpp"
-MACRO1(1,)    //R 1 -> 
-MACRO2(1, 2)  //R 1,2 
-STR()         //R "" 
+// this shouldn't give an recursion
+#include_next "t_9_019.hpp"

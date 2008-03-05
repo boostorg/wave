@@ -7,15 +7,9 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-// Tests empty __VA_ARGS__ expansion
+//  tests, whether regression causing #include_next to infinitely recurse is
+//  fixed
 
-//O --variadics
+//E t_9_019.hpp(11): error: could not find include file: t_9_019.hpp
+#include "t_9_019.hpp"
 
-#define MACRO1(x, ...)  x -> __VA_ARGS__
-#define MACRO2(...)     __VA_ARGS__
-#define STR(...)        #__VA_ARGS__
-
-//R #line 19 "t_1_034.cpp"
-MACRO1(1,)    //R 1 -> 
-MACRO2(1, 2)  //R 1,2 
-STR()         //R "" 

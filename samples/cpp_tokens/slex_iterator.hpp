@@ -5,7 +5,7 @@
     
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost 
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost 
     Software License, Version 1.0. (See accompanying file 
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -56,7 +56,7 @@ public:
             boost::wave::language_support language)
     :   functor_ptr(slex_input_interface<TokenT>
             ::new_lexer(first, last, pos, language)) 
-#if 0 != __DECCXX_VER || BOOST_WORKAROUND(BOOST_INTEL_LINUX, == 910)
+#if 0 != __DECCXX_VER || BOOST_WORKAROUND(BOOST_INTEL_LINUX, == 1010)
       , eof()
 #endif // 0 != __DECCXX_VER
     {}

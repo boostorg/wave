@@ -1,7 +1,7 @@
 Boost.Wave: A Standard compliant C++ preprocessor library
 http://www.boost.org/
 
-Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
 Software License, Version 1.0. (See accompanying file
 LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 -------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ TODO (known issues):
 CHANGELOG
 
 - Wave Version 1.4
-
+  
 Boost V1.35.0
 - Wave Version 1.3
 - Changed the return value of the 'evaluated_conditional_expression()' pp hook
@@ -156,6 +156,17 @@ Boost V1.35.0
   anymore.
 - Applied patch provided by Jens Seidel making sure every header compiles on 
   its own.
+- Updates to the documentation.
+- Fixed a problem in flex_string::compare() (#include_next was non-functional).
+- Fixed a bug in the pp hook expanding_function_like_macro(), where the seqend
+  parameter was set to the first token after the closing parenthesis instead of
+  pointing at it.
+- Added the BOOST_WAVE_SUPPORT_THREADING allowing to explicitely control 
+  whether the Wave library is built with threading support enabled. If not 
+  defined the build settings will be picked up from the Boost build environment
+  (BOOST_HAS_THREADS).
+- Fixed a whitespace insertion glitch, where whitespace got inserted 
+  unconditionally between two operators even if one of these was a comma.
   
 Boost V1.34.0
 - Wave Version 1.2.4

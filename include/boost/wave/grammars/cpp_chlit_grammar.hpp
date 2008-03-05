@@ -3,7 +3,7 @@
 
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -161,7 +161,9 @@ struct chlit_grammar :
         definition(chlit_grammar const &self)
         {
             using namespace boost::spirit;
-            using namespace phoenix;
+            using phoenix::var;
+            using phoenix::val;
+            using phoenix::arg1;
             
             // special parsers for '\x..' and L'\x....'
             typedef uint_parser<

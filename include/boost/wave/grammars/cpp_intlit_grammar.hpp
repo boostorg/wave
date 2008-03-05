@@ -3,7 +3,7 @@
 
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -90,11 +90,13 @@ struct intlit_grammar :
         definition(intlit_grammar const &self)
         {
             using namespace boost::spirit;
-            using namespace phoenix;
+            using phoenix::var;
+            using phoenix::arg1;
+ 
             
             int_lit = (
                     sub_int_lit = 
-                        (    ch_p('0')[self.val = 0] >> (hex_lit | oct_lit)
+                        (   ch_p('0')[self.val = 0] >> (hex_lit | oct_lit)
                         |   dec_lit
                         )
                         >> !as_lower_d[
