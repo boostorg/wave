@@ -65,7 +65,8 @@ template <
 >
 inline bool  
 retrieve_macroname(ContextT& ctx, ParseNodeT const &node, 
-    boost::spirit::parser_id id, TokenT &macroname, PositionT const &act_pos)
+    boost::spirit::parser_id id, TokenT &macroname, PositionT& act_pos,
+    bool update_position)
 {
 ParseNodeT const *name_node = 0;
 
@@ -91,16 +92,20 @@ typename ParseNodeT::children_t const &children = name_node->children;
 
 // retrieve the macro name
     macroname = *children.front().value.begin();
+    if (update_position) {
+        macroname.set_position(act_pos);
+        act_pos.set_column(act_pos.get_column() + macroname.get_value().size());
+    }
     return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // retrieve the macro parameters or the macro definition from the parse tree
-template <typename ParseNodeT, typename TokenT, typename ContainerT>
+template <typename ParseNodeT, typename ContainerT, typename PositionT>
 inline bool  
 retrieve_macrodefinition(
     ParseNodeT const &node, boost::spirit::parser_id id, 
-    ContainerT &macrodefinition, TokenT const &/*t*/)
+    ContainerT &macrodefinition, PositionT& act_pos, bool update_position)
 {
     using namespace boost::wave;
     typedef typename ParseNodeT::const_tree_iterator const_tree_iterator;
@@ -125,11 +130,21 @@ std::pair<const_tree_iterator, const_tree_iterator> nodes;
                 {
                     last_nonwhite = inserted;
                 }
+                
+                if (update_position) {
+                    (*inserted).set_position(act_pos);
+                    act_pos.set_column(
+                        act_pos.get_column() + (*inserted).get_value().size());
+                }
             }
         }
         
     // trim trailing whitespace (leading whitespace is trimmed by the grammar)
         if (last_nonwhite != macrodefinition.end()) {
+            if (update_position) {
+                act_pos.set_column((*last_nonwhite).get_position().get_column() +
+                    (*last_nonwhite).get_value().size());
+            }
             macrodefinition.erase(++last_nonwhite, macrodefinition.end());
         }
         return true;
@@ -161,7 +176,7 @@ std::string::iterator end = macrostring.end();
         ++begin;
         
 // parse the macro definition
-position_type act_pos("<command line>", 0);
+position_type act_pos("<command line>");
 boost::spirit::tree_parse_info<lexer_type> hit = 
     predef_macros_type::parse_predefined_macro(
         lexer_type(begin, end, position_type(), language), lexer_type());
@@ -171,7 +186,7 @@ boost::spirit::tree_parse_info<lexer_type> hit =
             macrostring.c_str(), act_pos);
         return false;
     }
-    
+
 // retrieve the macro definition from the parse tree
 token_type macroname;
 std::vector<token_type> macroparameters;
@@ -179,12 +194,12 @@ typename ContextT::token_sequence_type macrodefinition;
 bool has_parameters = false;
 
     if (!boost::wave::util::retrieve_macroname(ctx, *hit.trees.begin(), 
-            BOOST_WAVE_PLAIN_DEFINE_ID, macroname, act_pos))
+            BOOST_WAVE_PLAIN_DEFINE_ID, macroname, act_pos, true))
         return false;
     has_parameters = boost::wave::util::retrieve_macrodefinition(*hit.trees.begin(), 
-        BOOST_WAVE_MACRO_PARAMETERS_ID, macroparameters, token_type());
+        BOOST_WAVE_MACRO_PARAMETERS_ID, macroparameters, act_pos, true);
     boost::wave::util::retrieve_macrodefinition(*hit.trees.begin(), 
-        BOOST_WAVE_MACRO_DEFINITION_ID, macrodefinition, token_type());
+        BOOST_WAVE_MACRO_DEFINITION_ID, macrodefinition, act_pos, true);
 
 //  If no macrodefinition is given, and the macro string does not end with a 
 //  '=', then the macro should be defined with the value '1'
@@ -283,8 +298,8 @@ protected:
         bool include_next);
     
 protected:
-    result_type const &get_next_token(bool& skipped_newline);
-    result_type const &pp_token(bool& skipped_newline);
+    result_type const &get_next_token();
+    result_type const &pp_token();
 
     bool pp_directive();
     template <typename IteratorT>
@@ -472,7 +487,7 @@ pp_iterator_functor<ContextT>::operator()()
         // get_next_token assigns result to act_token member
             if (skipped_newline)
                 seen_newline = true;
-            get_next_token(skipped_newline);
+            get_next_token();
 
         // if comments shouldn't be preserved replace them with newlines
             id = token_id(act_token);
@@ -573,14 +588,14 @@ pp_iterator_functor<ContextT>::operator()()
 ///////////////////////////////////////////////////////////////////////////////
 template <typename ContextT> 
 inline typename pp_iterator_functor<ContextT>::result_type const &
-pp_iterator_functor<ContextT>::get_next_token(bool& skipped_newline)
+pp_iterator_functor<ContextT>::get_next_token()
 {
     using namespace boost::wave;
     
 // if there is something in the unput_queue, then return the next token from
 // there (all tokens in the queue are preprocessed already)
     if (!pending_queue.empty() || !unput_queue.empty()) 
-        return pp_token(skipped_newline);      // return next token
+        return pp_token();      // return next token
     
 // test for EOF, if there is a pending input context, pop it back and continue
 // parsing with it
@@ -657,7 +672,7 @@ bool returned_from_include_file = returned_from_include();
             else if (ctx.get_if_block_status()) {
             // preprocess this token, eat up more, if appropriate, return 
             // the next preprocessed token
-                return pp_token(skipped_newline);
+                return pp_token();
             }
             else {
             // compilation condition is false: if the current token is a 
@@ -785,7 +800,7 @@ typename ContextT::position_type pos = act_token.get_position();
 ///////////////////////////////////////////////////////////////////////////////
 template <typename ContextT> 
 inline typename pp_iterator_functor<ContextT>::result_type const &
-pp_iterator_functor<ContextT>::pp_token(bool& skipped_newline)
+pp_iterator_functor<ContextT>::pp_token()
 {
     using namespace boost::wave;
 
@@ -1415,14 +1430,15 @@ result_type macroname;
 std::vector<result_type> macroparameters;
 token_sequence_type macrodefinition;
 bool has_parameters = false;
+position_type pos(act_token.get_position());
 
     if (!boost::wave::util::retrieve_macroname(ctx, node, 
-            BOOST_WAVE_PLAIN_DEFINE_ID, macroname, act_token.get_position()))
+            BOOST_WAVE_PLAIN_DEFINE_ID, macroname, pos, false))
         return;
     has_parameters = boost::wave::util::retrieve_macrodefinition(node, 
-        BOOST_WAVE_MACRO_PARAMETERS_ID, macroparameters, act_token);
+        BOOST_WAVE_MACRO_PARAMETERS_ID, macroparameters, pos, false);
     boost::wave::util::retrieve_macrodefinition(node, 
-        BOOST_WAVE_MACRO_DEFINITION_ID, macrodefinition, act_token);
+        BOOST_WAVE_MACRO_DEFINITION_ID, macrodefinition, pos, false);
 
     if (has_parameters) {
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
