@@ -58,7 +58,7 @@ class lex_iterator_functor_shim
 public:
     lex_iterator_functor_shim() 
 #if 0 != __DECCXX_VER || BOOST_INTEL_CXX_VERSION > 900 || defined(__PGI)
-      , eof()
+      : eof()
 #endif
     {}
 
@@ -78,9 +78,9 @@ public:
     // this will be called whenever the last reference to a multi_pass will
     // be released
     template <typename MultiPass>
-    static void destroy(MultiPass& mp_shared)
-    {
-        delete mp_shared->ftor; 
+    static void destroy(MultiPass& mp)
+    { 
+        delete mp.shared->ftor; 
     }
 
     template <typename MultiPass>

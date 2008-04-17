@@ -280,11 +280,11 @@ lexer<IteratorT, PositionT>::get(lex_token<PositionT>& result)
 //     std::cerr << boost::wave::get_token_name(id) << ": " << value << std::endl;
 
     // the re2c lexer reports the new line number for newline tokens
-#if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
     result = token_type(id, value, PositionT(filename, actline, scanner.column));
+
+#if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
     return guards.detect_guard(result);
 #else
-    result = token_type(id, value, PositionT(filename, actline, scanner.column));
     return result;
 #endif
 }
@@ -324,7 +324,7 @@ class lex_functor
     >
 {    
 public:
-    typedef typename lexer<IteratorT, PositionT>::token_type   token_type;
+    typedef typename lexer<IteratorT, PositionT>::token_type token_type;
     
     lex_functor(IteratorT const &first, IteratorT const &last, 
             PositionT const &pos, boost::wave::language_support language)
