@@ -52,7 +52,7 @@ class slex_iterator_functor_shim
 
 public:
     slex_iterator_functor_shim()
-#if 0 != __DECCXX_VER || BOOST_INTEL_CXX_VERSION > 900 || defined(__PGI)
+#if /*0 != __DECCXX_VER || */defined(__PGI)
       : eof()
 #endif // 0 != __DECCXX_VER
     {}
@@ -151,7 +151,7 @@ struct make_multi_pass
     typedef boost::spirit::multi_pass_policies::split_std_deque storage_policy;
     
     typedef boost::spirit::multi_pass_policies::default_policy<
-            input_policy, ownership_policy, check_policy, storage_policy>
+            ownership_policy, check_policy, input_policy, storage_policy>
         policy_type;
     typedef boost::spirit::multi_pass<functor_data_type, policy_type> type;
 };
