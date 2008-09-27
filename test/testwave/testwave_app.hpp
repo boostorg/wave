@@ -2,7 +2,7 @@
     Boost.Wave: A Standard compliant C++ preprocessor library
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -59,12 +59,15 @@ protected:
     bool extract_special_information(std::string const& filename, 
         std::string const& instr, char flag, std::string& content);
 
-    //  Extract the expected output from the given input data
+    //  Extract the expected output and expected hooks information from the 
+    //  given input data.
     //  The expected output has to be provided inside of special comments which
-    //  start with a capital 'R'. All such comments are concatenated and 
-    //  returned through the parameter 'expected'.
+    //  start with a capital 'R' ('H' for the hooks information). All such 
+    //  comments are concatenated and returned through the parameter 'expected'
+    //  ('expectedhooks' for hooks information).
     bool extract_expected_output(std::string const& filename, 
-        std::string const& instr, std::string& expected);
+        std::string const& instr, std::string& expected, 
+        std::string& expectedhooks);
         
     //  Extracts the required preprocessing options from the given input data 
     //  and initializes the given Wave context object accordingly. 
@@ -83,7 +86,8 @@ protected:
     //  Preprocess the given input data and return the generated output through 
     //  the parameter 'result'.
     bool preprocess_file(std::string filename, std::string const& instr, 
-        std::string& result, std::string& error, bool single_line = false);
+        std::string& result, std::string& error, std::string& hooks, 
+        bool single_line = false);
 
     //  Add special predefined macros to the context object
     template <typename Context>

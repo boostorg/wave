@@ -2,7 +2,7 @@
     Boost.Wave: A Standard compliant C++ preprocessor library
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
@@ -28,7 +28,7 @@ OR(1, 2)                                    //R 1 | 2
 // 1.3: Any sequence other than above 9 is not a trigraph sequence.
 //R #line 30 "t_5_001.cpp"
 "?? ??? ??% ??^ ???="                       //R "?? ??? ??% ??^ ?#" 
-?? ??? ??% ??^ ???=                         //R ? ? ? ? ? ? ? % ? ? ^ ? # 
+?? ??? ??% ??^ ???=                         //R ? ? ? ? ? ? ?% ? ?^ ?# 
 
 /*-
  * Copyright (c) 1998, 2002-2005 Kiyoshi Matsui <kmatsui@t3.rim.or.jp>

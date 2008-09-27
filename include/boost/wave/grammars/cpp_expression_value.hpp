@@ -3,7 +3,7 @@
 
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -16,6 +16,7 @@
 #endif // defined(BOOST_SPIRIT_DEBUG)
 
 #include <boost/wave/wave_config.hpp>
+#include <boost/wave/grammars/cpp_value_error.hpp> // value_error
 
 // this must occur after all of the includes and before any code appears
 #ifdef BOOST_HAS_ABI_HEADERS
@@ -185,8 +186,8 @@ public:
             case is_bool:
                 {
                     int_literal_type result = value.i + as_long(rhs); 
-                    if (rhs.value.i > 0L && value.i > result || 
-                        rhs.value.i < 0L && value.i < result)
+                    if ((rhs.value.i > 0L && value.i > result) || 
+                        (rhs.value.i < 0L && value.i < result))
                     {
                         valid = error_integer_overflow;
                     }
@@ -199,8 +200,8 @@ public:
             case is_int:
                 {
                     int_literal_type result = value.i + rhs.value.i;
-                    if (rhs.value.i > 0L && value.i > result || 
-                        rhs.value.i < 0L && value.i < result)
+                    if ((rhs.value.i > 0L && value.i > result) || 
+                        (rhs.value.i < 0L && value.i < result))
                     {
                         valid = error_integer_overflow;
                     }
@@ -252,8 +253,8 @@ public:
             case is_bool:
                 {
                     int_literal_type result = value.i - as_long(rhs); 
-                    if (rhs.value.i > 0L && result > value.i || 
-                        rhs.value.i < 0L && result < value.i)
+                    if ((rhs.value.i > 0L && result > value.i) || 
+                        (rhs.value.i < 0L && result < value.i))
                     {
                         valid = error_integer_overflow;
                     }
@@ -266,8 +267,8 @@ public:
             case is_int:
                 {
                     int_literal_type result = value.i - rhs.value.i;
-                    if (rhs.value.i > 0L && result > value.i || 
-                        rhs.value.i < 0L && result < value.i)
+                    if ((rhs.value.i > 0L && result > value.i) || 
+                        (rhs.value.i < 0L && result < value.i))
                     {
                         valid = error_integer_overflow;
                     }
@@ -310,8 +311,8 @@ public:
             case is_int:
                 {
                     uint_literal_type result = value.ui - rhs.value.i;
-                    if (rhs.value.i > 0L && result > value.ui || 
-                        rhs.value.i < 0L && result < value.ui)
+                    if ((rhs.value.i > 0L && result > value.ui) || 
+                        (rhs.value.i < 0L && result < value.ui))
                     {
                         valid = error_integer_overflow;
                     }

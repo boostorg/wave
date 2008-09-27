@@ -24,7 +24,7 @@
 //      - Incorporated the changes from Andrei's latest version of this class
 //
 // #HK070307:
-//      - One again incorporated the changes from Andrei's latest version of 
+//      - Once again incorporated the changes from Andrei's latest version of 
 //        this class
 
 #ifndef FLEX_STRING_INC_
@@ -705,8 +705,8 @@ public:
 
         if (capacity() < neededCapacity)
         {
-            static std::less_equal<const E*> le;
-            BOOST_ASSERT(!(le(begin(), &*b) && le(&*b, end())));
+//             typedef std::less_equal<const E*> le_type;
+//             BOOST_ASSERT(!(le_type()(begin(), &*b) && le_type()(&*b, end())));
             reserve(neededCapacity);
         }
         std::copy(b, e, end());
@@ -1430,7 +1430,6 @@ class flex_string : private Storage
 
     struct Invariant;
     friend struct Invariant;
-    
     struct Invariant
     {
         Invariant(const flex_string& s) : s_(s)
@@ -2256,7 +2255,7 @@ public:
     {
         Enforce(pos1 <= size(), (std::out_of_range*)0, "");
         Procust(n1, size() - pos1);
-        const int r = traits_type::compare(data(), s, Min(n1, n2));
+        const int r = traits_type::compare(data()+pos1, s, Min(n1, n2));
         return 
             r != 0 ? r :
             n1 > n2 ? 1 :

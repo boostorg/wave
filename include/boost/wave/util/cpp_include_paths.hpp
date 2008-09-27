@@ -3,7 +3,7 @@
 
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -115,15 +115,15 @@ struct load_filepos
 //
 //      Any directories specified with the 'add_include_path()' function before 
 //      the function 'set_sys_include_delimiter()' is called are searched only 
-//      for the case of '#include "file"' directives, they are not searched for 
-//      '#include <file>' directives. If additional directories are specified 
+//      for the case of '#include "file"' directives, they are not searched for 
+//      '#include <file>' directives. If additional directories are specified 
 //      with the 'add_include_path()' function after a call to the function 
 //      'set_sys_include_delimiter()', these directories are searched for all 
 //      '#include' directives. 
 //
 //      In addition, a call to the function 'set_sys_include_delimiter()' 
 //      inhibits the use of the current directory as the first search directory 
-//      for '#include "file"' directives. Therefore, the current directory is 
+//      for '#include "file"' directives. Therefore, the current directory is 
 //      searched only if it is requested explicitly with a call to the function
 //      'add_include_path(".")'. 
 //
@@ -328,7 +328,7 @@ bool include_paths::find_include_file (std::string &s, std::string &dir,
         
         if (fs::exists(currpath)) {
             fs::path dirpath (s, fs::native);
-            if (!dirpath.has_root_name()) {
+            if (!dirpath.has_root_directory()) {
                 dirpath = fs::path((*it).second, fs::native);
                 dirpath /= fs::path(s, fs::native);
             }
@@ -364,7 +364,7 @@ include_paths::find_include_file (std::string &s, std::string &dir,
             // if 0 != current_path (#include_next handling) it can't be
             // the file in the current directory
                 fs::path dirpath (s, fs::native);
-                if (!dirpath.has_root_name()) {
+                if (!dirpath.has_root_directory()) {
                     dirpath = fs::path(current_rel_dir.string(), fs::native);
                     dirpath /= fs::path(s, fs::native);
                 }

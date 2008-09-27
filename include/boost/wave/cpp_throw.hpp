@@ -3,7 +3,7 @@
 
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -42,8 +42,8 @@
         if ((msg)[0] != 0) stream << ": " << (msg);                           \
         stream << std::ends;                                                  \
         std::string throwmsg = stream.str(); stream.freeze(false);            \
-        ctx.get_hooks().throw_exception(ctx, cls(throwmsg.c_str(), cls::code, \
-            (act_pos).get_line(), (act_pos).get_column(),                     \
+        ctx.get_hooks().throw_exception(ctx.derived(), cls(throwmsg.c_str(),  \
+            cls::code, (act_pos).get_line(), (act_pos).get_column(),          \
             (act_pos).get_file().c_str()));                                   \
     }                                                                         \
     /**/
@@ -70,9 +70,9 @@
             << cls::error_text(cls::code);                                    \
         if ((msg)[0] != 0) stream << ": " << (msg);                           \
         stream << std::ends;                                                  \
-        ctx.get_hooks().throw_exception(ctx, cls(stream.str().c_str(),        \
-            cls::code, (act_pos).get_line(), (act_pos).get_column(),          \
-            (act_pos).get_file().c_str()));                                   \
+        ctx.get_hooks().throw_exception(ctx.derived(),                        \
+            cls(stream.str().c_str(), cls::code, (act_pos).get_line(),        \
+                (act_pos).get_column(), (act_pos).get_file().c_str()));       \
     }                                                                         \
     /**/
 #endif // BOOST_NO_STRINGSTREAM
@@ -92,8 +92,8 @@
         if ((msg)[0] != 0) stream << ": " << (msg);                           \
         stream << std::ends;                                                  \
         std::string throwmsg = stream.str(); stream.freeze(false);            \
-        ctx.get_hooks().throw_exception(ctx, cls(throwmsg.c_str(), cls::code, \
-            (act_pos).get_line(), (act_pos).get_column(),                     \
+        ctx.get_hooks().throw_exception(ctx.derived(), cls(throwmsg.c_str(),  \
+            cls::code, (act_pos).get_line(), (act_pos).get_column(),          \
             (act_pos).get_file().c_str(), (name)));                           \
     }                                                                         \
     /**/
@@ -107,9 +107,9 @@
             << cls::error_text(cls::code);                                    \
         if ((msg)[0] != 0) stream << ": " << (msg);                           \
         stream << std::ends;                                                  \
-        ctx.get_hooks().throw_exception(ctx, cls(stream.str().c_str(),        \
-            cls::code, (act_pos).get_line(), (act_pos).get_column(),          \
-            (act_pos).get_file().c_str(), (name)));                           \
+        ctx.get_hooks().throw_exception(ctx.derived(),                        \
+            cls(stream.str().c_str(), cls::code, (act_pos).get_line(),        \
+                (act_pos).get_column(), (act_pos).get_file().c_str(), (name))); \
     }                                                                         \
     /**/
 #endif // BOOST_NO_STRINGSTREAM
@@ -129,8 +129,8 @@
         if ((msg)[0] != 0) stream << ": " << (msg);                           \
         stream << std::ends;                                                  \
         std::string throwmsg = stream.str(); stream.freeze(false);            \
-        ctx.get_hooks().throw_exception(ctx, cls(throwmsg.c_str(), code,      \
-            (act_pos).get_line(), (act_pos).get_column(),                     \
+        ctx.get_hooks().throw_exception(ctx.derived(), cls(throwmsg.c_str(),  \
+            code, (act_pos).get_line(), (act_pos).get_column(),               \
             (act_pos).get_file().c_str()));                                   \
     }                                                                         \
     /**/
@@ -144,9 +144,9 @@
             << cls::error_text(code);                                         \
         if ((msg)[0] != 0) stream << ": " << (msg);                           \
         stream << std::ends;                                                  \
-        ctx.get_hooks().throw_exception(ctx, cls(stream.str().c_str(), code,  \
-            (act_pos).get_line(), (act_pos).get_column(),                     \
-            (act_pos).get_file().c_str()));                                   \
+        ctx.get_hooks().throw_exception(ctx.derived(),                        \
+            cls(stream.str().c_str(), code, (act_pos).get_line(),             \
+                (act_pos).get_column(), (act_pos).get_file().c_str()));       \
     }                                                                         \
     /**/
 #endif // BOOST_NO_STRINGSTREAM

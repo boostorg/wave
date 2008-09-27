@@ -3,7 +3,7 @@
 
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -11,7 +11,7 @@
 #if !defined(CPP_PREDEF_MACROS_GEN_HPP_CADB6D2C_76A4_4988_83E1_EFFC6902B9A2_INCLUDED)
 #define CPP_PREDEF_MACROS_GEN_HPP_CADB6D2C_76A4_4988_83E1_EFFC6902B9A2_INCLUDED
 
-#include <boost/spirit/tree/parse_tree.hpp>
+#include <boost/spirit/include/classic_parse_tree.hpp>
 
 #include <boost/wave/wave_config.hpp>
 
@@ -59,7 +59,7 @@ struct BOOST_WAVE_DECL predefined_macros_grammar_gen
     typedef LexIteratorT iterator_type;
 
 //  parse the cpp_grammar and return the resulting parse tree    
-    static boost::spirit::tree_parse_info<iterator_type> 
+    static boost::spirit::classic::tree_parse_info<iterator_type> 
     parse_predefined_macro (iterator_type const &first, iterator_type const &last);
 };
 

@@ -4,7 +4,7 @@
 
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -47,6 +47,8 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+// if you want to use another iterator type for the underlying input stream
+// a corresponding explicit template instantiation needs to be added below
 template struct boost::wave::cpplexer::new_lexer_gen<
     BOOST_WAVE_STRINGTYPE::iterator>;
 template struct boost::wave::cpplexer::new_lexer_gen<

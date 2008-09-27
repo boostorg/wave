@@ -5,7 +5,7 @@
     
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -17,6 +17,7 @@
 
 #include <boost/wave/wave_config.hpp>
 #include <boost/wave/token_ids.hpp>
+#include <boost/wave/util/unput_queue_iterator.hpp> 
 
 // this must occur after all of the includes and before any code appears
 #ifdef BOOST_HAS_ABI_HEADERS
@@ -99,7 +100,8 @@ namespace on_exit {
     //
     ///////////////////////////////////////////////////////////////////////////
     template <typename IteratorT, typename UnputIteratorT>
-    class assign {
+    class assign
+    {
     public:
         assign(IteratorT &it_, UnputIteratorT const &uit_) 
         :   it(it_), uit(uit_) {}
@@ -169,13 +171,7 @@ token_equals(TokenT const &left, TokenT const &right)
 {
     using namespace boost::wave;
     
-#if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
-    if (T_PARAMETERBASE == token_id(left) || 
-        T_EXTPARAMETERBASE == token_id(left)) 
-#else
-    if (T_PARAMETERBASE == token_id(left))
-#endif 
-    {
+    if (IS_CATEGORY(left, ParameterTokenType)) {
     //  if the existing token is of type T_PARAMETERBASE, then the right token 
     //  must be of type T_IDENTIFIER or a keyword
     token_id id = token_id(right);
@@ -420,8 +416,6 @@ template <typename ContainerT>
 inline bool
 is_whitespace_only (ContainerT const &argument)
 {
-    using namespace cpplexer;
-    
     typename ContainerT::const_iterator end = argument.end();
     for (typename ContainerT::const_iterator it = argument.begin();
           it != end; ++it)
@@ -439,7 +433,8 @@ is_whitespace_only (ContainerT const &argument)
 ///////////////////////////////////////////////////////////////////////////////
 template <typename IteratorT>
 inline bool 
-skip_to_token(IteratorT &it, IteratorT const &end, token_id id)
+skip_to_token(IteratorT &it, IteratorT const &end, token_id id, 
+    bool& seen_newline)
 {
     using namespace boost::wave;
     if (token_id(*it) == id) 
@@ -448,8 +443,10 @@ skip_to_token(IteratorT &it, IteratorT const &end, token_id id)
         return false;
 
     while (IS_CATEGORY(*it, WhiteSpaceTokenType) || 
-            T_NEWLINE == token_id(*it)) 
+           T_NEWLINE == token_id(*it)) 
     {
+        if (T_NEWLINE == token_id(*it))
+            seen_newline = true;
         if (++it == end)
             return false;
     }
@@ -498,7 +495,51 @@ private:
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+//  Convert a string of an arbitrary string compatible type to a internal 
+//  string (BOOST_WAVE_STRING)
+template <typename Target, typename Src>
+struct to_string_helper
+{
+    typedef Target type;
+    
+    static Target call(Src const& str)
+    {
+        return Target(str.c_str());
+    }
+};
+
+// do nothing if types are equal
+template <typename Src>
+struct to_string_helper<Src, Src>
+{
+    typedef Src const& type;
+
+    static Src const& call(Src const& str)
+    {
+        return str;
+    }
+};
+
+template <typename Target>
+struct to_string_helper<Target, char const*>
+{
+    typedef Target type;
+
+    static Target call(char const* str)
+    {
+        return Target(str);
+    }
+};
+
+///////////////////////////////////////////////////////////////////////////////
 }   // namespace impl
+
+template <typename Target, typename Src>
+inline typename impl::to_string_helper<Target, Src>::type
+to_string(Src const& src)
+{
+    return impl::to_string_helper<Target, Src>::call(src);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 }   // namespace util

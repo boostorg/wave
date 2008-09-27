@@ -2,7 +2,7 @@
     Boost.Wave: A Standard compliant C++ preprocessor library
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -30,6 +30,6 @@ h 5) & m(f)^m(m);
 
 //R #line 27 "t_1_014.cpp"
 //R f(2 * (y+1)) + f(2 * (f(2 * (z[0])))) % f(2 * (0)) + t(1);
-//R f(2 * (2+ (3,4) -0,1))
+//R f(2 * (2+(3,4)-0,1))
 //E t_1_014.cpp(29): error: improperly terminated macro invocation or replacement-list terminates in partial macro expansion (not supported yet): missing ')'
 // should expand to: f(2 * g( ~ 5)) & f(2 * (0,1))^m(0,1);

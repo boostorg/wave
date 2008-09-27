@@ -3,7 +3,7 @@
 
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -14,9 +14,14 @@
 #include <map>
 
 #include <boost/wave/wave_config.hpp>
+#include <boost/intrusive_ptr.hpp> 
+
 #if BOOST_WAVE_SERIALIZATION != 0
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/map.hpp>
+#include <boost/shared_ptr.hpp>
+#else
+#include <boost/intrusive_ptr.hpp> 
 #endif
 
 #include <boost/iterator/transform_iterator.hpp>
@@ -39,9 +44,17 @@ namespace util {
 
 template <typename StringT, typename MacroDefT>
 struct symbol_table 
+#if BOOST_WAVE_SERIALIZATION != 0
 :   public std::map<StringT, boost::shared_ptr<MacroDefT> > 
+#else
+:   public std::map<StringT, boost::intrusive_ptr<MacroDefT> > 
+#endif
 {
+#if BOOST_WAVE_SERIALIZATION != 0
     typedef std::map<StringT, boost::shared_ptr<MacroDefT> > base_type;
+#else
+    typedef std::map<StringT, boost::intrusive_ptr<MacroDefT> > base_type;
+#endif
     typedef typename base_type::iterator iterator_type;
     typedef typename base_type::const_iterator const_iterator_type;
     

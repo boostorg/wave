@@ -2,7 +2,7 @@
     Boost.Wave: A Standard compliant C++ preprocessor library
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -36,3 +36,11 @@
 "X" is not defined.
 #endif
 
+//H 10: t_9_006.cpp(21): #define
+//H 08: t_9_006.cpp(21): X=
+//H 10: t_9_006.cpp(25): #if
+//H 11: t_9_006.cpp(25): #if defined(X): 1
+//H 10: t_9_006.cpp(27): #else
+//H 10: t_9_006.cpp(33): #if
+//H 11: t_9_006.cpp(33): #if defined X: 1
+//H 10: t_9_006.cpp(35): #else

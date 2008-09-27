@@ -5,7 +5,7 @@
     
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -17,6 +17,7 @@
 #include <boost/wave/util/file_position.hpp>
 #include <boost/wave/language_support.hpp>
 #include <boost/wave/cpplexer/cpp_lex_interface.hpp>
+#include <boost/wave/cpplexer/cpp_lex_token.hpp>      // lex_token 
 
 // this must occur after all of the includes and before any code appears
 #ifdef BOOST_HAS_ABI_HEADERS
@@ -75,6 +76,7 @@ struct lex_input_interface_generator
 {
     typedef typename lex_input_interface<TokenT>::position_type position_type;
     
+    lex_input_interface_generator() {}
     ~lex_input_interface_generator() {}
     
 //  The new_lexer function allows the opaque generation of a new lexer object.

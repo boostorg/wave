@@ -2,7 +2,7 @@
     Boost.Wave: A Standard compliant C++ preprocessor library
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
@@ -15,7 +15,7 @@
 
 // Tests whether rescanning of a macro replace any macro call in the replacement
 // text after substitution of parameters by pre-expanded-arguments.  This
-// re-examination may involve the succeding sequences from the source
+// re-examination may involve the succeeding sequences from the source
 // file (what a queer thing!).
 
 // Note: The tests 27.4 and 27.5 are currently disabled because of Wave's 
@@ -57,7 +57,7 @@ MATH(SUB, a, b)                   //R ((a) - (b))
 // 27.5: Queer thing.
 // R #line 28 "t_5_030.cpp"
 //#define HEAD            SUB(
-//HEAD a,b )                        // R 
+// HEAD a,b )                        // R 
 
 // 27.6: Recursive macro.
 //R #line 66 "t_5_030.cpp"

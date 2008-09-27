@@ -2,7 +2,7 @@
     Boost.Wave: A Standard compliant C++ preprocessor library
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -57,7 +57,7 @@ main(int argc, char *argv[])
             boost::wave::support_option_long_long);
         lexer_type end = lexer_type();
 
-        // verify the correct outcome of the tokenisation
+        // verify the correct outcome of the tokenization
 #if defined(TESTLEXERS_VERBOSE)
         std::cerr << boost::wave::get_token_name(data->id) << std::endl;
 #endif

@@ -3,7 +3,7 @@
 
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -13,6 +13,9 @@
 
 #include <vector>
 #include <list>
+
+#include <boost/detail/atomic_count.hpp>
+#include <boost/intrusive_ptr.hpp>
 
 #include <boost/wave/wave_config.hpp>
 #if BOOST_WAVE_SERIALIZATION != 0
@@ -59,6 +62,7 @@ struct macro_definition {
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
         , has_ellipsis(false)
 #endif
+        , use_count(0)
     {
     }
     // generated copy constructor
@@ -131,6 +135,7 @@ struct macro_definition {
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
     bool has_ellipsis;
 #endif
+    boost::detail::atomic_count use_count;
 
 #if BOOST_WAVE_SERIALIZATION != 0
     // default constructor is needed for serialization only
@@ -140,6 +145,7 @@ struct macro_definition {
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
       , has_ellipsis(false)
 #endif
+      , use_count(0)
     {}
 
 private:
@@ -162,6 +168,24 @@ private:
     }
 #endif
 };
+
+#if BOOST_WAVE_SERIALIZATION == 0
+///////////////////////////////////////////////////////////////////////////////
+template <typename TokenT, typename ContainerT>
+inline void
+intrusive_ptr_add_ref(macro_definition<TokenT, ContainerT>* p)
+{
+    ++p->use_count;
+}
+
+template <typename TokenT, typename ContainerT>
+inline void
+intrusive_ptr_release(macro_definition<TokenT, ContainerT>* p)
+{
+    if (--p->use_count == 0)
+        delete p;
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 }   // namespace util

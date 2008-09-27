@@ -3,7 +3,7 @@
 
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost 
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost 
     Software License, Version 1.0. (See accompanying file 
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -28,7 +28,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //  import required names
-using namespace boost::spirit;
+using namespace boost::spirit::classic;
 
 using std::string;
 using std::vector;

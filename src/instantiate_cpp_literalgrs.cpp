@@ -2,7 +2,7 @@
     Boost.Wave: A Standard compliant C++ preprocessor library
     http://www.boost.org/
 
-    Copyright (c) 2001-2007 Hartmut Kaiser. Distributed under the Boost
+    Copyright (c) 2001-2008 Hartmut Kaiser. Distributed under the Boost
     Software License, Version 1.0. (See accompanying file
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
@@ -36,6 +36,7 @@
 
 typedef boost::wave::cpplexer::lex_token<> token_type;
 
+// no need to change anything below
 template struct boost::wave::grammars::intlit_grammar_gen<token_type>;
 template struct boost::wave::grammars::chlit_grammar_gen<token_type>;
 
