@@ -7,7 +7,28 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-// This file is necessary only because Boost.Build V2 isn't able to handle
-// several testcases using the same source files.
+//O --c++0x
 
-#include "testwave.cpp"
+//R #line 16 "t_7_001.cpp"
+//R R"de
+//R fg
+//R h"
+R"de
+fg
+h"
+
+//R #line 21 "t_7_001.cpp"
+"abc"   //R "abc" 
+R"abc"  //R R"abc" 
+
+//R #line 27 "t_7_001.cpp"
+//R uR"de fg
+//R h"
+uR"de \
+fg
+h"
+
+//R #line 32 "t_7_001.cpp"
+u"abc"      //R u"abc" 
+U"def"      //R U"def" 
+u8"ghi"     //R u8"ghi" 
