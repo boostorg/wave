@@ -382,7 +382,7 @@ lexer<IteratorT, PositionT>::init_data[INIT_DATA_SIZE] =
 #endif
     TOKEN_DATA(SPACE, "[ \t\v\f]+"),
 //    TOKEN_DATA(SPACE2, "[\\v\\f]+"),
-    TOKEN_DATA(CONTLINE, "\\" "\\n"), 
+    TOKEN_DATA(CONTLINE, Q("\\") "\n"), 
     TOKEN_DATA(NEWLINE, NEWLINEDEF),
     TOKEN_DATA(POUND_POUND, "##"),
     TOKEN_DATA(POUND_POUND_ALT, Q("%:") Q("%:")),
@@ -637,8 +637,10 @@ public:
                     id = T_EOF;     // end of input reached
 
             string_type token_val(value.c_str());
-            
-                if (T_CONTLINE != id) {
+
+                if (boost::wave::need_emit_contnewlines(language) ||
+                    T_CONTLINE != id) 
+                {
                 //  The cast should avoid spurious warnings about missing case labels 
                 //  for the other token ids's.
                     switch (static_cast<unsigned int>(id)) {   
@@ -673,7 +675,7 @@ public:
                                 pos.get_line(), pos.get_column(), pos.get_file()); 
                         }
                         break;
-                        
+
                     case T_LONGINTLIT:  // supported in C99 and long_long mode
                         if (!boost::wave::need_long_long(language)) {
                         // syntax error: not allowed in C++ mode
@@ -706,7 +708,7 @@ public:
                         at_eof = true;
                         token_val.clear();
                         break;
-                        
+
                     case T_OR_TRIGRAPH:
                     case T_XOR_TRIGRAPH:
                     case T_LEFTBRACE_TRIGRAPH:

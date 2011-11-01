@@ -52,16 +52,20 @@ main(int argc, char *argv[])
         return 1;
     }
 
-// read the file to analyse into a std::string     
+// read the file to analyse into a std::string
     ifstream infile(argv[1]);
     string teststr;
     if (infile.is_open()) {
         infile.unsetf(std::ios::skipws);
-        string line;
-        for (getline(infile, line); infile.good(); getline(infile, line)) {
-            teststr += line;
-            teststr += '\n';
-        }
+#if defined(BOOST_NO_TEMPLATED_ITERATOR_CONSTRUCTORS)
+        // this is known to be very slow for large files on some systems
+        copy (std::istream_iterator<char>(infile),
+              std::istream_iterator<char>(), 
+              std::inserter(teststr, teststr.end()));
+#else
+        teststr = std::string(std::istreambuf_iterator<char>(infile.rdbuf()),
+                              std::istreambuf_iterator<char>());
+#endif 
     }
     else {
         teststr = argv[1];
@@ -90,6 +94,7 @@ main(int argc, char *argv[])
     ctx.set_language(boost::wave::support_cpp0x);
     ctx.set_language(boost::wave::enable_preserve_comments(ctx.get_language()));
     ctx.set_language(boost::wave::enable_prefer_pp_numbers(ctx.get_language()));
+    ctx.set_language(boost::wave::enable_emit_contnewlines(ctx.get_language()));
 
     context_type::iterator_type first = ctx.begin();
     context_type::iterator_type last = ctx.end();
