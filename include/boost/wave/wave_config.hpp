@@ -186,7 +186,9 @@
 #endif
 
 #if BOOST_WAVE_SUPPORT_THREADING != 0 
-#define BOOST_SPIRIT_THREADSAFE 1
+#ifndef BOOST_SPIRIT_THREADSAFE
+#define BOOST_SPIRIT_THREADSAFE
+#endif
 #define PHOENIX_THREADSAFE 1
 #else
 // disable thread support in Boost.Pool
