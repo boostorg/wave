@@ -15,6 +15,7 @@
 #include <list>
 #include <utility>
 
+#include <boost/assert.hpp>
 #include <boost/wave/wave_config.hpp>
 #include <boost/wave/util/filesystem_compatibility.hpp>
 
@@ -441,18 +442,13 @@ void include_paths::set_current_directory(char const *path_)
     
     fs::path filepath (create_path(path_));
     fs::path filename = util::complete_path(filepath, current_dir);
-    if (fs::exists(filename) && fs::is_directory(filename)) {
-        current_rel_dir.clear();
-        if (!as_relative_to(filepath, current_dir, current_rel_dir))
-            current_rel_dir = filepath;
-        current_dir = filename;
-    }
-    else {
-        current_rel_dir.clear();
-        if (!as_relative_to(branch_path(filepath), current_dir, current_rel_dir))
-            current_rel_dir = branch_path(filepath);
-        current_dir = branch_path(filename);
-    }
+
+    BOOST_ASSERT(!(fs::exists(filename) && fs::is_directory(filename)));
+
+    current_rel_dir.clear();
+    if (!as_relative_to(branch_path(filepath), current_dir, current_rel_dir))
+        current_rel_dir = branch_path(filepath);
+    current_dir = branch_path(filename);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
