@@ -161,7 +161,7 @@ public:
     void set_sys_include_delimiter() { was_sys_include_path = true; }
     bool find_include_file (std::string &s, std::string &dir, bool is_system, 
         char const *current_file) const;
-    void set_current_directory(char const *path_);
+    void set_current_directory(char const *path_, bool directory_exists);
     boost::filesystem::path get_current_directory() const 
         { return current_dir; }
 
@@ -435,13 +435,13 @@ as_relative_to(boost::filesystem::path const& path,
 
 ///////////////////////////////////////////////////////////////////////////////
 inline
-void include_paths::set_current_directory(char const *path_)
+void include_paths::set_current_directory(char const *path_, bool directory_exists)
 {
     namespace fs = boost::filesystem;
     
     fs::path filepath (create_path(path_));
     fs::path filename = util::complete_path(filepath, current_dir);
-    if (fs::exists(filename) && fs::is_directory(filename)) {
+    if (directory_exists) {
         current_rel_dir.clear();
         if (!as_relative_to(filepath, current_dir, current_rel_dir))
             current_rel_dir = filepath;
