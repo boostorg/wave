@@ -329,7 +329,7 @@ protected:
                 using namespace boost::filesystem;
                 path fpath(util::complete_path(path(filename)));
                 fname = fpath.string();
-                includes.set_current_directory(fname.c_str());
+                includes.set_current_directory(fname.c_str(), false);
             }
             has_been_initialized = true;  // execute once
         }
@@ -340,8 +340,8 @@ protected:
         { return macros.is_defined(begin, end); }
 
 // maintain include paths (helper functions)
-    void set_current_directory(char const *path_) 
-        { includes.set_current_directory(path_); }
+    void set_current_directory(char const *path_, bool directory_exists) 
+        { includes.set_current_directory(path_, directory_exists); }
 
 // conditional compilation contexts
     bool get_if_block_status() const { return ifblocks.get_status(); }

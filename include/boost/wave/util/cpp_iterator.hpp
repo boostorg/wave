@@ -434,7 +434,7 @@ pp_iterator_functor<ContextT>::returned_from_include()
         std::string real_filename(rfp.string());
         ctx.set_current_filename(real_filename.c_str());
 #endif
-        ctx.set_current_directory(iter_ctx->real_filename.c_str());
+        ctx.set_current_directory(iter_ctx->real_filename.c_str(), false);
         ctx.set_current_relative_filename(iter_ctx->real_relative_filename.c_str());
 
     // ensure the integrity of the #if/#endif stack
@@ -1605,7 +1605,7 @@ char const *current_name = 0;   // never try to match current file name
 #endif
     {
     // the new include file determines the actual current directory
-        ctx.set_current_directory(native_path_str.c_str());
+        ctx.set_current_directory(native_path_str.c_str(), false);
 
     // preprocess the opened file
     boost::shared_ptr<base_iteration_context_type> new_iter_ctx (
