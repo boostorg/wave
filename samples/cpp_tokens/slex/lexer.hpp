@@ -355,8 +355,13 @@ public:
 
 private:
 
+#ifdef BOOST_NO_AUTO_PTR
+    std::unique_ptr<node> m_left;
+    std::unique_ptr<node> m_right;
+#else
     std::auto_ptr<node> m_left;
     std::auto_ptr<node> m_right;
+#endif
 };
 
 inline
@@ -483,8 +488,13 @@ public:
 
 private:
 
+#ifdef BOOST_NO_AUTO_PTR
+    std::unique_ptr<node> m_left;
+    std::unique_ptr<node> m_right;
+#else
     std::auto_ptr<node> m_left;
     std::auto_ptr<node> m_right;
+#endif
 };
 
 inline
@@ -634,7 +644,11 @@ public:
 
 private:
 
+#ifdef BOOST_NO_AUTO_PTR
+    std::unique_ptr<node> m_left;
+#else
     std::auto_ptr<node> m_left;
+#endif
 };
 
 inline
@@ -2403,7 +2417,11 @@ bool find_acceptance_state(const node_set& eof_node_ids,
 }
 
 template <typename RegexListT, typename GrammarT>
+#ifdef BOOST_NO_AUTO_PTR
+inline std::unique_ptr<node>
+#else
 inline std::auto_ptr<node>
+#endif
 parse_regexes(const RegexListT& regex_list, GrammarT& g)
 {
     // parse the expressions into a tree
@@ -2411,18 +2429,29 @@ parse_regexes(const RegexListT& regex_list, GrammarT& g)
         boost::throw_exception(bad_regex());
 
     typename RegexListT::const_iterator ri = regex_list.begin();
+#ifdef BOOST_NO_AUTO_PTR
+    std::unique_ptr<node> tree(lexerimpl::parse(g, (*ri).str));
+#else
     std::auto_ptr<node> tree(lexerimpl::parse(g, (*ri).str));
+#endif
     if (tree.get() == 0)
         boost::throw_exception(bad_regex());
 
     ++ri;
     for (/**/; ri != regex_list.end(); ++ri)
     {
+#ifdef BOOST_NO_AUTO_PTR
+        std::unique_ptr<node> next_tree(lexerimpl::parse(g, (*ri).str));
+#else
         std::auto_ptr<node> next_tree(lexerimpl::parse(g, (*ri).str));
+#endif
         if (next_tree.get() == 0)
             boost::throw_exception(bad_regex());
-        std::auto_ptr<node> newnode(new or_node(tree.release(), next_tree.release()));
-        tree = newnode;
+#ifdef BOOST_NO_AUTO_PTR
+        tree = std::unique_ptr<node>(new or_node(tree.release(), next_tree.release()));
+#else
+        tree = std::auto_ptr<node>(new or_node(tree.release(), next_tree.release()));
+#endif
     }
     return tree;
 }
@@ -2444,7 +2473,11 @@ inline void
 lexer<IteratorT, TokenT, CallbackT>::create_dfa_for_state(int state)
 {
     using lexerimpl::node;
+#ifdef BOOST_NO_AUTO_PTR
+    std::unique_ptr<node> tree = lexerimpl::parse_regexes(m_regex_list[state], g);
+#else
     std::auto_ptr<node> tree = lexerimpl::parse_regexes(m_regex_list[state], g);
+#endif
     node_id_t dummy = 0;
     tree->assign_node_ids(dummy);
 
