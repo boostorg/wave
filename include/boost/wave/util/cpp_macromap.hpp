@@ -742,7 +742,7 @@ token_type startof_argument_list = *next;
             return 0;
         }
 
-        switch (static_cast<unsigned int>(id)) {
+        switch (id) {
         case T_LEFTPAREN:
             ++nested_parenthesis_level;
             argument->push_back(*next);
