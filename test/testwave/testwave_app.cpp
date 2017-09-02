@@ -35,6 +35,22 @@
 #include <boost/wave/cpplexer/cpp_lex_token.hpp>      // token type
 #include <boost/wave/cpplexer/cpp_lex_iterator.hpp>   // lexer type
 
+#if BOOST_WAVE_SEPARATE_LEXER_INSTANTIATION == 0
+#include <boost/wave/cpplexer/re2clex/cpp_re2c_lexer.hpp>
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+//  Include the grammar definitions, if these shouldn't be compiled separately
+//  (ATTENTION: _very_ large compilation times!)
+#if BOOST_WAVE_SEPARATE_GRAMMAR_INSTANTIATION == 0
+#include <boost/wave/grammars/cpp_intlit_grammar.hpp>
+#include <boost/wave/grammars/cpp_chlit_grammar.hpp>
+#include <boost/wave/grammars/cpp_grammar.hpp>
+#include <boost/wave/grammars/cpp_expression_grammar.hpp>
+#include <boost/wave/grammars/cpp_predef_macros_grammar.hpp>
+#include <boost/wave/grammars/cpp_defined_grammar.hpp>
+#endif
+
 //  test application related headers
 #include "cmd_line_utils.hpp"
 #include "testwave_app.hpp"
