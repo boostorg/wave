@@ -546,7 +546,7 @@ pp_iterator_functor<ContextT>::operator()()
 
 // cleanup of certain tokens required
     seen_newline = false;
-    switch (static_cast<unsigned int>(id)) {
+    switch (id) {
     case T_NONREPLACABLE_IDENTIFIER:
         act_token.set_token_id(id = T_IDENTIFIER);
         break;
@@ -794,7 +794,7 @@ typename ContextT::position_type pos = act_token.get_position();
             char buffer[22];
 
                 using namespace std;    // for some systems sprintf is in namespace std
-                sprintf (buffer, "%ld", pos.get_line());
+                sprintf (buffer, "%zd", pos.get_line());
 
                 pos.set_column(++column);                 // account for ' '
                 pending.push_back(result_type(T_INTLIT, buffer, pos));
@@ -1109,7 +1109,7 @@ pp_iterator_functor<ContextT>::handle_pp_directive(IteratorT &it)
     if (!ctx.get_if_block_status()) {
         if (IS_EXTCATEGORY(*it, PPConditionalTokenType)) {
         // simulate the if block hierarchy
-            switch (static_cast<unsigned int>(id)) {
+            switch (id) {
             case T_PP_IFDEF:        // #ifdef
             case T_PP_IFNDEF:       // #ifndef
             case T_PP_IF:           // #if
@@ -1163,7 +1163,7 @@ pp_iterator_functor<ContextT>::handle_pp_directive(IteratorT &it)
     // try to handle the simple pp directives without parsing
         result_type directive = *it;
         bool include_next = false;
-        switch (static_cast<unsigned int>(id)) {
+        switch (id) {
         case T_PP_QHEADER:        // #include "..."
 #if BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
         case T_PP_QHEADER_NEXT:
@@ -1424,7 +1424,7 @@ token_id id = token_id(found_directive);
     if (impl::call_found_directive_hook(ctx, found_directive))
         return true;    // skip this directive and return newline only
 
-    switch (static_cast<unsigned int>(id)) {
+    switch (id) {
 //     case T_PP_QHEADER:      // #include "..."
 // #if BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
 //     case T_PP_QHEADER_NEXT: // #include_next "..."
