@@ -389,6 +389,8 @@ testwave_app::testwave_app(po::variables_map const& vm)
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
         ("c++11", "enable C++11 mode (implies --variadics and --long_long)")
 #endif
+        ("warning,W", po::value<std::vector<std::string> >()->composing(),
+            "Warning settings.")
     ;
 }
 

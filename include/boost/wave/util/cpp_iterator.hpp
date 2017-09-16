@@ -668,9 +668,21 @@ bool returned_from_include_file = returned_from_include();
                 if ((!seen_newline || act_pos.get_column() > 1) &&
                     !need_single_line(ctx.get_language()))
                 {
-                // warn, if this file does not end with a newline
-                    BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
-                        last_line_not_terminated, "", act_pos);
+                    if (need_no_newline_at_end_of_file(ctx.get_language()))
+                    {
+                      seen_newline = true;
+                      return act_token =
+                          typename pp_iterator_functor<ContextT>::result_type(
+                          T_NEWLINE,
+                          "\n",
+                          act_pos);
+                    }
+                    else
+                    {
+                    // warn, if this file does not end with a newline
+                        BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                            last_line_not_terminated, "", act_pos);
+                    }
                 }
                 continue;   // if this is the main file, the while loop breaks
             }
@@ -1060,10 +1072,13 @@ pp_iterator_functor<ContextT>::ensure_is_last_on_line(IteratorT& it, bool call_h
         seen_newline = true;    // allow to resume after warning
         iter_ctx->first = it;
 
-    // Trigger a warning that the last line was not terminated with a
-    // newline.
-        BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
-            last_line_not_terminated, "", act_pos);
+        if (!need_no_newline_at_end_of_file(ctx.get_language()))
+        {
+        // Trigger a warning that the last line was not terminated with a
+        // newline.
+            BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                last_line_not_terminated, "", act_pos);
+        }
 
         return false;
     }
@@ -1083,10 +1098,13 @@ pp_iterator_functor<ContextT>::skip_to_eol_with_check(IteratorT &it, bool call_h
         seen_newline = true;    // allow to resume after warning
         iter_ctx->first = it;
 
-    // Trigger a warning, that the last line was not terminated with a
-    // newline.
-        BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
-            last_line_not_terminated, "", act_pos);
+        if (!need_no_newline_at_end_of_file(ctx.get_language()))
+        {
+        // Trigger a warning, that the last line was not terminated with a
+        // newline.
+            BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                last_line_not_terminated, "", act_pos);
+        }
         return false;
     }
 
@@ -1368,7 +1386,9 @@ tree_parse_info_type hit = cpp_grammar_type::parse_cpp_grammar(
     // the found pp directive
     bool result = dispatch_directive (hit, found_directive, found_eoltokens);
 
-        if (found_eof && !need_single_line(ctx.get_language())) {
+        if (found_eof && !need_single_line(ctx.get_language()) &&
+            !need_no_newline_at_end_of_file(ctx.get_language()))
+        {
         // The line was terminated with an end of file token.
         // So trigger a warning, that the last line was not terminated with a
         // newline.
