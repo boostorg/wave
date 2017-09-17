@@ -974,7 +974,7 @@ namespace impl {
             if (call_hook)
                 util::impl::call_skipped_token_hook(ctx, *it);
         }
-        return false;
+        return need_no_newline_at_end_of_file(ctx.get_language());
     }
 
     ///////////////////////////////////////////////////////////////////////////
