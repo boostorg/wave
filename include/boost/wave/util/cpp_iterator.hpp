@@ -671,7 +671,7 @@ bool returned_from_include_file = returned_from_include();
                     if (need_no_newline_at_end_of_file(ctx.get_language()))
                     {
                       seen_newline = true;
-                      return act_token =
+                      act_token =
                           typename pp_iterator_functor<ContextT>::result_type(
                           T_NEWLINE,
                           "\n",
@@ -710,7 +710,7 @@ bool returned_from_include_file = returned_from_include();
                 if (iter_ctx->first == iter_ctx->last)
                 {
                     seen_newline = true;
-                    return act_token = result_type(T_NEWLINE, "\n", act_pos);
+                    act_token = result_type(T_NEWLINE, "\n", act_pos);
                 }
 
             // loop to the next token to analyze
