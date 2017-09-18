@@ -8,8 +8,10 @@
 =============================================================================*/
 
 //O --c++11
-//O -Werror
-//R
+//R #line 10 "t_7_006.hpp"
+//R header
+//R #line 17 "t_7_006.cpp"
+//R cpp_content
 
-#if 0
-#endif
+#include "t_7_006.hpp"
+cpp_content

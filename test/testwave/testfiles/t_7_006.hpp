@@ -7,9 +7,4 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-//O --c++11
-//O -Werror
-//R
-
-#if 0
-#endif
+header
