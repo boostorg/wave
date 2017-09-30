@@ -670,12 +670,10 @@ bool returned_from_include_file = returned_from_include();
                 {
                     if (need_no_newline_at_end_of_file(ctx.get_language()))
                     {
-                      seen_newline = true;
-                      return act_token =
-                          typename pp_iterator_functor<ContextT>::result_type(
-                          T_NEWLINE,
-                          "\n",
-                          act_pos);
+                        seen_newline = true;
+                        pending_queue.push_back(
+                            result_type(T_NEWLINE, "\n", act_pos)
+                        );
                     }
                     else
                     {
@@ -707,6 +705,11 @@ bool returned_from_include_file = returned_from_include();
 //                 pending_queue.push_back(result_type(T_NEWLINE, "\n", act_pos));
 //                 seen_newline = true;
 //                 must_emit_line_directive = true;
+                if (iter_ctx->first == iter_ctx->last)
+                {
+                    seen_newline = true;
+                    act_token = result_type(T_NEWLINE, "\n", act_pos);
+                }
 
             // loop to the next token to analyze
             // simply fall through, since the iterator was already adjusted
@@ -974,7 +977,7 @@ namespace impl {
             if (call_hook)
                 util::impl::call_skipped_token_hook(ctx, *it);
         }
-        return false;
+        return need_no_newline_at_end_of_file(ctx.get_language());
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -2336,7 +2339,10 @@ token_sequence_type toexpand;
         act_pos.set_file(unescape_lit(file_name).c_str());
     }
     act_pos.set_line(line);
-    iter_ctx->first.set_position(act_pos);
+    if (iter_ctx->first != iter_ctx->last)
+    {
+      iter_ctx->first.set_position(act_pos);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
