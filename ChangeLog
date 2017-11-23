@@ -9,8 +9,6 @@ LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 TODO (known issues):
 - Fix expansion of macros, which replacement-list terminates in a partial
   macro expansion.
-- Fix the re2c lexer for iterators others then string::iterator (or more
-  generally for iterators, which aren't random access iterators)
 - Try to remove the second parameter from the pp_iterator<>::force_include
   function.
 - Fix the trigraph backslash problem in the re2c (C/C++ and IDL) scanners, if
