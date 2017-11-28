@@ -258,7 +258,10 @@ NonDigit            = [a-zA-Z_$] | UniversalChar;
     "L"? "R" ["]
         {
             if (s->act_in_cpp0x_mode)
+            {
+                rawstringdelim = "";
                 goto extrawstringlit;
+            }
             --YYCURSOR;
             BOOST_WAVE_RET(T_IDENTIFIER);
         }
@@ -282,7 +285,10 @@ NonDigit            = [a-zA-Z_$] | UniversalChar;
     ([uU] | "u8") "R" ["]
         {
             if (s->act_in_cpp0x_mode)
+            {
+                rawstringdelim = "";
                 goto extrawstringlit;
+            }
             --YYCURSOR;
             BOOST_WAVE_RET(T_IDENTIFIER);
         }
@@ -503,19 +509,68 @@ extstringlit:
 
 extrawstringlit:
 {
+    // we have consumed the double quote but not the lparen
+    // at this point we may see a delimiter
+
     /*!re2c
-        (EscapeSequence | UniversalChar | any\[\r\n\\"])
+        * {
+            (*s->error_proc)(s, lexing_exception::generic_lexing_error,
+                "Invalid character in raw string delimiter ('%c')", yych);
+        }
+
+        // delimiters are any character but parentheses, backslash, and whitespace
+        any\[()\\\t\v\f\r\n]
         {
+            rawstringdelim += yych;
+            if (rawstringdelim.size() > 16)
+            {
+                (*s->error_proc)(s, lexing_exception::generic_lexing_error,
+                    "Raw string delimiter of excessive length (\"%s\") in input stream",
+                    rawstringdelim.c_str());
+            }
             goto extrawstringlit;
+        }
+
+        "("
+        {
+            rawstringdelim = ")" + rawstringdelim;
+            goto extrawstringbody;
+        }
+
+    */
+}
+
+extrawstringbody:
+{
+    /*!re2c
+
+        * {
+            (*s->error_proc)(s, lexing_exception::generic_lexing_error,
+                "Invalid character in raw string body ('%c')", yych);
         }
 
         Newline
         {
             s->line += count_backslash_newlines(s, cursor) +1;
             cursor.column = 1;
-            goto extrawstringlit;
+            goto extrawstringbody;
         }
 
-        ["] { BOOST_WAVE_RET(T_RAWSTRINGLIT); }
+        (EscapeSequence | UniversalChar | any\["])
+        {
+            goto extrawstringbody;
+        }
+
+        ["]
+        {
+            // check to see if we have completed a delimiter
+            if (string_type((char *)(YYCURSOR - rawstringdelim.size() - 1),
+                             (char *)(YYCURSOR - 1)) == rawstringdelim)
+            {
+                 BOOST_WAVE_RET(T_RAWSTRINGLIT);
+            } else {
+                goto extrawstringbody;
+            }
+        }
     */
 }

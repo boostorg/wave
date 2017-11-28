@@ -378,6 +378,9 @@ boost::wave::token_id scan(Scanner<Iterator> *s)
     uchar_wrapper marker (s->ptr);
     uchar_wrapper limit (s->lim);
 
+    typedef BOOST_WAVE_STRINGTYPE string_type;
+    string_type   rawstringdelim;         // for use with C++11 raw string literals
+
 // include the correct Re2C token definition rules
 #if BOOST_WAVE_USE_STRICT_LEXER != 0
 #include "strict_cpp_re.inc"
