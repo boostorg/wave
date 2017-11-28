@@ -7358,7 +7358,7 @@ yy1070:
 
 extrawstringlit:
 {
-    // we have consumed the double quote but not the rparen
+    // we have consumed the double quote but not the lparen
     // at this point we may see a delimiter
 
     
