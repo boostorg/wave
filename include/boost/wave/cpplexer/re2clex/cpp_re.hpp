@@ -348,20 +348,20 @@ uchar *fill(Scanner<Iterator> *s, uchar *cursor)
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Special wrapper class holding the current cursor position
-struct uchar_wrapper
+struct BOOST_WAVE_DECL uchar_wrapper
 {
-    BOOST_WAVE_DECL uchar_wrapper (uchar *base_cursor, std::size_t column = 1);
+    uchar_wrapper (uchar *base_cursor, std::size_t column = 1);
 
-    BOOST_WAVE_DECL uchar_wrapper& operator++();
+    uchar_wrapper& operator++();
 
-    BOOST_WAVE_DECL uchar_wrapper& operator--();
+    uchar_wrapper& operator--();
 
-    BOOST_WAVE_DECL uchar operator* () const;
+    uchar operator* () const;
 
-    BOOST_WAVE_DECL operator uchar *() const;
+    operator uchar *() const;
 
-    friend std::ptrdiff_t
-    BOOST_WAVE_DECL operator- (uchar_wrapper const& lhs, uchar_wrapper const& rhs);
+    friend BOOST_WAVE_DECL std::ptrdiff_t
+    operator- (uchar_wrapper const& lhs, uchar_wrapper const& rhs);
 
     uchar *base_cursor;
     std::size_t column;
