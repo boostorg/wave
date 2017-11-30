@@ -90,25 +90,18 @@ BOOST_WAVE_DECL boost::wave::token_id scan(Scanner<Iterator> *s);
 template<typename Iterator>
 int get_one_char(Scanner<Iterator> *s)
 {
-    if (Iterator() != s->act) {
-        RE2C_ASSERT(s->first != Iterator() && s->last != Iterator());
-        RE2C_ASSERT(s->first <= s->act && s->act <= s->last);
-        if (s->act < s->last)
-            return *(s->act)++;
-    }
+    RE2C_ASSERT(s->first <= s->act && s->act <= s->last);
+    if (s->act < s->last)
+        return *(s->act)++;
     return -1;
 }
 
 template<typename Iterator>
 std::ptrdiff_t rewind_stream (Scanner<Iterator> *s, int cnt)
 {
-    if (Iterator() != s->act) {
-        RE2C_ASSERT(s->first != Iterator() && s->last != Iterator());
-        std::advance(s->act, cnt);
-        RE2C_ASSERT(s->first <= s->act && s->act <= s->last);
-        return std::distance(s->first, s->act);
-    }
-    return 0;
+    std::advance(s->act, cnt);
+    RE2C_ASSERT(s->first <= s->act && s->act <= s->last);
+    return std::distance(s->first, s->act);
 }
 
 template<typename Iterator>
@@ -219,20 +212,18 @@ uchar *fill(Scanner<Iterator> *s, uchar *cursor)
             s->bot = buf;
         }
 
-        if (s->act != Iterator()) {
-            cnt = std::distance(s->act, s->last);
-            if (cnt > BOOST_WAVE_BSIZE)
-                cnt = BOOST_WAVE_BSIZE;
-            uchar * dst = s->lim;
-            for (std::ptrdiff_t idx = 0; idx < cnt; ++idx)
-            {
-                *dst++ = *s->act++;
-            }
+        cnt = std::distance(s->act, s->last);
+        if (cnt > BOOST_WAVE_BSIZE)
+            cnt = BOOST_WAVE_BSIZE;
+        uchar * dst = s->lim;
+        for (std::ptrdiff_t idx = 0; idx < cnt; ++idx)
+        {
+            *dst++ = *s->act++;
+        }
 
-            if (cnt != BOOST_WAVE_BSIZE)
-            {
-                s->eof = &s->lim[cnt]; *(s->eof)++ = '\0';
-            }
+        if (cnt != BOOST_WAVE_BSIZE)
+        {
+            s->eof = &s->lim[cnt]; *(s->eof)++ = '\0';
         }
 
         /* backslash-newline erasing time */
