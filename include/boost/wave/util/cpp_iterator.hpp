@@ -23,6 +23,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/spirit/include/classic_multi_pass.hpp>
 #include <boost/spirit/include/classic_parse_tree_utils.hpp>
 
@@ -806,14 +807,12 @@ typename ContextT::position_type pos = act_token.get_position();
 
             // 21 is the max required size for a 64 bit integer represented as a
             // string
-            char buffer[22];
 
-                using namespace std;    // for some systems sprintf is in namespace std
-                sprintf (buffer, "%zd", pos.get_line());
+		std::string buffer = lexical_cast<std::string>(pos.get_line());
 
                 pos.set_column(++column);                 // account for ' '
-                pending.push_back(result_type(T_INTLIT, buffer, pos));
-                pos.set_column(column += (unsigned int)strlen(buffer)); // account for <number>
+                pending.push_back(result_type(T_INTLIT, buffer.c_str(), pos));
+                pos.set_column(column += buffer.size()); // account for <number>
                 pending.push_back(result_type(T_SPACE, " ", pos));
                 pos.set_column(++column);                 // account for ' '
 
