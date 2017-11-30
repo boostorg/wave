@@ -173,7 +173,7 @@ int count_backslash_newlines(Scanner<Iterator> *s, uchar *cursor)
     return skipped;
 }
 
-bool is_backslash(uchar *p, uchar *end, int &len);
+BOOST_WAVE_DECL bool is_backslash(uchar *p, uchar *end, int &len);
 
 #define BOOST_WAVE_BSIZE     196608
 template<typename Iterator>
@@ -350,18 +350,18 @@ uchar *fill(Scanner<Iterator> *s, uchar *cursor)
 //  Special wrapper class holding the current cursor position
 struct uchar_wrapper
 {
-    uchar_wrapper (uchar *base_cursor, std::size_t column = 1);
+    BOOST_WAVE_DECL uchar_wrapper (uchar *base_cursor, std::size_t column = 1);
 
-    uchar_wrapper& operator++();
+    BOOST_WAVE_DECL uchar_wrapper& operator++();
 
-    uchar_wrapper& operator--();
+    BOOST_WAVE_DECL uchar_wrapper& operator--();
 
-    uchar operator* () const;
+    BOOST_WAVE_DECL uchar operator* () const;
 
-    operator uchar *() const;
+    BOOST_WAVE_DECL operator uchar *() const;
 
     friend std::ptrdiff_t
-    operator- (uchar_wrapper const& lhs, uchar_wrapper const& rhs);
+    BOOST_WAVE_DECL operator- (uchar_wrapper const& lhs, uchar_wrapper const& rhs);
 
     uchar *base_cursor;
     std::size_t column;
