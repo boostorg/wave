@@ -796,7 +796,7 @@ typename ContextT::position_type pos = act_token.get_position();
 
             if (!ctx.get_hooks().emit_line_directive(ctx, pending, act_token))
             {
-            unsigned int column = 6;
+                unsigned int column = 6;
 
                 // the hook did not generate anything, emit default #line
                 pos.set_column(1);
@@ -805,10 +805,10 @@ typename ContextT::position_type pos = act_token.get_position();
                 pos.set_column(column);      // account for '#line'
                 pending.push_back(result_type(T_SPACE, " ", pos));
 
-            // 21 is the max required size for a 64 bit integer represented as a
-            // string
+                // 21 is the max required size for a 64 bit integer represented as a
+                // string
 
-		std::string buffer = lexical_cast<std::string>(pos.get_line());
+                std::string buffer = lexical_cast<std::string>(pos.get_line());
 
                 pos.set_column(++column);                 // account for ' '
                 pending.push_back(result_type(T_INTLIT, buffer.c_str(), pos));
@@ -816,9 +816,9 @@ typename ContextT::position_type pos = act_token.get_position();
                 pending.push_back(result_type(T_SPACE, " ", pos));
                 pos.set_column(++column);                 // account for ' '
 
-            std::string file("\"");
-            boost::filesystem::path filename(
-                wave::util::create_path(act_pos.get_file().c_str()));
+                std::string file("\"");
+                boost::filesystem::path filename(
+                    wave::util::create_path(act_pos.get_file().c_str()));
 
                 using wave::util::impl::escape_lit;
                 file += escape_lit(wave::util::native_file_string(filename)) + "\"";
