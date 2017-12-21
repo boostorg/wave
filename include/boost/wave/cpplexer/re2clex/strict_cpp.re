@@ -2,42 +2,41 @@
     Boost.Wave: A Standard compliant C++ preprocessor library
 
     Copyright (c) 2001 Daniel C. Nuffer
-    Copyright (c) 2001-2013 Hartmut Kaiser.
+    Copyright (c) 2001-2011 Hartmut Kaiser.
     Distributed under the Boost Software License, Version 1.0. (See accompanying
     file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-    This is a lexer conforming to the Standard with a few exceptions.
-    So it does allow the '$' to be part of identifiers. If you need strict
-    Standards conforming behaviour, please include the lexer definition
-    provided in the file strict_cpp.re.
+    This is a strict lexer conforming to the Standard as close as possible.
+    It does not allow the '$' to be part of identifiers. If you need the '$'
+    character in identifiers please include the lexer definition provided
+    in the cpp.re file.
 
     TODO:
         handle errors better.
 =============================================================================*/
 
 /*!re2c
-re2c:indent:string  = "    ";
-any                 = [\t\v\f\r\n\040-\377];
-anyctrl             = [\001-\037];
-OctalDigit          = [0-7];
-Digit               = [0-9];
-HexDigit            = [a-fA-F0-9];
-Integer             = (("0" [xX] HexDigit+) | ("0" OctalDigit*) | ([1-9] Digit*));
-ExponentStart       = [Ee] [+-];
-ExponentPart        = [Ee] [+-]? Digit+;
-FractionalConstant  = (Digit* "." Digit+) | (Digit+ ".");
-FloatingSuffix      = [fF] [lL]? | [lL] [fF]?;
-IntegerSuffix       = [uU] [lL]? | [lL] [uU]?;
-LongIntegerSuffix   = [uU] ([lL] [lL]) | ([lL] [lL]) [uU]?;
-MSLongIntegerSuffix = "u"? "i64";
-Backslash           = [\\] | "??/";
-EscapeSequence      = Backslash ([abfnrtv?'"] | Backslash | "x" HexDigit+ | OctalDigit OctalDigit? OctalDigit?);
-HexQuad             = HexDigit HexDigit HexDigit HexDigit;
-UniversalChar       = Backslash ("u" HexQuad | "U" HexQuad HexQuad);
-Newline             = "\r\n" | "\n" | "\r";
-PPSpace             = ([ \t\f\v]|("/*"(any\[*]|Newline|("*"+(any\[*/]|Newline)))*"*"+"/"))*;
-Pound               = "#" | "??=" | "%:";
-NonDigit            = [a-zA-Z_$] | UniversalChar;
+re2c:indent:string = "    ";
+any                = [\t\v\f\r\n\040-\377];
+anyctrl            = [\001-\037];
+OctalDigit         = [0-7];
+Digit              = [0-9];
+HexDigit           = [a-fA-F0-9];
+Integer            = (("0" [xX] HexDigit+) | ("0" OctalDigit*) | ([1-9] Digit*));
+ExponentStart      = [Ee] [+-];
+ExponentPart       = [Ee] [+-]? Digit+;
+FractionalConstant = (Digit* "." Digit+) | (Digit+ ".");
+FloatingSuffix     = [fF] [lL]? | [lL] [fF]?;
+IntegerSuffix      = [uU] [lL]? | [lL] [uU]?;
+LongIntegerSuffix  = [uU] ([lL] [lL]) | ([lL] [lL]) [uU]?;
+Backslash          = [\\] | "??/";
+EscapeSequence     = Backslash ([abfnrtv?'"] | Backslash | "x" HexDigit+ | OctalDigit OctalDigit? OctalDigit?);
+HexQuad            = HexDigit HexDigit HexDigit HexDigit;
+UniversalChar      = Backslash ("u" HexQuad | "U" HexQuad HexQuad);
+Newline            = "\r\n" | "\n" | "\r";
+PPSpace            = ([ \t\f\v]|("/*"(any\[*]|Newline|("*"+(any\[*/]|Newline)))*"*"+"/"))*;
+Pound              = "#" | "??=" | "%:";
+NonDigit           = [a-zA-Z_] | UniversalChar;
 */
 
 /*!re2c
@@ -258,7 +257,10 @@ NonDigit            = [a-zA-Z_$] | UniversalChar;
     "L"? "R" ["]
         {
             if (s->act_in_cpp0x_mode)
+            {
+                rawstringdelim = "";
                 goto extrawstringlit;
+            }
             --YYCURSOR;
             BOOST_WAVE_RET(T_IDENTIFIER);
         }
@@ -282,12 +284,15 @@ NonDigit            = [a-zA-Z_$] | UniversalChar;
     ([uU] | "u8") "R" ["]
         {
             if (s->act_in_cpp0x_mode)
+            {
+                rawstringdelim = "";
                 goto extrawstringlit;
+            }
             --YYCURSOR;
             BOOST_WAVE_RET(T_IDENTIFIER);
         }
 
-    ([a-zA-Z_$] | UniversalChar) ([a-zA-Z_0-9$] | UniversalChar)*
+    ([a-zA-Z_] | UniversalChar) ([a-zA-Z_0-9] | UniversalChar)*
         { BOOST_WAVE_RET(T_IDENTIFIER); }
 
     Pound PPSpace ( "include" | "include_next") PPSpace "<" (any\[\n\r>])+ ">"
@@ -383,7 +388,7 @@ ccomment:
     anyctrl
     {
         // flag the error
-        BOOST_WAVE_UPDATE_CURSOR();     // adjust the input cursor
+        BOOST_WAVE_UPDATE_CURSOR();   // adjust the input cursor
         (*s->error_proc)(s, lexing_exception::generic_lexing_error,
             "invalid character '\\%03o' in input stream", *--YYCURSOR);
     }
@@ -459,7 +464,7 @@ integer_suffix:
 {
     if (s->enable_ms_extensions) {
     /*!re2c
-        LongIntegerSuffix | MSLongIntegerSuffix
+        LongIntegerSuffix | "i64"
             { BOOST_WAVE_RET(T_LONGINTLIT); }
 
         IntegerSuffix?
@@ -503,19 +508,68 @@ extstringlit:
 
 extrawstringlit:
 {
+    // we have consumed the double quote but not the lparen
+    // at this point we may see a delimiter
+
     /*!re2c
-        (EscapeSequence | UniversalChar | any\[\r\n\\"])
+        * {
+            (*s->error_proc)(s, lexing_exception::generic_lexing_error,
+                "Invalid character in raw string delimiter ('%c')", yych);
+        }
+
+        // delimiters are any character but parentheses, backslash, and whitespace
+        any\[()\\\t\v\f\r\n]
         {
+            rawstringdelim += yych;
+            if (rawstringdelim.size() > 16)
+            {
+                (*s->error_proc)(s, lexing_exception::generic_lexing_error,
+                    "Raw string delimiter of excessive length (\"%s\") in input stream",
+                    rawstringdelim.c_str());
+            }
             goto extrawstringlit;
+        }
+
+        "("
+        {
+            rawstringdelim = ")" + rawstringdelim;
+            goto extrawstringbody;
+        }
+
+    */
+}
+
+extrawstringbody:
+{
+    /*!re2c
+
+        * {
+            (*s->error_proc)(s, lexing_exception::generic_lexing_error,
+                "Invalid character in raw string body ('%c')", yych);
         }
 
         Newline
         {
             s->line += count_backslash_newlines(s, cursor) +1;
             cursor.column = 1;
-            goto extrawstringlit;
+            goto extrawstringbody;
         }
 
-        ["] { BOOST_WAVE_RET(T_RAWSTRINGLIT); }
+        (EscapeSequence | UniversalChar | any\["])
+        {
+            goto extrawstringbody;
+        }
+
+        ["]
+        {
+            // check to see if we have completed a delimiter
+            if (string_type((char *)(YYCURSOR - rawstringdelim.size() - 1),
+                             (char *)(YYCURSOR - 1)) == rawstringdelim)
+            {
+                 BOOST_WAVE_RET(T_RAWSTRINGLIT);
+            } else {
+                goto extrawstringbody;
+            }
+        }
     */
 }
