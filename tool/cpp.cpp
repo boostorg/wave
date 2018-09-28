@@ -19,6 +19,7 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 #include <boost/timer.hpp>
 #include <boost/any.hpp>
 #include <boost/algorithm/cxx11/any_of.hpp>
@@ -1256,6 +1257,11 @@ const bool treat_warnings_as_error = vm.count("warning") &&
 int
 main (int argc, char *argv[])
 {
+    std::locale global_loc = std::locale();
+    std::locale loc(global_loc, new
+                    boost::filesystem::detail::utf8_codecvt_facet);
+    boost::filesystem::path::imbue(loc);
+
     const std::string accepted_w_args[] = {"error"};
 
     // test Wave compilation configuration
