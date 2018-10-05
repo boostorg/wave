@@ -58,6 +58,9 @@
 #include "testwave_app.hpp"
 #include "collect_hooks_information.hpp"
 
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
+
 # ifdef BOOST_NO_STDC_NAMESPACE
 namespace std
 {
@@ -76,6 +79,31 @@ namespace fs = boost::filesystem;
 #define TESTWAVE_VERSION_SUBMINOR        0
 
 namespace {
+    struct fs_path_imbue_utf8
+    {
+        explicit fs_path_imbue_utf8(bool enable)
+            : m_enabled(enable), m_prevLocale()
+        {
+            if (!m_enabled) return;
+            static std::locale global_loc = std::locale();
+            static std::locale utf_8_loc(global_loc, new boost::filesystem::detail::utf8_codecvt_facet);
+            
+            m_prevLocale = boost::filesystem::path::imbue(utf_8_loc);
+            
+        }
+        ~fs_path_imbue_utf8()
+        {
+            if (!m_enabled) return;
+            boost::filesystem::path::imbue(m_prevLocale);
+        }
+    private:
+        fs_path_imbue_utf8();
+        fs_path_imbue_utf8(fs_path_imbue_utf8 const&);
+        fs_path_imbue_utf8& operator=(fs_path_imbue_utf8 const&);
+
+        bool m_enabled;
+        std::locale m_prevLocale;
+    };
 
     ///////////////////////////////////////////////////////////////////////////
     template <typename Iterator>
@@ -411,6 +439,10 @@ testwave_app::test_a_file(std::string filename)
     std::string instr;
     if (!read_file(filename, instr))
         return false;     // error was reported already
+
+    std::string use_utf8;
+    extract_special_information(filename, instr, 'U', use_utf8);
+    fs_path_imbue_utf8 to_utf8(use_utf8.substr(0,3) == "yes");
 
     bool test_hooks = true;
     if (global_vm.count("hooks"))
@@ -1009,11 +1041,14 @@ testwave_app::initialise_options(Context& ctx, po::variables_map const& vm,
         for (std::vector<std::string>::const_iterator cit = syspaths.begin();
               cit != end; ++cit)
         {
+            std::string full(*cit);
+            got_expected_result(ctx.get_current_filename(),"",full);
+            
             if (9 == debuglevel) {
                 std::cerr << "initialise_options: option: -S" << *cit
                           << std::endl;
             }
-            ctx.add_sysinclude_path((*cit).c_str());
+            ctx.add_sysinclude_path(full.c_str());
         }
     }
 
@@ -1026,11 +1061,14 @@ testwave_app::initialise_options(Context& ctx, po::variables_map const& vm,
         for (std::vector<std::string>::const_iterator cit = ip.paths.begin();
               cit != end; ++cit)
         {
+            std::string full(*cit);
+            got_expected_result(ctx.get_current_filename(),"",full);
+
             if (9 == debuglevel) {
                 std::cerr << "initialise_options: option: -I" << *cit
                           << std::endl;
             }
-            ctx.add_include_path((*cit).c_str());
+            ctx.add_include_path(full.c_str());
         }
 
     // if on the command line was given -I- , this has to be propagated
