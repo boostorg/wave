@@ -9,5 +9,5 @@
 
 //U yes
 //R #line 10 "file.hpp"
-//R "$P(utf8-test-ßµ™∃\\file.hpp)"
+//R "$P(utf8-test-ßµ™∃/file.hpp)"
 #include <utf8-test-ßµ™∃/file.hpp>
