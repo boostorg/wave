@@ -23,22 +23,26 @@ environment:
       TOOLSET: msvc-14.1
       CXXSTD: 14,17
       ADDRMD: 32,64
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      ADDPATH: C:\cygwin\bin;
-      TOOLSET: gcc
-      CXXSTD: 03,11,14,1z
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      ADDPATH: C:\cygwin64\bin;
-      TOOLSET: gcc
-      CXXSTD: 03,11,14,1z
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      ADDPATH: C:\mingw\bin;
-      TOOLSET: gcc
-      CXXSTD: 03,11,14,1z
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-      ADDPATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;
-      TOOLSET: gcc
-      CXXSTD: 03,11,14,1z
+##
+## cygwin and mingw disabled for now, failing to build
+## for reasons unrelated to wave
+##
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+#      ADDPATH: C:\cygwin\bin;
+#      TOOLSET: gcc
+#      CXXSTD: 03,11,14,1z
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+#      ADDPATH: C:\cygwin64\bin;
+#      TOOLSET: gcc
+#      CXXSTD: 03,11,14,1z
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+#      ADDPATH: C:\mingw\bin;
+#      TOOLSET: gcc
+#      CXXSTD: 03,11,14,1z
+#    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+#      ADDPATH: C:\mingw-w64\x86_64-6.3.0-posix-seh-rt_v5-rev1\mingw64\bin;
+#      TOOLSET: gcc
+#      CXXSTD: 03,11,14,1z
 
 install:
   - set BOOST_BRANCH=develop
