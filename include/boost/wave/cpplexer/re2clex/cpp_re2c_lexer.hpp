@@ -375,7 +375,7 @@ token_cache<typename lexer<IteratorT, PositionT, TokenT>::string_type> const
 ///////////////////////////////////////////////////////////////////////////////
 
 #if BOOST_WAVE_SEPARATE_LEXER_INSTANTIATION != 0
-#define BOOST_WAVE_RE2C_NEW_LEXER_INLINE BOOST_SYMBOL_VISIBLE
+#define BOOST_WAVE_RE2C_NEW_LEXER_INLINE
 #else
 #define BOOST_WAVE_RE2C_NEW_LEXER_INLINE inline
 #endif
