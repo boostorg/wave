@@ -18,6 +18,7 @@
 // Include additional Boost libraries
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <boost/timer.hpp>
 #include <boost/any.hpp>
 #include <boost/algorithm/cxx11/any_of.hpp>
@@ -86,7 +87,8 @@ using namespace boost::spirit::classic;
 using std::pair;
 using std::vector;
 using std::getline;
-using std::ofstream;
+using boost::filesystem::ofstream;
+using boost::filesystem::ifstream;
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -229,7 +231,7 @@ namespace cmd_line_utils {
         po::options_description const &desc, po::variables_map &vm,
         bool may_fail = false)
     {
-    std::ifstream ifs(filename.c_str());
+        ifstream ifs(filename.c_str());
 
         if (!ifs.is_open()) {
             if (!may_fail) {
@@ -468,7 +470,7 @@ namespace {
 #if BOOST_WAVE_BINARY_SERIALIZATION != 0
                 mode = (std::ios::openmode)(mode | std::ios::binary);
 #endif
-                std::ifstream ifs (state_file.string().c_str(), mode);
+                ifstream ifs (state_file.string().c_str(), mode);
                 if (ifs.is_open()) {
                     using namespace boost::serialization;
                     iarchive ia(ifs);
@@ -540,7 +542,7 @@ namespace {
     bool list_macro_names(context_type const& ctx, std::string filename)
     {
     // open file for macro names listing
-        std::ofstream macronames_out;
+        ofstream macronames_out;
         fs::path macronames_file (boost::wave::util::create_path(filename));
 
         if (macronames_file != "-") {
@@ -610,7 +612,7 @@ namespace {
     bool list_macro_counts(context_type const& ctx, std::string filename)
     {
     // open file for macro invocation count listing
-        std::ofstream macrocounts_out;
+        ofstream macrocounts_out;
         fs::path macrocounts_file (boost::wave::util::create_path(filename));
 
         if (macrocounts_file != "-") {
@@ -687,10 +689,10 @@ const bool treat_warnings_as_error = vm.count("warning") &&
 
     // The preprocessing of the input stream is done on the fly behind the
     // scenes during iteration over the context_type::iterator_type stream.
-    std::ofstream output;
-    std::ofstream traceout;
-    std::ofstream includelistout;
-    std::ofstream listguardsout;
+    ofstream output;
+    ofstream traceout;
+    ofstream includelistout;
+    ofstream listguardsout;
 
     trace_flags enable_trace = trace_nothing;
 
@@ -829,7 +831,7 @@ const bool treat_warnings_as_error = vm.count("warning") &&
         if (vm.count ("license")) {
         // try to open the file, where to put the preprocessed output
         std::string license_file(vm["license"].as<std::string>());
-        std::ifstream license_stream(license_file.c_str());
+        ifstream license_stream(license_file.c_str());
 
             if (!license_stream.is_open()) {
                 cerr << "wave: could not open specified license file: "
@@ -1484,7 +1486,7 @@ main (int argc, char *argv[])
             }
 
         std::string file_name(arguments[0].value[0]);
-        std::ifstream instream(file_name.c_str());
+        ifstream instream(file_name.c_str());
 
         // preprocess the given input file
             if (!instream.is_open()) {
