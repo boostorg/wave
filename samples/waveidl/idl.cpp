@@ -208,15 +208,14 @@ namespace cmd_line_util {
 //  switching the semantics of an -I option.
 //
 ///////////////////////////////////////////////////////////////////////////////
-namespace boost { namespace program_options {
+namespace cmd_line_util {
 
-  void validate(boost::any &v, std::vector<std::string> const &s,
-      cmd_line_util::include_paths *, int) 
-  {
-      cmd_line_util::include_paths::validate(v, s);
-  }
+void validate(boost::any &v, std::vector<std::string> const &s,
+              cmd_line_util::include_paths *, int) {
+  cmd_line_util::include_paths::validate(v, s);
+}
 
-}}  // namespace boost::program_options
+} // namespace cmd_line_util
 
 ///////////////////////////////////////////////////////////////////////////////
 //  do the actual preprocessing
@@ -471,7 +470,7 @@ main (int argc, char *argv[])
         
     // Try to find a waveidl.cfg in the same directory as the executable was 
     // started from. If this exists, treat it as a wave config file
-    fs::path filename(argv[0], fs::native);
+    fs::path filename = boost::wave::util::create_path(argv[0]);
 
         filename = filename.branch_path() / "waveidl.cfg";
         cmd_line_util::read_config_file_options(filename.string(), 
