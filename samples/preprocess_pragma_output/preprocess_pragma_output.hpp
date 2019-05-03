@@ -25,7 +25,7 @@ as_unescaped_string(Iterator it, Iterator const& end)
         switch (token_id(*it)) {
         case T_STRINGLIT:
             {
-                string val (util::impl::unescape_lit((*it).get_value()).c_str());
+                String val (util::impl::unescape_lit((*it).get_value()).c_str());
                 val.erase(val.size()-1);
                 val.erase(0, 1);
                 result += val;
