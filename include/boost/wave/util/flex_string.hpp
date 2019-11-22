@@ -1802,13 +1802,13 @@ private:
         if(!empty() && beginIterator != endIterator)
         {
             typedef const typename std::iterator_traits<Iterator>::value_type *
-                pointer;
+                value_pointer;
 
-            pointer myBegin(&*begin());
-            pointer myEnd(&*begin() + size());
-            pointer rangeBegin(DereferenceValidIterator(beginIterator));
+            value_pointer myBegin(&*begin());
+            value_pointer myEnd(&*begin() + size());
+            value_pointer rangeBegin(DereferenceValidIterator(beginIterator));
 
-            const std::less_equal<pointer> less_equal = std::less_equal<pointer>();
+            const std::less_equal<value_pointer> less_equal = std::less_equal<value_pointer>();
             if(less_equal(myBegin, rangeBegin) && less_equal(rangeBegin, myEnd))
                 return true;
         }
