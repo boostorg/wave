@@ -687,20 +687,20 @@ public:
                         }
                         break;
 
-#if BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
                     case T_PP_HHEADER:
                     case T_PP_QHEADER:
                     case T_PP_INCLUDE:
                     // convert to the corresponding ..._next token, if appropriate
                         {
+#if BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
                         // Skip '#' and whitespace and see whether we find an
                         // 'include_next' here.
                             typename string_type::size_type start = value.find("include");
                             if (0 == value.compare(start, 12, "include_next", 12))
                                 id = token_id(id | AltTokenType);
+#endif // BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
                             break;
                         }
-#endif // BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
 
                     case T_EOF:
                     // T_EOF is returned as a valid token, the next call will
