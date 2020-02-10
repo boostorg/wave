@@ -74,7 +74,7 @@ class lexertl
 {
 private:
     typedef BOOST_WAVE_STRINGTYPE string_type;
-    typedef typename boost::detail::iterator_traits<Iterator>::value_type
+    typedef typename boost::iterators::iterator_value<Iterator>::type
         char_type;
 
 public:
@@ -588,7 +588,7 @@ class lexertl_functor
 {
 public:
     typedef wave::util::position_iterator<Iterator, Position> iterator_type;
-    typedef typename boost::detail::iterator_traits<Iterator>::value_type
+    typedef typename boost::iterators::iterator_value<Iterator>::type
         char_type;
     typedef BOOST_WAVE_STRINGTYPE string_type;
     typedef wave::cpplexer::lex_token<Position> token_type;

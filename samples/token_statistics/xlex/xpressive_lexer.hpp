@@ -36,7 +36,7 @@ template <
 class xpressive_lexer
 {
 private:
-    typedef typename boost::detail::iterator_traits<Iterator>::value_type
+    typedef typename boost::iterators::iterator_value<Iterator>::type
         char_type;
     typedef std::basic_string<char_type> string_type;
     
