@@ -22,8 +22,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 namespace impl {
 
-using boost::wave::token_id::T_UNKNOWN;
-
 template <typename StringTypeT, typename PositionT>
 class token_data
 {
@@ -37,7 +35,7 @@ public:
 
     //  construct an invalid token
     explicit token_data(int)
-    :   id(T_UNKNOWN), refcnt(1)
+    :   id(boost::wave::T_UNKNOWN), refcnt(1)
     {}
 
     token_data(boost::wave::token_id id_, string_type const &value_, 
@@ -162,7 +160,7 @@ public:
     bool is_valid() const
     {
         using namespace boost::wave;
-        return 0 != data && token_id(*data) != T_UNKNOWN;
+        return 0 != data && token_id(*data) != boost::wave::T_UNKNOWN;
     }
 
     void set_token_id (boost::wave::token_id id_) 
