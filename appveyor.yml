@@ -14,7 +14,7 @@ branches:
 
 environment:
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       TOOLSET: msvc-9.0,msvc-10.0,msvc-11.0,msvc-12.0
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
       TOOLSET: msvc-14.0
@@ -54,7 +54,7 @@ install:
   - git submodule update --init libs/config
   - git submodule update --init tools/boostdep
   - xcopy /s /e /q %APPVEYOR_BUILD_FOLDER% libs\wave
-  - python tools/boostdep/depinst/depinst.py wave
+  - python tools/boostdep/depinst/depinst.py -I tool -I samples wave
   - cmd /c bootstrap
   - b2 -d0 headers
 
@@ -65,3 +65,5 @@ test_script:
   - if not "%CXXSTD%" == "" set CXXSTD=cxxstd=%CXXSTD%
   - if not "%ADDRMD%" == "" set ADDRMD=address-model=%ADDRMD%
   - b2 -j3 libs/wave/test toolset=%TOOLSET% %CXXSTD% %ADDRMD% variant=debug,release
+  - b2 -j3 libs/wave/tool/build//wave toolset=%TOOLSET% %CXXSTD% %ADDRMD% variant=release
+  - b2 -j3 libs/wave/samples toolset=%TOOLSET% %CXXSTD% %ADDRMD% variant=release

@@ -75,12 +75,14 @@ install:
   - git submodule update --init libs/config
   - git submodule update --init tools/boostdep
   - cp -r $TRAVIS_BUILD_DIR/* libs/wave
-  - python tools/boostdep/depinst/depinst.py wave
+  - python tools/boostdep/depinst/depinst.py -I tool -I samples wave
   - ./bootstrap.sh
   - ./b2 headers
 
 script:
   - ./b2 libs/wave/test toolset=$TOOLSET cxxstd=$CXXSTD
+  - ./b2 libs/wave/tool/build//wave toolset=$TOOLSET cxxstd=$CXXSTD
+  - ./b2 libs/wave/samples toolset=$TOOLSET cxxstd=$CXXSTD
 
 notifications:
   email:

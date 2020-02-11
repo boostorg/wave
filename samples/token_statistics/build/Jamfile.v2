@@ -19,7 +19,7 @@ exe token_statistics
     :
         $(SOURCES)
         /boost/wave//boost_wave
-        /boost/program_options//boost_program_options
+        /boost/program_options//boost_program_options/<link>static
         /boost/filesystem//boost_filesystem     
         /boost/system//boost_system     
         /boost/thread//boost_thread
