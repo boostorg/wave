@@ -116,7 +116,6 @@ template <typename IteratorT, typename PositionT>
 inline
 lexer<IteratorT, PositionT>::~lexer() 
 {
-    boost::wave::cpplexer::re2clex::aq_terminate(scanner.eol_offsets);
     free(scanner.bot);
 }
 
