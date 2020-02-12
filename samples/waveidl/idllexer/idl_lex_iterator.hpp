@@ -173,7 +173,7 @@ public:
     :   base_type(
             functor_data_type(
                 unique_functor_type(),
-                cpplexer::lex_input_interface_generator<TokenT>
+                idllexer::lex_input_interface_generator<TokenT>
                     ::new_lexer(first, last, pos, language)
             )
         )
