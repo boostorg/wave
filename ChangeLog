@@ -18,6 +18,14 @@ TODO (known issues):
 
 CHANGELOG
 
+Boost V1.73:
+  - Fixed TRAC #7822: waveidl sample does not use the IDL lexer
+  - Fixed TRAC #9874: Turning off 'include_next' support breaks include
+  - Fixed a typedef shadowing a class (MSVC warning 4458) - Conrad Poelman
+  - Updated waveidl to match recent changes in the RE2C lexer
+  - Samples now build cleanly
+  - Ensured samples and wave driver are covered by continuous integration
+
 Boost V1.55:
  - Fixed #8848: Wave driver improperly processes 0xFFFFui64 token
  - Fixed #9098: Wave driver option --c++0x invalid

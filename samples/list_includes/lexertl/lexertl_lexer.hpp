@@ -74,7 +74,7 @@ class lexertl
 {
 private:
     typedef BOOST_WAVE_STRINGTYPE string_type;
-    typedef typename boost::detail::iterator_traits<Iterator>::value_type
+    typedef typename boost::iterators::iterator_value<Iterator>::type
         char_type;
 
 public:
@@ -588,7 +588,7 @@ class lexertl_functor
 {
 public:
     typedef wave::util::position_iterator<Iterator, Position> iterator_type;
-    typedef typename boost::detail::iterator_traits<Iterator>::value_type
+    typedef typename boost::iterators::iterator_value<Iterator>::type
         char_type;
     typedef BOOST_WAVE_STRINGTYPE string_type;
     typedef wave::cpplexer::lex_token<Position> token_type;
@@ -651,11 +651,11 @@ public:
                         }
                         break;
 
-#if BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
                     case T_PP_HHEADER:
                     case T_PP_QHEADER:
                     case T_PP_INCLUDE:
                     // convert to the corresponding ..._next token, if appropriate
+#if BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
                         {
                         // Skip '#' and whitespace and see whether we find an
                         // 'include_next' here.
@@ -663,8 +663,8 @@ public:
                             if (0 == token_val.compare(start, 12, "include_next", 12))
                                 id = token_id(id | AltTokenType);
                         }
-                        break;
 #endif // BOOST_WAVE_SUPPORT_INCLUDE_NEXT != 0
+                        break;
 
                     case T_EOF:
                     // T_EOF is returned as a valid token, the next call will

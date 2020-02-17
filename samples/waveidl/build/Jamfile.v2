@@ -22,10 +22,11 @@ exe waveidl
     :
         $(SOURCES)
         /boost/wave//boost_wave
-        /boost/program_options//boost_program_options
+        /boost/program_options//boost_program_options/<link>static
         /boost/system//boost_system
         /boost/thread//boost_thread
         /boost/date_time//boost_date_time
+        /boost/filesystem//boost_filesystem
     ;
 
 for local source in $(SOURCES)

@@ -55,14 +55,14 @@ template <
 >
 class lexer 
 {
-    typedef boost::wave::cpplexer::re2clex::Scanner scanner_t;
+    typedef boost::wave::cpplexer::re2clex::Scanner<IteratorT> scanner_t;
 
 public:
 
-    typedef char                                        char_t;
-    typedef boost::wave::cpplexer::re2clex::Scanner     base_t;
-    typedef boost::wave::cpplexer::lex_token<PositionT> token_type;
-    typedef typename token_type::string_type            string_type;
+    typedef char                                                 char_t;
+    typedef boost::wave::cpplexer::re2clex::Scanner<IteratorT>   base_t;
+    typedef boost::wave::cpplexer::lex_token<PositionT>          token_type;
+    typedef typename token_type::string_type                     string_type;
     
     lexer(IteratorT const &first, IteratorT const &last, 
         PositionT const &pos, boost::wave::language_support language);
@@ -96,15 +96,11 @@ inline
 lexer<IteratorT, PositionT>::lexer(IteratorT const &first, 
         IteratorT const &last, PositionT const &pos, 
         boost::wave::language_support language) 
-:   filename(pos.get_file()), at_eof(false), language(language)
+    :   scanner(first, last), filename(pos.get_file()), at_eof(false), language(language)
 {
     using namespace std;        // some systems have memset in std
     using namespace boost::wave::cpplexer::re2clex;
 
-    memset(&scanner, '\0', sizeof(scanner_t));
-    scanner.eol_offsets = aq_create();
-    scanner.first = scanner.act = (uchar *)&(*first);
-    scanner.last = scanner.first + std::distance(first, last);
     scanner.line = pos.get_line();
     scanner.error_proc = report_error;
     scanner.file_name = filename.c_str();
@@ -120,7 +116,6 @@ template <typename IteratorT, typename PositionT>
 inline
 lexer<IteratorT, PositionT>::~lexer() 
 {
-    boost::wave::cpplexer::re2clex::aq_terminate(scanner.eol_offsets);
     free(scanner.bot);
 }
 
@@ -204,20 +199,20 @@ public:
     
     lex_functor(IteratorT const &first, IteratorT const &last, 
             PositionT const &pos, boost::wave::language_support language)
-    :   lexer(first, last, pos, language)
+    :   re2c_lexer(first, last, pos, language)
     {}
     virtual ~lex_functor() {}
 
 // get the next token from the input stream
-    token_type& get(token_type& t) { return lexer.get(t); }
+    token_type& get(token_type& t) { return re2c_lexer.get(t); }
     void set_position(PositionT const &pos) 
-    { lexer.set_position(pos); }
+    { re2c_lexer.set_position(pos); }
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
     bool has_include_guards(std::string&) const { return false; }
 #endif    
 
 private:
-    lexer<IteratorT, PositionT> lexer;
+    lexer<IteratorT, PositionT> re2c_lexer;
 };
 
 }   // namespace re2clex
