@@ -549,8 +549,13 @@ class AllocatorStringStorage : public A
 
     void* Alloc(size_type sz, const void* p = 0)
     {
+#if defined(BOOST_NO_CXX11_ALLOCATOR)
         return A::allocate(1 + (sz - 1) / sizeof(E),
             static_cast<const char*>(p));
+#else
+        return std::allocator_traits<A>::allocate(*this, 1 + (sz - 1) / sizeof(E),
+            static_cast<const char*>(p));
+#endif
     }
 
     void* Realloc(void* p, size_type oldSz, size_type newSz)
@@ -666,7 +671,11 @@ public:
     { return size_type(end() - begin()); }
 
     size_type max_size() const
+#if defined(BOOST_NO_CXX11_ALLOCATOR)
     { return A::max_size(); }
+#else
+    { return std::allocator_traits<A>::max_size(*this); }
+#endif
 
     size_type capacity() const
     { return size_type(pData_->pEndOfMem_ - pData_->buffer_); }
@@ -1202,7 +1211,7 @@ public:
     typedef typename Storage::const_iterator const_iterator;
     typedef typename Storage::allocator_type allocator_type;
     typedef typename allocator_type::size_type size_type;
-    typedef typename Storage::reference reference;
+    typedef typename Storage::value_type& reference;
 
 private:
     union
@@ -1464,10 +1473,17 @@ public:
     typedef typename A::size_type size_type;
     typedef typename A::difference_type difference_type;
 
+#if defined(BOOST_NO_CXX11_ALLOCATOR)
     typedef typename A::reference reference;
     typedef typename A::const_reference const_reference;
     typedef typename A::pointer pointer;
     typedef typename A::const_pointer const_pointer;
+#else
+    typedef typename std::allocator_traits<A>::value_type& reference;
+    typedef typename std::allocator_traits<A>::value_type const& const_reference;
+    typedef typename std::allocator_traits<A>::pointer pointer;
+    typedef typename std::allocator_traits<A>::const_pointer const_pointer;
+#endif
 
     typedef typename Storage::iterator iterator;
     typedef typename Storage::const_iterator const_iterator;
