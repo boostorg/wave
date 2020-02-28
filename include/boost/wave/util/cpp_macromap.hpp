@@ -982,7 +982,9 @@ bool adjacent_stringize = false;
         typename ContainerT::size_type i;
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
         bool is_ellipsis = false;
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
         bool is_va_opt = false;
+#endif
 
             if (IS_EXTCATEGORY((*cit), ExtParameterTokenType)) {
                 BOOST_ASSERT(boost::wave::need_variadics(ctx.get_language()));
@@ -1048,11 +1050,11 @@ bool adjacent_stringize = false;
                     // cstart still points to __VA_OPT__; cit now points to the last rparen
 
                     if ((i == arguments.size()) ||             // no variadic argument
-                        impl::is_blank_only(arguments[i])) {   // no visible tokens
+                        impl::is_whitespace_only(arguments[i])) {   // no visible tokens
                         // no args; insert placemarker if one is not already present
                         expanded.push_back(
                             typename ContainerT::value_type(T_PLACEMARKER, "\xA7", pos));
-                    } else {
+                    } else if (!impl::is_blank_only(arguments[i])) {
                         ++cstart; ++cstart;
                         // [cstart, cit) is now the args to va_opt
                         // recursively process them
@@ -1311,8 +1313,9 @@ ContainerT replacement_list;
         std::size_t parm_count_required = macro_def.macroparameters.size();
 #if BOOST_WAVE_SUPPORT_CPP2A
         if (boost::wave::need_cpp2a(ctx.get_language())) {
-            // if the last parameter is ellipsis (varargs),
-            // reduce the required count by one
+            // Starting with C++20, variable arguments may be left out
+            // entirely, so reduce the mandatory argument count by one
+            // if the last parameter is ellipsis:
             if ((parm_count_required > 0) &&
                 (T_ELLIPSIS == token_id(macro_def.macroparameters.back()))) {
                 --parm_count_required;

@@ -1351,7 +1351,7 @@ main (int argc, char *argv[])
             ("c++11", "enable C++11 mode (implies --variadics and --long_long)")
 #endif
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
-            ("c++20", "enable C++20 mode (implies --variadics and --long_long, adds __VAR__OPT__)")
+            ("c++20", "enable C++20 mode (implies --variadics and --long_long, adds __VA_OPT__)")
 #endif
             ("listincludes,l", po::value<std::string>(),
                 "list names of included files to a file [arg] or to stdout [-]")
