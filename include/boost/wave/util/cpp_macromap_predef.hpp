@@ -240,6 +240,23 @@ namespace util {
         }
 #endif
 
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+    // C++20 mode
+        static_macros const& static_data_cpp2a(std::size_t i) const
+        {
+        static static_macros data[] = {
+                { "__STDC__", T_INTLIT, "1" },
+                { "__cplusplus", T_INTLIT, "202002L" },
+                { "__STDC_VERSION__", T_INTLIT, "199901L" },
+                { "__STDC_HOSTED__", T_INTLIT, "0" },
+                { "__WAVE_HAS_VARIADICS__", T_INTLIT, "1" },
+                { 0, T_EOF, 0 }
+            };
+            BOOST_ASSERT(i < sizeof(data)/sizeof(data[0]));
+            return data[i];
+        }
+#endif
+
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
     // C99 mode
         static_macros const& static_data_c99(std::size_t i) const

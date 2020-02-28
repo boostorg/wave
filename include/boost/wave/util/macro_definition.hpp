@@ -107,6 +107,15 @@ struct macro_definition {
                             (*it).set_token_id(token_id(T_EXTPARAMETERBASE+i));
                             break;
                         }
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
+                        else if (T_ELLIPSIS == token_id(*cit) &&
+                            "__VA_OPT__" == (*it).get_value())
+                        {
+                        // __VA_OPT__ also requires related special handling
+                            (*it).set_token_id(token_id(T_OPTPARAMETERBASE+i));
+                            break;
+                        }
+#endif
 #endif
                     }
                 }

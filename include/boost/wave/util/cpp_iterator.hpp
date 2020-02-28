@@ -1789,6 +1789,17 @@ position_type pos(act_token.get_position());
                         macroname.get_value().c_str(), (*pit).get_position());
                     return;
                 }
+
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
+                // can't use __VA_OPT__ either
+                if (boost::wave::need_va_opt(ctx.get_language()) &&
+                    ("__VA_OPT__" == (*pit).get_value())) {
+                    BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                        bad_define_statement_va_opt,
+                        macroname.get_value().c_str(), (*pit).get_position());
+                    return;
+                }
+#endif
             }
 
         // if there wasn't an ellipsis, then there shouldn't be a __VA_ARGS__
@@ -1797,6 +1808,7 @@ position_type pos(act_token.get_position());
                 typedef typename token_sequence_type::iterator definition_iterator_t;
 
                 bool seen_va_args = false;
+                bool seen_va_opt = false;
                 definition_iterator_t pend = macrodefinition.end();
                 for (definition_iterator_t dit = macrodefinition.begin();
                      dit != pend; ++dit)
@@ -1806,11 +1818,22 @@ position_type pos(act_token.get_position());
                     {
                         seen_va_args = true;
                     }
+                    if (T_IDENTIFIER == token_id(*dit) &&
+                        "__VA_OPT__" == (*dit).get_value())
+                    {
+                        seen_va_opt = true;
+                    }
                 }
                 if (seen_va_args) {
                 // must not have seen __VA_ARGS__ placeholder
                     BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
                         bad_define_statement_va_args,
+                        macroname.get_value().c_str(), act_token.get_position());
+                    return;
+                }
+                if (seen_va_opt) {
+                    BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                        bad_define_statement_va_opt,
                         macroname.get_value().c_str(), act_token.get_position());
                     return;
                 }

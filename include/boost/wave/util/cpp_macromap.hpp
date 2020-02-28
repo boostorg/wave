@@ -202,7 +202,8 @@ protected:
 //  Expand the replacement list (replaces parameters with arguments)
     template <typename ContainerT>
     void expand_replacement_list(
-        macro_definition_type const &macrodefinition,
+        typename macro_definition_type::const_definition_iterator_t cbeg,
+        typename macro_definition_type::const_definition_iterator_t cend,
         std::vector<ContainerT> &arguments,
         bool expand_operator_defined, ContainerT &expanded);
 
@@ -295,6 +296,15 @@ macromap<ContextT>::add_macro(token_type const &name, bool has_parameters,
     // can't use __VA_ARGS__ as a macro name
         BOOST_WAVE_THROW_NAME_CTX(ctx, macro_handling_exception,
             bad_define_statement_va_args, name.get_value().c_str(), main_pos,
+            name.get_value().c_str());
+        return false;
+    }
+    if (boost::wave::need_variadics(ctx.get_language()) &&
+        "__VA_OPT__" == name.get_value())
+    {
+    // can't use __VA_OPT__ as a macro name
+        BOOST_WAVE_THROW_NAME_CTX(ctx, macro_handling_exception,
+            bad_define_statement_va_opt, name.get_value().c_str(), main_pos,
             name.get_value().c_str());
         return false;
     }
@@ -927,7 +937,8 @@ template <typename ContextT>
 template <typename ContainerT>
 inline void
 macromap<ContextT>::expand_replacement_list(
-    macro_definition_type const &macrodef,
+    typename macro_definition_type::const_definition_iterator_t cit,
+    typename macro_definition_type::const_definition_iterator_t cend,
     std::vector<ContainerT> &arguments, bool expand_operator_defined,
     ContainerT &expanded)
 {
@@ -941,9 +952,7 @@ bool seen_concat = false;
 bool adjacent_concat = false;
 bool adjacent_stringize = false;
 
-    macro_definition_iter_t cend = macrodef.macrodefinition.end();
-    for (macro_definition_iter_t cit = macrodef.macrodefinition.begin();
-        cit != cend; ++cit)
+    for (;cit != cend; ++cit)
     {
     bool use_replaced_arg = true;
     token_id base_id = BASE_TOKEN(token_id(*cit));
@@ -973,6 +982,7 @@ bool adjacent_stringize = false;
         typename ContainerT::size_type i;
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
         bool is_ellipsis = false;
+        bool is_va_opt = false;
 
             if (IS_EXTCATEGORY((*cit), ExtParameterTokenType)) {
                 BOOST_ASSERT(boost::wave::need_variadics(ctx.get_language()));
@@ -980,12 +990,21 @@ bool adjacent_stringize = false;
                 is_ellipsis = true;
             }
             else
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
+
+            if (IS_EXTCATEGORY((*cit), OptParameterTokenType)) {
+                BOOST_ASSERT(boost::wave::need_va_opt(ctx.get_language()));
+                i = token_id(*cit) - T_OPTPARAMETERBASE;
+                is_va_opt = true;
+            }
+            else
+#endif
 #endif
             {
                 i = token_id(*cit) - T_PARAMETERBASE;
             }
 
-            BOOST_ASSERT(i < arguments.size());
+            BOOST_ASSERT(i <= arguments.size());
             if (use_replaced_arg) {
 
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
@@ -1004,13 +1023,56 @@ bool adjacent_stringize = false;
                     impl::replace_ellipsis(expanded_args, i, expanded, pos);
                 }
                 else
+
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
+                if (is_va_opt) {
+                    position_type const &pos = (*cit).get_position();
+
+                    BOOST_ASSERT(boost::wave::need_va_opt(ctx.get_language()));
+
+                    // ensure all variadic arguments to be expanded
+                    for (typename vector<ContainerT>::size_type arg = i;
+                         arg < expanded_args.size(); ++arg)
+                    {
+                        expand_argument(arg, arguments, expanded_args,
+                            expand_operator_defined, has_expanded_args);
+                    }
+
+                    // locate the __VA_OPT__ arguments
+                    typename macro_definition_type::const_definition_iterator_t cstart = cit;
+                    if (!impl::find_va_opt_params(cit, cend)) {
+                        BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                            improperly_terminated_macro, "missing ')' in __VA_OPT__",
+                            pos);
+                    }
+                    // cstart still points to __VA_OPT__; cit now points to the last rparen
+
+                    if ((i == arguments.size()) ||             // no variadic argument
+                        impl::is_blank_only(arguments[i])) {   // no visible tokens
+                        // no args; insert placemarker
+                        *std::back_inserter(expanded) =
+                            typename ContainerT::value_type(T_PLACEMARKER, "\xA7", pos);
+                    } else {
+                        ++cstart; ++cstart;
+                        // [cstart, cit) is now the args to va_opt
+                        // recursively process them
+                        expand_replacement_list(cstart, cit, arguments,
+                                                expand_operator_defined, expanded);
+                    }
+                    // continue from rparen
+                }
+                else
+
+#endif
 #endif
                 {
+                    BOOST_ASSERT(i < arguments.size());
                 // ensure argument i to be expanded
                     expand_argument(i, arguments, expanded_args,
                         expand_operator_defined, has_expanded_args);
 
                 // replace argument
+                    BOOST_ASSERT(i < expanded_args.size());
                 ContainerT const &arg = expanded_args[i];
 
                     std::copy(arg.begin(), arg.end(),
@@ -1046,12 +1108,19 @@ bool adjacent_stringize = false;
             // simply copy the original argument (adjacent '##' or '#')
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
                 if (is_ellipsis) {
-                position_type const &pos = (*cit).get_position();
+                    position_type const &pos = (*cit).get_position();
+                    if (i < arguments.size()) {
 
-                    impl::trim_sequence_left(arguments[i]);
-                    impl::trim_sequence_right(arguments.back());
-                    BOOST_ASSERT(boost::wave::need_variadics(ctx.get_language()));
-                    impl::replace_ellipsis(arguments, i, expanded, pos);
+                        impl::trim_sequence_left(arguments[i]);
+                        impl::trim_sequence_right(arguments.back());
+                        BOOST_ASSERT(boost::wave::need_variadics(ctx.get_language()));
+                        impl::replace_ellipsis(arguments, i, expanded, pos);
+                    } else {
+                        BOOST_ASSERT(i == arguments.size());
+                        // no argument supplied; insert placemarker
+                        *std::back_inserter(expanded) =
+                            typename ContainerT::value_type(T_PLACEMARKER, "\xA7", pos);
+                    }
                 }
                 else
 #endif
@@ -1233,9 +1302,21 @@ ContainerT replacement_list;
                 macro_def.macroparameters.size(), seen_newline);
 #endif
 
+        std::size_t parm_count_required = macro_def.macroparameters.size();
+#if BOOST_WAVE_SUPPORT_CPP2A
+        if (boost::wave::need_cpp2a(ctx.get_language())) {
+            // if the last parameter is ellipsis (varargs),
+            // reduce the required count by one
+            if ((parm_count_required > 0) &&
+                (T_ELLIPSIS == token_id(macro_def.macroparameters.back()))) {
+                --parm_count_required;
+            }
+        }
+#endif
+
         // verify the parameter count
-            if (count_args < macro_def.macroparameters.size() ||
-                arguments.size() < macro_def.macroparameters.size())
+            if (count_args < parm_count_required ||
+                arguments.size() < parm_count_required)
             {
                 if (count_args != arguments.size()) {
                 // must been at least one empty argument in C++ mode
@@ -1291,7 +1372,9 @@ ContainerT replacement_list;
 #endif
 
         // expand the replacement list of this macro
-            expand_replacement_list(macro_def, arguments, expand_operator_defined,
+            expand_replacement_list(macro_def.macrodefinition.begin(),
+                macro_def.macrodefinition.end(),
+                arguments, expand_operator_defined,
                 replacement_list);
         }
         else {
@@ -1852,6 +1935,17 @@ position_type pos("<built-in>");
         // define C++11 specifics
             for (int i = 0; 0 != predef.static_data_cpp0x(i).name; ++i) {
                 predefined_macros::static_macros const& m = predef.static_data_cpp0x(i);
+                predefine_macro(current_scope, m.name,
+                    token_type(m.token_id, m.value, pos));
+            }
+        }
+        else
+#endif
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+        if (boost::wave::need_cpp2a(ctx.get_language())) {
+        // define C++20 specifics
+            for (int i = 0; 0 != predef.static_data_cpp2a(i).name; ++i) {
+                predefined_macros::static_macros const& m = predef.static_data_cpp2a(i);
                 predefine_macro(current_scope, m.name,
                     token_type(m.token_id, m.value, pos));
             }
