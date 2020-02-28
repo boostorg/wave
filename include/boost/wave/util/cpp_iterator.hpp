@@ -1808,7 +1808,9 @@ position_type pos(act_token.get_position());
                 typedef typename token_sequence_type::iterator definition_iterator_t;
 
                 bool seen_va_args = false;
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
                 bool seen_va_opt = false;
+#endif
                 definition_iterator_t pend = macrodefinition.end();
                 for (definition_iterator_t dit = macrodefinition.begin();
                      dit != pend; ++dit)
@@ -1818,11 +1820,13 @@ position_type pos(act_token.get_position());
                     {
                         seen_va_args = true;
                     }
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
                     if (T_IDENTIFIER == token_id(*dit) &&
                         "__VA_OPT__" == (*dit).get_value())
                     {
                         seen_va_opt = true;
                     }
+#endif
                 }
                 if (seen_va_args) {
                 // must not have seen __VA_ARGS__ placeholder
@@ -1831,12 +1835,14 @@ position_type pos(act_token.get_position());
                         macroname.get_value().c_str(), act_token.get_position());
                     return;
                 }
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
                 if (seen_va_opt) {
                     BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
                         bad_define_statement_va_opt,
                         macroname.get_value().c_str(), act_token.get_position());
                     return;
                 }
+#endif
             }
         }
         else

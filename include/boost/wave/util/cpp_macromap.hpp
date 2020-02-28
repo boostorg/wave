@@ -1049,9 +1049,9 @@ bool adjacent_stringize = false;
 
                     if ((i == arguments.size()) ||             // no variadic argument
                         impl::is_blank_only(arguments[i])) {   // no visible tokens
-                        // no args; insert placemarker
-                        *std::back_inserter(expanded) =
-                            typename ContainerT::value_type(T_PLACEMARKER, "\xA7", pos);
+                        // no args; insert placemarker if one is not already present
+                        expanded.push_back(
+                            typename ContainerT::value_type(T_PLACEMARKER, "\xA7", pos));
                     } else {
                         ++cstart; ++cstart;
                         // [cstart, cit) is now the args to va_opt
@@ -1109,18 +1109,24 @@ bool adjacent_stringize = false;
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
                 if (is_ellipsis) {
                     position_type const &pos = (*cit).get_position();
-                    if (i < arguments.size()) {
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+                    if (i < arguments.size())
+#endif
+                    {
 
                         impl::trim_sequence_left(arguments[i]);
                         impl::trim_sequence_right(arguments.back());
                         BOOST_ASSERT(boost::wave::need_variadics(ctx.get_language()));
                         impl::replace_ellipsis(arguments, i, expanded, pos);
-                    } else {
+                    }
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+                    else if (boost::wave::need_cpp2a(ctx.get_language())) {
                         BOOST_ASSERT(i == arguments.size());
                         // no argument supplied; insert placemarker
-                        *std::back_inserter(expanded) =
-                            typename ContainerT::value_type(T_PLACEMARKER, "\xA7", pos);
+                        expanded.push_back(
+                            typename ContainerT::value_type(T_PLACEMARKER, "\xA7", pos));
                     }
+#endif
                 }
                 else
 #endif

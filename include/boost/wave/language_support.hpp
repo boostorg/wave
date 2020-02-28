@@ -41,7 +41,6 @@ enum language_support {
     support_cpp0x = support_option_variadics | support_option_long_long |
         support_option_no_newline_at_end_of_file | 0x10,
     support_cpp11 = support_cpp0x,
-#endif
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
 //  support flags for C++20
     support_option_va_opt = 0x10000,
@@ -49,6 +48,7 @@ enum language_support {
     support_cpp2a = support_option_variadics | support_option_long_long |
         support_option_no_newline_at_end_of_file | support_option_va_opt | 0x20000,
     support_cpp20 = support_cpp2a,
+#endif
 #endif
 
     support_option_mask = 0xFFC0,
