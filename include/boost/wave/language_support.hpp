@@ -35,6 +35,7 @@ enum language_support {
     support_c99 = support_option_variadics | support_option_long_long | 0x08,
 #endif
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
+//  support flags for C++11
     support_option_no_newline_at_end_of_file = 0x20,
 
     support_cpp0x = support_option_variadics | support_option_long_long |

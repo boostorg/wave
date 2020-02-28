@@ -976,7 +976,7 @@ testwave_app::initialise_options(Context& ctx, po::variables_map const& vm,
         }
         ctx.set_language(
             boost::wave::language_support(
-                boost::wave::support_cpp0x
+                 boost::wave::support_cpp0x
               |  boost::wave::support_option_convert_trigraphs
               |  boost::wave::support_option_long_long
               |  boost::wave::support_option_emit_line_directives
