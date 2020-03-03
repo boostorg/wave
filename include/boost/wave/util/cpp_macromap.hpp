@@ -370,6 +370,8 @@ typename defined_macros_type::iterator it = current_scope->find(name.get_value()
             // is this va_opt?
             if ((IS_EXTCATEGORY((*mdit), OptParameterTokenType)) ||  // if params replaced
                 ("__VA_OPT__" == (*mdit).get_value())) {             // if not
+                iter_t va_opt_it = mdit;
+                // next must be lparen
                 if ((++mdit == mdend) ||                             // no further tokens
                     (T_LEFTPAREN != token_id(*mdit))) {              // not lparen
                     BOOST_WAVE_THROW_NAME_CTX(ctx, macro_handling_exception,
@@ -377,6 +379,25 @@ typename defined_macros_type::iterator it = current_scope->find(name.get_value()
                         name.get_value().c_str(), main_pos,
                         name.get_value().c_str());
                     return false;
+                }
+                // check that no __VA_OPT__ appears inside
+                iter_t va_opt_end = va_opt_it;
+                if (!impl::find_va_opt_args(va_opt_end, mdend)) {
+                    BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                        improperly_terminated_macro, "missing ')' in __VA_OPT__",
+                        main_pos);
+                    return false;
+                }
+                // skip initial __VA_OPT__ and lparen
+                ++va_opt_it; ++va_opt_it;
+                for (;va_opt_it != va_opt_end; ++va_opt_it) {
+                    if ((IS_EXTCATEGORY((*va_opt_it), OptParameterTokenType)) ||
+                        ("__VA_OPT__" == (*va_opt_it).get_value())) {
+                        BOOST_WAVE_THROW_NAME_CTX(ctx, macro_handling_exception,
+                            bad_define_statement_va_opt_recurse,
+                            name.get_value().c_str(), (*va_opt_it).get_position(),
+                            name.get_value().c_str());
+                    }
                 }
             }
         }
@@ -1066,9 +1087,9 @@ bool adjacent_stringize = false;
 
                     // locate the __VA_OPT__ arguments
                     typename macro_definition_type::const_definition_iterator_t cstart = cit;
-                    if (!impl::find_va_opt_params(cit, cend)) {
+                    if (!impl::find_va_opt_args(cit, cend)) {
                         BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
-                            improperly_terminated_macro, "missing ')' in __VA_OPT__",
+                            improperly_terminated_macro, "missing '(' or ')' in __VA_OPT__",
                             pos);
                     }
                     // cstart still points to __VA_OPT__; cit now points to the last rparen

@@ -262,7 +262,7 @@ namespace impl {
     //  and leaves mdit unchanged.
     //
     template <typename MDefIterT>
-    bool find_va_opt_params (
+    bool find_va_opt_args (
         MDefIterT & mdit,                     // VA_OPT
         MDefIterT   mdend)
     {
