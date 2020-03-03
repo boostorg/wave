@@ -359,6 +359,31 @@ typename defined_macros_type::iterator it = current_scope->find(name.get_value()
         }
     }
 
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
+// check that __VA_OPT__ is used as a function macro
+    if (boost::wave::need_va_opt(ctx.get_language())) {
+        // __VA_OPT__, if present, must be followed by an lparen
+        typedef typename macro_definition_type::const_definition_iterator_t iter_t;
+        iter_t mdit = definition.begin();
+        iter_t mdend = definition.end();
+        for (; mdit != mdend; ++mdit) {
+            // is this va_opt?
+            if ((IS_EXTCATEGORY((*mdit), OptParameterTokenType)) ||  // if params replaced
+                ("__VA_OPT__" == (*mdit).get_value())) {             // if not
+                if ((++mdit == mdend) ||                             // no further tokens
+                    (T_LEFTPAREN != token_id(*mdit))) {              // not lparen
+                    auto tid = impl::next_token<iter_t>::peek(mdit, mdend);
+                    BOOST_WAVE_THROW_NAME_CTX(ctx, macro_handling_exception,
+                        bad_define_statement_va_opt_parens,
+                        name.get_value().c_str(), main_pos,
+                        name.get_value().c_str());
+                    return false;
+                }
+            }
+        }
+    }
+#endif
+
 // insert a new macro node
     std::pair<typename defined_macros_type::iterator, bool> p =
         current_scope->insert(

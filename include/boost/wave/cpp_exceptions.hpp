@@ -116,6 +116,7 @@ public:
         bad_define_statement,
         bad_define_statement_va_args,
         bad_define_statement_va_opt,
+        bad_define_statement_va_opt_parens,
         too_few_macroarguments,
         too_many_macroarguments,
         empty_macroarguments,
@@ -206,6 +207,7 @@ public:
         case preprocess_exception::bad_define_statement:
         case preprocess_exception::bad_define_statement_va_args:
         case preprocess_exception::bad_define_statement_va_opt:
+        case preprocess_exception::bad_define_statement_va_opt_parens:
         case preprocess_exception::bad_line_statement:
         case preprocess_exception::bad_line_number:
         case preprocess_exception::bad_line_filename:
@@ -260,6 +262,8 @@ public:
             "expansion of a C99 variadic macro",        // bad_define_statement_va_args
             "__VA_OPT__ can only appear in the "
             "expansion of a C++20 variadic macro",      // bad_define_statement_va_opt
+            "__VA_OPT__ must be followed by a left "
+            "paren in a C++20 variadic macro",          // bad_define_statement_va_opt_parens
             "too few macro arguments",                  // too_few_macroarguments
             "too many macro arguments",                 // too_many_macroarguments
             "empty macro arguments are not supported in pure C++ mode, "
@@ -324,6 +328,7 @@ public:
             util::severity_error,              // bad_define_statement
             util::severity_error,              // bad_define_statement_va_args
             util::severity_error,              // bad_define_statement_va_opt
+            util::severity_error,              // bad_define_statement_va_opt_parens
             util::severity_warning,            // too_few_macroarguments
             util::severity_warning,            // too_many_macroarguments
             util::severity_warning,            // empty_macroarguments
