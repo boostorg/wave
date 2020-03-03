@@ -372,7 +372,6 @@ typename defined_macros_type::iterator it = current_scope->find(name.get_value()
                 ("__VA_OPT__" == (*mdit).get_value())) {             // if not
                 if ((++mdit == mdend) ||                             // no further tokens
                     (T_LEFTPAREN != token_id(*mdit))) {              // not lparen
-                    auto tid = impl::next_token<iter_t>::peek(mdit, mdend);
                     BOOST_WAVE_THROW_NAME_CTX(ctx, macro_handling_exception,
                         bad_define_statement_va_opt_parens,
                         name.get_value().c_str(), main_pos,
