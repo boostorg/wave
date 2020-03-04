@@ -42,3 +42,31 @@ SDEF(bar, 1, 2, 3);
 //R printf("at line=%d" ": ", 44); printf("All well in zone %d", n); printf("\n");
 LOG2();
 LOG2("All well in zone %d", n);
+
+//H 10: t_8_001.cpp(17): #define
+//H 08: t_8_001.cpp(17): LOG(msg, ...)=printf(msg __VA_OPT__(,) __VA_ARGS__)
+//H 10: t_8_001.cpp(18): #define
+//H 08: t_8_001.cpp(18): SDEF(sname, ...)=S sname __VA_OPT__(= { __VA_ARGS__ })
+//H 10: t_8_001.cpp(19): #define
+//H 08: t_8_001.cpp(19): LOG2(...)=printf("at line=%d" __VA_OPT__(": "), __LINE__);      __VA_OPT__(printf(__VA_ARGS__);)                      printf("\n")
+//H 00: t_8_001.cpp(28): LOG("hello world\n"), [t_8_001.cpp(17): LOG(msg, ...)=printf(msg __VA_OPT__(,) __VA_ARGS__)]
+//H 02: printf("hello world\n" § )
+//H 03: printf("hello world\n"  )
+//H 00: t_8_001.cpp(29): LOG("hello world\n", §), [t_8_001.cpp(17): LOG(msg, ...)=printf(msg __VA_OPT__(,) __VA_ARGS__)]
+//H 02: printf("hello world\n"  )
+//H 03: printf("hello world\n"  )
+//H 00: t_8_001.cpp(30): LOG("hello %d\n", n), [t_8_001.cpp(17): LOG(msg, ...)=printf(msg __VA_OPT__(,) __VA_ARGS__)]
+//H 02: printf("hello %d\n" ,  n)
+//H 03: printf("hello %d\n" ,  n)
+//H 00: t_8_001.cpp(35): SDEF(foo), [t_8_001.cpp(18): SDEF(sname, ...)=S sname __VA_OPT__(= { __VA_ARGS__ })]
+//H 02: S foo §
+//H 03: S foo
+//H 00: t_8_001.cpp(36): SDEF(bar, 1, 2, 3), [t_8_001.cpp(18): SDEF(sname, ...)=S sname __VA_OPT__(= { __VA_ARGS__ })]
+//H 02: S bar = {  1, 2, 3 }
+//H 03: S bar = {  1, 2, 3 }
+//H 00: t_8_001.cpp(43): LOG2(§), [t_8_001.cpp(19): LOG2(...)=printf("at line=%d" __VA_OPT__(": "), __LINE__);      __VA_OPT__(printf(__VA_ARGS__);)                      printf("\n")]
+//H 02: printf("at line=%d" , __LINE__);                            printf("\n")
+//H 03: printf("at line=%d" , 43);                            printf("\n")
+//H 00: t_8_001.cpp(44): LOG2("All well in zone %d", n), [t_8_001.cpp(19): LOG2(...)=printf("at line=%d" __VA_OPT__(": "), __LINE__);      __VA_OPT__(printf(__VA_ARGS__);)                      printf("\n")]
+//H 02: printf("at line=%d" ": ", __LINE__);      printf("All well in zone %d", n);                      printf("\n")
+//H 03: printf("at line=%d" ": ", 44);      printf("All well in zone %d", n);                      printf("\n")
