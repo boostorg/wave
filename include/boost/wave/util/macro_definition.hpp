@@ -73,7 +73,8 @@ struct macro_definition {
     // with special parameter tokens to simplify later macro replacement.
     // Additionally mark all occurrences of the macro name itself throughout
     // the macro definition
-    void replace_parameters()
+    template<typename ContextT>
+    void replace_parameters(ContextT const & ctx)
     {
         using namespace boost::wave;
 
@@ -100,7 +101,8 @@ struct macro_definition {
                             break;
                         }
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
-                        else if (T_ELLIPSIS == token_id(*cit) &&
+                        else if (need_variadics(ctx.get_language()) &&
+                            T_ELLIPSIS == token_id(*cit) &&
                             "__VA_ARGS__" == (*it).get_value())
                         {
                         // __VA_ARGS__ requires special handling
@@ -108,7 +110,8 @@ struct macro_definition {
                             break;
                         }
 #if BOOST_WAVE_SUPPORT_VA_OPT != 0
-                        else if (T_ELLIPSIS == token_id(*cit) &&
+                        else if (need_va_opt(ctx.get_language()) &&
+                            T_ELLIPSIS == token_id(*cit) &&
                             "__VA_OPT__" == (*it).get_value())
                         {
                         // __VA_OPT__ also requires related special handling

@@ -1309,7 +1309,7 @@ macromap<ContextT>::expand_macro(ContainerT &expanded,
 // ensure the parameters to be replaced with special parameter tokens
 macro_definition_type &macro_def = *(*it).second.get();
 
-    macro_def.replace_parameters();
+    macro_def.replace_parameters(ctx);
 
 // test if this macro is currently available for replacement
     if (!macro_def.is_available_for_replacement) {
