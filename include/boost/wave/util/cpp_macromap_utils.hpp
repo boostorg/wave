@@ -345,6 +345,27 @@ is_whitespace_only (ContainerT const &argument)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Tests whether the given token sequence consists only of whitespace
+//  and placemarkers
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename ContainerT>
+inline bool
+is_blank_only (ContainerT const &argument)
+{
+    typename ContainerT::const_iterator end = argument.end();
+    for (typename ContainerT::const_iterator it = argument.begin();
+          it != end; ++it)
+    {
+        if (!IS_CATEGORY(*it, WhiteSpaceTokenType) &&
+            (T_PLACEMARKER != token_id(*it)))
+            return false;
+    }
+    return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Remove all placeholder tokens from the given token sequence
 //
 ///////////////////////////////////////////////////////////////////////////////

@@ -1207,9 +1207,7 @@ protected:
         using namespace boost::wave;
 
         typedef typename ContextT::token_type token_type;
-        typedef typename token_type::string_type string_type;
         typedef typename ContainerT::const_iterator const_iterator;
-        typedef typename ContainerT::iterator iterator;
 
         token_type* current = 0;
 
