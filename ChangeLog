@@ -18,6 +18,14 @@ TODO (known issues):
 
 CHANGELOG
 
+Boost V1.73:
+  - Fixed TRAC #7822: waveidl sample does not use the IDL lexer
+  - Fixed TRAC #9874: Turning off 'include_next' support breaks include
+  - Fixed a typedef shadowing a class (MSVC warning 4458) - Conrad Poelman
+  - Updated waveidl to match recent changes in the RE2C lexer
+  - Samples now build cleanly
+  - Ensured samples and wave driver are covered by continuous integration
+
 Boost V1.55:
  - Fixed #8848: Wave driver improperly processes 0xFFFFui64 token
  - Fixed #9098: Wave driver option --c++0x invalid
@@ -1383,7 +1391,7 @@ Wed May  7 22:44:21     2003
 - Introduced the wave::language_support enum for convenient switching of the
   supported language features throughout the library.
 - Fixed a bug, which prevented the definition of the predefined macro
-  __WAVE_HAS_VARRIADICS__, if --variadics were given on the command line.
+  __WAVE_HAS_VARIADICS__, if --variadics were given on the command line.
 
 Tue May  6 15:49:45     2003
 - Made predefined macros available at every macro scope without qualification.

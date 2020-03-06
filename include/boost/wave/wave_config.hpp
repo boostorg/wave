@@ -41,6 +41,14 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
+//  Decide whether to support the C++20 __VA_OPT__ variadics feature
+//
+//
+#if !defined(BOOST_WAVE_SUPPORT_VA_OPT) && BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
+#define BOOST_WAVE_SUPPORT_VA_OPT 1
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
 //  Decide, whether to implement a #warning directive as an extension to the
 //  C++ Standard (same as #error, but emits a warning, not an error)
 //
@@ -92,6 +100,25 @@
 #define BOOST_WAVE_SUPPORT_CPP0X 1
 #undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
 #define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//  Decide whether to support C++20
+//
+#if !defined(BOOST_WAVE_SUPPORT_CPP2A)
+#  define BOOST_WAVE_SUPPORT_CPP2A 1
+#  undef BOOST_WAVE_SUPPORT_CPP0X
+#  define BOOST_WAVE_SUPPORT_CPP0X 1
+#  undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
+#  define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
+#  if !defined(BOOST_WAVE_SUPPORT_VA_OPT)
+#    undef BOOST_WAVE_SUPPORT_VA_OPT
+#    define BOOST_WAVE_SUPPORT_VA_OPT 1
+#  endif
+#elif BOOST_WAVE_SUPPORT_CPP2A == 0
+#  undef BOOST_WAVE_SUPPORT_VA_OPT
+#  define BOOST_WAVE_SUPPORT_VA_OPT 0
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -252,6 +252,48 @@ namespace impl {
                 expanded.push_back(comma);
         }
     }
+
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
+    ///////////////////////////////////////////////////////////////////////////
+    //
+    //  Finds the token range inside __VA_OPT__.
+    //  Updates mdit to the position of the final rparen.
+    //  If the parenthesis do not match up, or there are none, returns false
+    //  and leaves mdit unchanged.
+    //
+    template <typename MDefIterT>
+    bool find_va_opt_args (
+        MDefIterT & mdit,                     // VA_OPT
+        MDefIterT   mdend)
+    {
+        if ((std::distance(mdit, mdend) < 3) ||
+            (T_LEFTPAREN != next_token<MDefIterT>::peek(mdit, mdend))) {
+            return false;
+        }
+
+        MDefIterT mdstart_it = mdit;
+        ++mdit;   // skip to lparen
+        std::size_t scope = 0;
+        // search for final rparen, leaving iterator there
+        for (; (mdit != mdend) && !((scope == 1) && (T_RIGHTPAREN == token_id(*mdit)));
+             ++mdit) {
+            // count balanced parens
+            if (T_RIGHTPAREN == token_id(*mdit)) {
+                scope--;
+            } else if (T_LEFTPAREN == token_id(*mdit)) {
+                scope++;
+            }
+        }
+        if ((mdit == mdend) && ((scope != 1) || (T_RIGHTPAREN != token_id(*mdit)))) {
+            // arrived at end without matching rparen
+            mdit = mdstart_it;
+            return false;
+        }
+
+        return true;
+    }
+
+#endif
 #endif
 
     // Skip all whitespace characters and queue the skipped characters into the

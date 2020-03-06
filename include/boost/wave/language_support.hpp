@@ -35,11 +35,20 @@ enum language_support {
     support_c99 = support_option_variadics | support_option_long_long | 0x08,
 #endif
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
+//  support flags for C++11
     support_option_no_newline_at_end_of_file = 0x20,
 
     support_cpp0x = support_option_variadics | support_option_long_long |
         support_option_no_newline_at_end_of_file | 0x10,
     support_cpp11 = support_cpp0x,
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+//  support flags for C++20
+    support_option_va_opt = 0x10000,
+
+    support_cpp2a = support_option_variadics | support_option_long_long |
+        support_option_no_newline_at_end_of_file | support_option_va_opt | 0x20000,
+    support_cpp20 = support_cpp2a,
+#endif
 #endif
 
     support_option_mask = 0xFFC0,
@@ -87,6 +96,31 @@ need_cpp0x(language_support language)
 
 inline bool
 need_cpp0x(language_support language)
+{
+    return false;
+}
+
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  need_cpp2a
+//
+//      Extract if the language to support is C++20
+//
+///////////////////////////////////////////////////////////////////////////////
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+
+inline bool
+need_cpp2a(language_support language)
+{
+    return (language & ~support_option_mask) == support_cpp2a;
+}
+
+#else
+
+inline bool
+need_cpp2a(language_support language)
 {
     return false;
 }
@@ -196,6 +230,9 @@ BOOST_WAVE_OPTION(include_guard_detection)   // support_option_include_guard_det
 #endif
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
 BOOST_WAVE_OPTION(variadics)                 // support_option_variadics
+#endif
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
+BOOST_WAVE_OPTION(va_opt)                    // support_option_va_opt
 #endif
 #if BOOST_WAVE_EMIT_PRAGMA_DIRECTIVES != 0
 BOOST_WAVE_OPTION(emit_pragma_directives)    // support_option_emit_pragma_directives

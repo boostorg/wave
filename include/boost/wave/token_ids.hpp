@@ -47,6 +47,7 @@ enum token_category {
     IdentifierTokenType         = 0x08040000,
     ParameterTokenType          = 0x08840000,
     ExtParameterTokenType       = 0x088C0000,
+    OptParameterTokenType       = 0x08940000,
     KeywordTokenType            = 0x10040000,
     OperatorTokenType           = 0x18040000,
     LiteralTokenType            = 0x20040000,
@@ -311,7 +312,8 @@ enum token_id {
     T_PLACEHOLDER = TOKEN_FROM_ID(T_LAST_TOKEN+2, WhiteSpaceTokenType),
     T_PLACEMARKER = TOKEN_FROM_ID(T_LAST_TOKEN+3, InternalTokenType),
     T_PARAMETERBASE = TOKEN_FROM_ID(T_LAST_TOKEN+4, ParameterTokenType),
-    T_EXTPARAMETERBASE = TOKEN_FROM_ID(T_LAST_TOKEN+4, ExtParameterTokenType)
+    T_EXTPARAMETERBASE = TOKEN_FROM_ID(T_LAST_TOKEN+4, ExtParameterTokenType),
+    T_OPTPARAMETERBASE = TOKEN_FROM_ID(T_LAST_TOKEN+4, OptParameterTokenType)
 };
 
 ///////////////////////////////////////////////////////////////////////////////

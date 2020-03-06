@@ -115,6 +115,9 @@ public:
         ill_formed_operator,
         bad_define_statement,
         bad_define_statement_va_args,
+        bad_define_statement_va_opt,
+        bad_define_statement_va_opt_parens,
+        bad_define_statement_va_opt_recurse,
         too_few_macroarguments,
         too_many_macroarguments,
         empty_macroarguments,
@@ -204,6 +207,9 @@ public:
         case preprocess_exception::unbalanced_if_endif:
         case preprocess_exception::bad_define_statement:
         case preprocess_exception::bad_define_statement_va_args:
+        case preprocess_exception::bad_define_statement_va_opt:
+        case preprocess_exception::bad_define_statement_va_opt_parens:
+        case preprocess_exception::bad_define_statement_va_opt_recurse:
         case preprocess_exception::bad_line_statement:
         case preprocess_exception::bad_line_number:
         case preprocess_exception::bad_line_filename:
@@ -256,6 +262,11 @@ public:
             "ill formed #define directive",             // bad_define_statement
             "__VA_ARGS__ can only appear in the "
             "expansion of a C99 variadic macro",        // bad_define_statement_va_args
+            "__VA_OPT__ can only appear in the "
+            "expansion of a C++20 variadic macro",      // bad_define_statement_va_opt
+            "__VA_OPT__ must be followed by a left "
+            "paren in a C++20 variadic macro",          // bad_define_statement_va_opt_parens
+            "__VA_OPT__() may not contain __VA_OPT__",  // bad_define_statement_va_opt_recurse
             "too few macro arguments",                  // too_few_macroarguments
             "too many macro arguments",                 // too_many_macroarguments
             "empty macro arguments are not supported in pure C++ mode, "
@@ -319,6 +330,9 @@ public:
             util::severity_error,              // ill_formed_operator
             util::severity_error,              // bad_define_statement
             util::severity_error,              // bad_define_statement_va_args
+            util::severity_error,              // bad_define_statement_va_opt
+            util::severity_error,              // bad_define_statement_va_opt_parens
+            util::severity_error,              // bad_define_statement_va_opt_recurse
             util::severity_warning,            // too_few_macroarguments
             util::severity_warning,            // too_many_macroarguments
             util::severity_warning,            // empty_macroarguments
