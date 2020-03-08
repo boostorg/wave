@@ -501,7 +501,7 @@ lexertl<Iterator, Position>::next_token(Iterator &first, Iterator const &last,
     size_t const dfa_alphabet = state_machine_.data()._dfa_alphabet[0];
 
     size_t const* dfa = &state_machine_.data()._dfa[0]->front();
-    size_t const* ptr = dfa + dfa_alphabet + boost::lexer::dfa_offset;
+    size_t const* ptr = dfa + dfa_alphabet;
 #else
     const std::size_t *ptr = dfa + dfa_offset;
 #endif // BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
@@ -518,7 +518,7 @@ lexertl<Iterator, Position>::next_token(Iterator &first, Iterator const &last,
         ++curr;
 
 #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
-        ptr = &dfa[state * (dfa_alphabet + boost::lexer::dfa_offset)];
+        ptr = &dfa[state * dfa_alphabet];
 #else
         ptr = &dfa[state * dfa_offset];
 #endif // BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
