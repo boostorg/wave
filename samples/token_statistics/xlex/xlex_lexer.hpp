@@ -124,7 +124,7 @@ private:
 #define TRI(c)              Q("?") Q("?") c
 
 // definition of some subtoken regexps to simplify the regex definitions
-#define BLANK               "[ \t]"
+#define BLANK               "[ \t\v\f]"
 #define CCOMMENT            Q("/") Q("*") ".*?" Q("*") Q("/")
         
 #define PPSPACE             "(" BLANK OR CCOMMENT ")*"
@@ -360,7 +360,6 @@ lexer<Iterator, Position>::init_data[] =
     TOKEN_DATA(T_IDENTIFIER, "([a-zA-Z_$]" OR UNIVERSALCHAR ")([a-zA-Z0-9_$]" OR UNIVERSALCHAR ")*"),
 #endif
     TOKEN_DATA(T_SPACE, BLANK "+"),
-    TOKEN_DATA(T_SPACE2, "[\v\f]+"),
     TOKEN_DATA(T_CONTLINE, Q("\\") "\n"), 
     TOKEN_DATA(T_NEWLINE, NEWLINEDEF),
     TOKEN_DATA(T_POUND_POUND, "##"),
