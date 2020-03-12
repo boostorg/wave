@@ -35,7 +35,7 @@
 #include <boost/wave/cpplexer/cpp_lex_interface.hpp>
 
 // reuse the default token type 
-#include "../xlex_iterator.hpp"
+#include "../xlex_interface.hpp"
 
 // include the xpressive headers
 #include "xpressive_lexer.hpp"
