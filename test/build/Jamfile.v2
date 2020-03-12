@@ -187,6 +187,10 @@ test-suite wave
                 <variant>debug
                 <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
                 <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+                # to generate wave_lexertl_tables_next_token.hpp:
+#                <define>BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE=1
+                # to use the resulting static tables:
+#                <define>BOOST_WAVE_LEXERTL_USE_STATIC_TABLES=1
             :
             # name
                 test_lexertl_lexer
