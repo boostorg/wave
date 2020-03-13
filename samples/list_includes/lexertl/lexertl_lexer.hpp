@@ -37,9 +37,9 @@
 #include <boost/spirit/home/support/detail/lexer/state_machine.hpp>
 #include <boost/spirit/home/support/detail/lexer/consts.hpp>
 //#include "lexertl/examples/serialise.hpp>
-// #if BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE != 0
-// #include "lexertl/examples/cpp_code.hpp"
-// #endif
+#if BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE != 0
+#include <boost/spirit/home/support/detail/lexer/generate_cpp.hpp>
+#endif
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -499,12 +499,14 @@ lexertl<Iterator, Position>::next_token(Iterator &first, Iterator const &last,
 #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
     size_t const* const lookup = &state_machine_.data()._lookup[0]->front ();
     size_t const dfa_alphabet = state_machine_.data()._dfa_alphabet[0];
-
     size_t const* dfa = &state_machine_.data()._dfa[0]->front();
-    size_t const* ptr = dfa + dfa_alphabet + boost::lexer::dfa_offset;
 #else
-    const std::size_t *ptr = dfa + dfa_offset;
+    // set up pointers from static data
+    size_t const* lookup = lookup_;
+    size_t const dfa_alphabet = dfa_alphabet_;
+    size_t const* dfa = dfa_;
 #endif // BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
+    size_t const* ptr = dfa + dfa_alphabet;
 
     Iterator curr = first;
     Iterator end_token = first;
@@ -517,11 +519,7 @@ lexertl<Iterator, Position>::next_token(Iterator &first, Iterator const &last,
             break;
         ++curr;
 
-#if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
-        ptr = &dfa[state * (dfa_alphabet + boost::lexer::dfa_offset)];
-#else
-        ptr = &dfa[state * dfa_offset];
-#endif // BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
+        ptr = &dfa[state * dfa_alphabet];
 
         if (0 != *ptr) {
             end_state = true;
@@ -568,12 +566,12 @@ template <typename Iterator, typename Position>
 inline bool
 lexertl<Iterator, Position>::save (std::ostream& outstrm)
 {
-// #if defined(BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE)
-//     cpp_code::generate(state_machine_, outstrm);
-// #else
+#if defined(BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE)
+    boost::lexer::generate_cpp(state_machine_, outstrm);
+#else
 //     boost::lexer::serialise::save_as_binary(state_machine_, outstrm,
 //         (std::size_t)get_compilation_time());
-// #endif
+#endif
     return outstrm.good();
 }
 #endif // #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
@@ -598,6 +596,14 @@ public:
     :   first(first_, last_, pos_), language(language), at_eof(false)
     {
         lexer_.init_dfa(language, pos_);
+
+#if BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE != 0
+        std::ofstream os("wave_lexertl_tables_next_token.hpp");
+        // generates a next_token function with an incompatible interface
+        // to lexertl::next_token(), but you can extract the necessary tables
+        // and replace them manually:
+        lexer_.save(os);
+#endif
     }
     ~lexertl_functor() {}
 
