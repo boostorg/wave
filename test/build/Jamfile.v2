@@ -196,6 +196,32 @@ test-suite wave
                 test_lexertl_lexer
         ]
 
+        # test the xlex wave lexing component
+        [
+            run
+            # sources
+                ../testlexers/test_xlex_lexer.cpp
+                /boost/wave//boost_wave
+                /boost/program_options//boost_program_options
+                /boost/filesystem//boost_filesystem
+                /boost/thread//boost_thread
+                /boost/system//boost_system
+                /boost/date_time//boost_date_time
+            :
+            # arguments
+            :
+            # input files
+            :
+            # requirements
+                <threading>multi
+                <variant>debug
+                <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
+                <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+            :
+            # name
+                test_xlex_lexer
+        ]
+
         [
             run
             # sources
