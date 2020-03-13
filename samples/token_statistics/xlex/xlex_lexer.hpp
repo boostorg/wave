@@ -35,7 +35,7 @@
 #include <boost/wave/cpplexer/cpp_lex_interface.hpp>
 
 // reuse the default token type 
-#include "../xlex_iterator.hpp"
+#include "../xlex_interface.hpp"
 
 // include the xpressive headers
 #include "xpressive_lexer.hpp"
@@ -71,9 +71,9 @@ public:
     token_type& get(token_type& t);
     void set_position(Position const &pos)
     {
-        // set position has to change the file name and line number only
         filename = pos.get_file();
         line = pos.get_line();
+        column = pos.get_column();
     }
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
@@ -91,6 +91,7 @@ private:
     
     string_type filename;
     int line;
+    int column;
     bool at_eof;
     boost::wave::language_support language;
 
@@ -124,7 +125,7 @@ private:
 #define TRI(c)              Q("?") Q("?") c
 
 // definition of some subtoken regexps to simplify the regex definitions
-#define BLANK               "[ \t]"
+#define BLANK               "[ \t\v\f]"
 #define CCOMMENT            Q("/") Q("*") ".*?" Q("*") Q("/")
         
 #define PPSPACE             "(" BLANK OR CCOMMENT ")*"
@@ -360,7 +361,6 @@ lexer<Iterator, Position>::init_data[] =
     TOKEN_DATA(T_IDENTIFIER, "([a-zA-Z_$]" OR UNIVERSALCHAR ")([a-zA-Z0-9_$]" OR UNIVERSALCHAR ")*"),
 #endif
     TOKEN_DATA(T_SPACE, BLANK "+"),
-    TOKEN_DATA(T_SPACE2, "[\v\f]+"),
     TOKEN_DATA(T_CONTLINE, Q("\\") "\n"), 
     TOKEN_DATA(T_NEWLINE, NEWLINEDEF),
     TOKEN_DATA(T_POUND_POUND, "##"),
@@ -433,7 +433,8 @@ lexer<Iterator, Position>::lexer(Iterator const &first,
         Iterator const &last, Position const &pos, 
         boost::wave::language_support language) 
 :   first(first), last(last), 
-    filename(pos.get_file()), line(0), at_eof(false), language(language)
+    filename(pos.get_file()), line(pos.get_line()), column(pos.get_column()),
+    at_eof(false), language(language)
 {
 // if in C99 mode, some of the keywords/operators are not valid    
     if (!boost::wave::need_c99(language)) {
@@ -486,13 +487,19 @@ lexer<Iterator, Position>::get(boost::wave::cpplexer::lex_token<Position>& t)
         at_eof = true;
         value.clear();
     }
+    else if (T_NEWLINE == id) {
+        ++line;
+        column = 1;
+    } else {
+        column += value.size();
+    }
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
-    cpplexer::lex_token<Position> tok(id, value, Position(filename, line, -1));
+    cpplexer::lex_token<Position> tok(id, value, Position(filename, line, column));
     return t = guards.detect_guard(tok);
 #else
     return t = cpplexer::lex_token<Position>(id, value, 
-        Position(filename, line, -1));
+        Position(filename, line, column));
 #endif
 }
 

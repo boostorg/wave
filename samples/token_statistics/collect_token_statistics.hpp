@@ -38,7 +38,7 @@ public:
     {
         using boost::wave::token_id;
         
-        int id = token_id(token) - boost::wave::T_FIRST_TOKEN;
+        int id = ID_FROM_TOKEN(token) - boost::wave::T_FIRST_TOKEN;
         BOOST_ASSERT(id < count);
         ++token_count[id];
     }
