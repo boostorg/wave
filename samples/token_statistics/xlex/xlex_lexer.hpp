@@ -144,13 +144,13 @@ private:
             
 #define INTEGER_SUFFIX      "(" "[uU][lL]?|[lL][uU]?" ")"
 #if BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
-#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "[lL][lL]" ")" OR \
-                                "(" "[lL][lL]" ")" "[uU]" "?" OR \
+#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "ll" OR "LL" ")" OR \
+                                "(" "ll" OR "LL" ")" "[uU]" "?" OR \
                                 "i64" \
                             ")" 
 #else
-#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "[lL][lL]" ")" OR \
-                            "(" "[lL][lL]" ")" "[uU]" "?" ")"
+#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "ll" OR "LL" ")" OR \
+                            "(" "ll" OR "LL" ")" "[uU]" "?" ")"
 #endif
 #define FLOAT_SUFFIX        "(" "[fF][lL]?|[lL][fF]?" ")"
 #define CHAR_SPEC           "L?"
