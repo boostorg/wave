@@ -161,9 +161,9 @@ lexertl<Iterator, Position>::init_macro_data[INIT_MACRO_DATA_SIZE] =
     MACRO_DATA("INTEGER", "(" "(0x|0X){HEXDIGIT}+" OR "0{OCTALDIGIT}*" OR "[1-9]{DIGIT}*" ")"),
     MACRO_DATA("INTEGER_SUFFIX", "(" "[uU][lL]?" OR "[lL][uU]?" ")"),
 #if BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
-    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU]([lL][lL])|([lL][lL])[uU]?|i64)"),
+    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU](ll|LL)|(ll|LL)[uU]?|i64)"),
 #else
-    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU]([lL][lL])|([lL][lL])[uU]?)"),
+    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU](ll|LL)|(ll|LL)[uU]?)"),
 #endif
     MACRO_DATA("FLOAT_SUFFIX", "(" "[fF][lL]?" OR "[lL][fF]?" ")"),
     MACRO_DATA("CHAR_SPEC", "L?"),

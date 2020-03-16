@@ -228,7 +228,6 @@ lexem const lexems[] =
     { "1.1e1fl", boost::wave::T_FLOATLIT },
     { "1.e1LF", boost::wave::T_FLOATLIT },
     { "1234LL", boost::wave::T_LONGINTLIT },
-    { "1234Ll", boost::wave::T_LONGINTLIT },
     { "1234ll", boost::wave::T_LONGINTLIT },
     { "1234llu", boost::wave::T_LONGINTLIT },
     { "1234ull", boost::wave::T_LONGINTLIT },
