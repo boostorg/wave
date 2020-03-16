@@ -40,7 +40,6 @@ exe wave
     /boost//serialization
     /boost//system
     /boost//thread
-    /boost//date_time
     /boost/timer//boost_timer/<link>static
     :
     <threading>multi
