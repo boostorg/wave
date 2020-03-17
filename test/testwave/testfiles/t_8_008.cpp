@@ -46,17 +46,38 @@ __BASE_FILE__               //R "$F"
 //H 01: <built-in>(1): __STDC_HOSTED__
 //H 02: 0
 //H 03: 0
+//H 01: <built-in>(1): __LINE__
+//H 02: 20
+//H 03: 20
+//H 01: <built-in>(1): __FILE__
+//H 02: "$P(t_8_008.cpp)"
+//H 03: "$P(t_8_008.cpp)"
 //H 01: <built-in>(1): __BASE_FILE__
 //H 02: "$F"
 //H 03: "$F"
 //H 01: <built-in>(1): __WAVE_HAS_VARIADICS__
 //H 02: 1
 //H 03: 1
+//H 01: <built-in>(1): __INCLUDE_LEVEL__
+//H 02: 0
+//H 03: 0
 //H 10: t_8_008.cpp(26): #line
 //H 17: 53 "test.cpp" (53, "test.cpp")
+//H 01: <built-in>(1): __LINE__
+//H 02: 53
+//H 03: 53
+//H 01: <built-in>(1): __FILE__
+//H 02: "test.cpp"
+//H 03: "test.cpp"
 //H 01: <built-in>(1): __BASE_FILE__
 //H 02: "$F"
 //H 03: "$F"
+//H 01: <built-in>(1): __LINE__
+//H 02: 59
+//H 03: 59
+//H 01: <built-in>(1): __FILE__
+//H 02: "test.cpp"
+//H 03: "test.cpp"
 //H 01: <built-in>(1): __BASE_FILE__
 //H 02: "$F"
 //H 03: "$F"

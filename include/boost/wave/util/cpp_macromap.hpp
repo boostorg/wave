@@ -1543,15 +1543,32 @@ macromap<ContextT>::expand_predefined_macro(token_type const &curr_token,
 
 string_type const &value = curr_token.get_value();
 
-    if (value.size() < 8 || '_' != value[0] || '_' != value[1])
-        return false;       // quick check failed
+    if ((value != "__LINE__") && (value != "__FILE__") && (value != "__INCLUDE_LEVEL__"))
+        return false;
+
+    // construct a fake token for the macro's definition point
+    token_type deftoken(T_IDENTIFIER, value, position_type("<built-in>"));
+
+#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
+    ctx.get_hooks().expanding_object_like_macro(
+        deftoken, Container(), curr_token);    // BOZO check params
+#else
+    if (ctx.get_hooks().expanding_object_like_macro(ctx.derived(),
+            deftoken, ContainerT(), curr_token))
+    {
+        // do not expand this macro, just copy the whole sequence
+        expanded.push_back(curr_token);
+        return false;           // no further preprocessing required
+    }
+#endif
+
+    token_type replacement;
 
     if (value == "__LINE__") {
     // expand the __LINE__ macro
         std::string buffer = lexical_cast<std::string>(main_pos.get_line());
 
-        expanded.push_back(token_type(T_INTLIT, buffer.c_str(), curr_token.get_position()));
-        return true;
+        replacement = token_type(T_INTLIT, buffer.c_str(), curr_token.get_position());
     }
     else if (value == "__FILE__") {
     // expand the __FILE__ macro
@@ -1562,9 +1579,8 @@ string_type const &value = curr_token.get_value();
 
         using boost::wave::util::impl::escape_lit;
         file += escape_lit(wave::util::native_file_string(filename)) + "\"";
-        expanded.push_back(token_type(T_STRINGLIT, file.c_str(),
-            curr_token.get_position()));
-        return true;
+        replacement = token_type(T_STRINGLIT, file.c_str(),
+            curr_token.get_position());
     }
     else if (value == "__INCLUDE_LEVEL__") {
     // expand the __INCLUDE_LEVEL__ macro
@@ -1572,10 +1588,29 @@ string_type const &value = curr_token.get_value();
 
         using namespace std;    // for some systems sprintf is in namespace std
         sprintf(buffer, "%d", (int)ctx.get_iteration_depth());
-        expanded.push_back(token_type(T_INTLIT, buffer, curr_token.get_position()));
-        return true;
+        replacement = token_type(T_INTLIT, buffer, curr_token.get_position());
     }
-    return false;   // no predefined token
+
+    // post-expansion hooks
+    ContainerT replacement_list;
+    replacement_list.push_back(replacement);
+
+#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
+    ctx.get_hooks().expanded_macro(replacement_list);
+#else
+    ctx.get_hooks().expanded_macro(ctx.derived(), replacement_list);
+#endif
+
+    expanded.push_back(replacement);
+
+#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
+    ctx.get_hooks().rescanned_macro(expanded);
+#else
+    ctx.get_hooks().rescanned_macro(ctx.derived(), expanded);
+#endif
+
+    return true;
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////

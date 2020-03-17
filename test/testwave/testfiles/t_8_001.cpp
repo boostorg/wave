@@ -66,7 +66,13 @@ LOG2("All well in zone %d", n);
 //H 03: S bar = {  1, 2, 3 }
 //H 00: t_8_001.cpp(43): LOG2(§), [t_8_001.cpp(19): LOG2(...)=printf("at line=%d" __VA_OPT__(": "), __LINE__);      __VA_OPT__(printf(__VA_ARGS__);)                      printf("\n")]
 //H 02: printf("at line=%d" , __LINE__);                            printf("\n")
+//H 01: <built-in>(1): __LINE__
+//H 02: 43
+//H 03: 43
 //H 03: printf("at line=%d" , 43);                            printf("\n")
 //H 00: t_8_001.cpp(44): LOG2("All well in zone %d", n), [t_8_001.cpp(19): LOG2(...)=printf("at line=%d" __VA_OPT__(": "), __LINE__);      __VA_OPT__(printf(__VA_ARGS__);)                      printf("\n")]
 //H 02: printf("at line=%d" ": ", __LINE__);      printf("All well in zone %d", n);                      printf("\n")
+//H 01: <built-in>(1): __LINE__
+//H 02: 44
+//H 03: 44
 //H 03: printf("at line=%d" ": ", 44);      printf("All well in zone %d", n);                      printf("\n")
