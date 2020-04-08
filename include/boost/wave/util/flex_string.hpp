@@ -899,7 +899,11 @@ public:
     typedef value_type* iterator;
     typedef const value_type* const_iterator;
     typedef typename Storage::allocator_type allocator_type;
+#if defined(BOOST_NO_CXX11_ALLOCATOR)
     typedef typename allocator_type::size_type size_type;
+#else
+    typedef typename std::allocator_traits<allocator_type>::size_type size_type;
+#endif
 
 private:
   enum { temp1 = threshold * sizeof(value_type) > sizeof(Storage)
@@ -1226,7 +1230,11 @@ public:
     typedef typename Storage::iterator iterator;
     typedef typename Storage::const_iterator const_iterator;
     typedef typename Storage::allocator_type allocator_type;
+#if defined(BOOST_NO_CXX11_ALLOCATOR)
     typedef typename allocator_type::size_type size_type;
+#else
+    typedef typename std::allocator_traits<allocator_type>::size_type size_type;
+#endif
     typedef typename Storage::value_type& reference;
 
 private:
