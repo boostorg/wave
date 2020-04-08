@@ -331,7 +331,11 @@ public:
     };
     static const Data emptyString_;
 
+#if defined(BOOST_NO_CXX11_ALLOCATOR)
     typedef typename A::size_type size_type;
+#else
+    typedef typename std::allocator_traits<A>::size_type size_type;
+#endif
 
 private:
     Data* pData_;
@@ -544,7 +548,11 @@ SimpleStringStorage<E, A>::emptyString_ =
 template <typename E, class A = std::allocator<E> >
 class AllocatorStringStorage : public A
 {
+#if defined(BOOST_NO_CXX11_ALLOCATOR)
     typedef typename A::size_type size_type;
+#else
+    typedef typename std::allocator_traits<A>::size_type size_type;
+#endif
     typedef typename SimpleStringStorage<E, A>::Data Data;
 
     void* Alloc(size_type sz, const void* p = 0)
@@ -568,7 +576,11 @@ class AllocatorStringStorage : public A
 
     void Free(void* p, size_type sz)
     {
+#if defined(BOOST_NO_CXX11_ALLOCATOR)
         A::deallocate(static_cast<E*>(p), sz);
+#else
+        std::allocator_traits<A>::deallocate(*this, static_cast<E*>(p), sz);
+#endif
     }
 
     Data* pData_;
@@ -766,7 +778,11 @@ public: // protected:
     typedef typename base::iterator iterator;
     typedef typename base::const_iterator const_iterator;
     typedef A allocator_type;
+#if defined(BOOST_NO_CXX11_ALLOCATOR)
     typedef typename A::size_type size_type;
+#else
+    typedef typename std::allocator_traits<A>::size_type size_type;
+#endif
 
     VectorStringStorage(const VectorStringStorage& s) : base(s)
     { }
@@ -1470,19 +1486,19 @@ public:
     typedef T traits_type;
     typedef typename traits_type::char_type value_type;
     typedef A allocator_type;
-    typedef typename A::size_type size_type;
-    typedef typename A::difference_type difference_type;
 
 #if defined(BOOST_NO_CXX11_ALLOCATOR)
     typedef typename A::reference reference;
     typedef typename A::const_reference const_reference;
     typedef typename A::pointer pointer;
     typedef typename A::const_pointer const_pointer;
+    typedef typename A::size_type size_type;
 #else
     typedef typename std::allocator_traits<A>::value_type& reference;
     typedef typename std::allocator_traits<A>::value_type const& const_reference;
     typedef typename std::allocator_traits<A>::pointer pointer;
     typedef typename std::allocator_traits<A>::const_pointer const_pointer;
+    typedef typename std::allocator_traits<A>::size_type size_type;
 #endif
 
     typedef typename Storage::iterator iterator;
