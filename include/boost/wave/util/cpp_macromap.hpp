@@ -1124,6 +1124,7 @@ bool adjacent_stringize = false;
                     if (suppress_expand) {
                         // leave the whole expression in place
                         std::copy(cstart, cit, std::back_inserter(expanded));
+                        expanded.push_back(*cit);  // include the rparen
                     } else {
                         ContainerT va_expanded;
                         if ((i == arguments.size()) ||                 // no variadic argument
