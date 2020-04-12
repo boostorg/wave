@@ -1085,7 +1085,7 @@ bool adjacent_stringize = false;
                             expand_operator_defined, has_expanded_args);
                     }
 
-                    // locate the __VA_OPT__ arguments
+                    // locate the end of the __VA_OPT__ call
                     typename macro_definition_type::const_definition_iterator_t cstart = cit;
                     if (!impl::find_va_opt_args(cit, cend)) {
                         BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
@@ -1094,17 +1094,59 @@ bool adjacent_stringize = false;
                     }
                     // cstart still points to __VA_OPT__; cit now points to the last rparen
 
-                    if ((i == arguments.size()) ||             // no variadic argument
-                        impl::is_whitespace_only(arguments[i])) {   // no visible tokens
-                        // no args; insert placemarker if one is not already present
-                        expanded.push_back(
-                            typename ContainerT::value_type(T_PLACEMARKER, "\xA7", pos));
-                    } else if (!impl::is_blank_only(arguments[i])) {
-                        ++cstart; ++cstart;
-                        // [cstart, cit) is now the args to va_opt
-                        // recursively process them
-                        expand_replacement_list(cstart, cit, arguments,
-                                                expand_operator_defined, expanded);
+                    // locate the __VA_OPT__ arguments
+                    typename macro_definition_type::const_definition_iterator_t arg_start = cstart;
+                    ++arg_start;  // skip __VA_OPT__
+                    ++arg_start;  // skip lparen
+
+                    // create a synthetic macro definition for use with hooks
+                    token_type macroname(T_IDENTIFIER, "__VA_OPT__", position_type("<built-in>"));
+                    parameter_container_type macroparameters;
+                    macroparameters.push_back(token_type(T_ELLIPSIS, "...", position_type("<built-in>")));
+                    definition_container_type macrodefinition;
+
+                    bool suppress_expand = false;
+                    // __VA_OPT__ treats its arguments as an undifferentiated stream of tokens
+                    // for our purposes we can consider it as a single argument
+                    typename std::vector<ContainerT> va_opt_args(1, ContainerT(arg_start, cit));
+#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
+                    ctx.get_hooks().expanding_function_like_macro(
+                        macroname, macroparameters, macrodefinitions,
+                        *cstart, va_opt_args);
+#else
+                    suppress_expand = ctx.get_hooks().expanding_function_like_macro(
+                        ctx.derived(),
+                        macroname, macroparameters, macrodefinition,
+                        *cstart, va_opt_args,
+                        cstart, cit);
+#endif
+
+                    if (suppress_expand) {
+                        // leave the whole expression in place
+                        std::copy(cstart, cit, std::back_inserter(expanded));
+                        expanded.push_back(*cit);  // include the rparen
+                    } else {
+                        ContainerT va_expanded;
+                        if ((i == arguments.size()) ||                 // no variadic argument
+                            impl::is_whitespace_only(arguments[i])) {  // no visible tokens
+                            // no args; insert placemarker
+                            va_expanded.push_back(
+                                typename ContainerT::value_type(T_PLACEMARKER, "\xA7", pos));
+                        } else if (!impl::is_blank_only(arguments[i])) {
+                            // [cstart, cit) is now the args to va_opt
+                            // recursively process them
+                            expand_replacement_list(arg_start, cit, arguments,
+                                                    expand_operator_defined, va_expanded);
+                        }
+                        // run final hooks
+#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
+                        ctx.get_hooks().expanded_macro(va_expanded);
+#else
+                        ctx.get_hooks().expanded_macro(ctx.derived(), va_expanded);
+#endif
+
+                        // updated overall expansion with va_opt results
+                        expanded.splice(expanded.end(), va_expanded);
                     }
                     // continue from rparen
                 }
@@ -1543,15 +1585,32 @@ macromap<ContextT>::expand_predefined_macro(token_type const &curr_token,
 
 string_type const &value = curr_token.get_value();
 
-    if (value.size() < 8 || '_' != value[0] || '_' != value[1])
-        return false;       // quick check failed
+    if ((value != "__LINE__") && (value != "__FILE__") && (value != "__INCLUDE_LEVEL__"))
+        return false;
+
+    // construct a fake token for the macro's definition point
+    token_type deftoken(T_IDENTIFIER, value, position_type("<built-in>"));
+
+#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
+    ctx.get_hooks().expanding_object_like_macro(
+        deftoken, Container(), curr_token);    // BOZO check params
+#else
+    if (ctx.get_hooks().expanding_object_like_macro(ctx.derived(),
+            deftoken, ContainerT(), curr_token))
+    {
+        // do not expand this macro, just copy the whole sequence
+        expanded.push_back(curr_token);
+        return false;           // no further preprocessing required
+    }
+#endif
+
+    token_type replacement;
 
     if (value == "__LINE__") {
     // expand the __LINE__ macro
         std::string buffer = lexical_cast<std::string>(main_pos.get_line());
 
-        expanded.push_back(token_type(T_INTLIT, buffer.c_str(), curr_token.get_position()));
-        return true;
+        replacement = token_type(T_INTLIT, buffer.c_str(), curr_token.get_position());
     }
     else if (value == "__FILE__") {
     // expand the __FILE__ macro
@@ -1562,9 +1621,8 @@ string_type const &value = curr_token.get_value();
 
         using boost::wave::util::impl::escape_lit;
         file += escape_lit(wave::util::native_file_string(filename)) + "\"";
-        expanded.push_back(token_type(T_STRINGLIT, file.c_str(),
-            curr_token.get_position()));
-        return true;
+        replacement = token_type(T_STRINGLIT, file.c_str(),
+            curr_token.get_position());
     }
     else if (value == "__INCLUDE_LEVEL__") {
     // expand the __INCLUDE_LEVEL__ macro
@@ -1572,10 +1630,29 @@ string_type const &value = curr_token.get_value();
 
         using namespace std;    // for some systems sprintf is in namespace std
         sprintf(buffer, "%d", (int)ctx.get_iteration_depth());
-        expanded.push_back(token_type(T_INTLIT, buffer, curr_token.get_position()));
-        return true;
+        replacement = token_type(T_INTLIT, buffer, curr_token.get_position());
     }
-    return false;   // no predefined token
+
+    // post-expansion hooks
+    ContainerT replacement_list;
+    replacement_list.push_back(replacement);
+
+#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
+    ctx.get_hooks().expanded_macro(replacement_list);
+#else
+    ctx.get_hooks().expanded_macro(ctx.derived(), replacement_list);
+#endif
+
+    expanded.push_back(replacement);
+
+#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
+    ctx.get_hooks().rescanned_macro(expanded);
+#else
+    ctx.get_hooks().rescanned_macro(ctx.derived(), expanded);
+#endif
+
+    return true;
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////
