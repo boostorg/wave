@@ -85,15 +85,15 @@ public:
     }
     ~bad_pragma_exception() throw() {}
 
-    virtual char const *what() const throw()
+    char const *what() const throw() BOOST_OVERRIDE
     {
         return "boost::wave::bad_pragma_exception";
     }
-    virtual bool is_recoverable() const throw()
+    virtual bool is_recoverable() const throw() BOOST_OVERRIDE
     {
         return true;
     }
-    virtual int get_severity() const throw()
+    virtual int get_severity() const throw() BOOST_OVERRIDE
     {
         return boost::wave::util::severity_remark;
     }

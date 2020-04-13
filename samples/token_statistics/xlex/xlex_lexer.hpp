@@ -526,11 +526,11 @@ public:
     virtual ~xlex_functor() {}
     
 // get the next token from the input stream
-    token_type& get(token_type& t) { return lexer_.get(t); }
-    void set_position(Position const &pos) { lexer_.set_position(pos); }
+    token_type& get(token_type& t) BOOST_OVERRIDE { return lexer_.get(t); }
+    void set_position(Position const &pos) BOOST_OVERRIDE { lexer_.set_position(pos); }
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
-    bool has_include_guards(std::string& guard_name) const 
+    bool has_include_guards(std::string& guard_name) const BOOST_OVERRIDE
         { return lexer_.has_include_guards(guard_name); }
 #endif    
 

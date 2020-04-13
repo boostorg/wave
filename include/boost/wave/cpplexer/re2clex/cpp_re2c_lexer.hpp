@@ -343,10 +343,10 @@ public:
     virtual ~lex_functor() {}
 
 // get the next token from the input stream
-    token_type& get(token_type& result) { return re2c_lexer.get(result); }
-    void set_position(PositionT const &pos) { re2c_lexer.set_position(pos); }
+    token_type& get(token_type& result) BOOST_OVERRIDE { return re2c_lexer.get(result); }
+    void set_position(PositionT const &pos) BOOST_OVERRIDE { re2c_lexer.set_position(pos); }
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
-    bool has_include_guards(std::string& guard_name) const
+    bool has_include_guards(std::string& guard_name) const BOOST_OVERRIDE
         { return re2c_lexer.has_include_guards(guard_name); }
 #endif
 

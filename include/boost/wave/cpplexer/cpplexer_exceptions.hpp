@@ -142,7 +142,7 @@ public:
     }
     ~cpplexer_exception() throw() {}
 
-    virtual char const *what() const throw() = 0;   // to be overloaded
+    char const *what() const throw() BOOST_OVERRIDE = 0;   // to be overloaded
     virtual char const *description() const throw() = 0;
     virtual int get_errorcode() const throw() = 0;
     virtual int get_severity() const throw() = 0;
@@ -186,23 +186,23 @@ public:
     }
     ~lexing_exception() throw() {}
 
-    virtual char const *what() const throw()
+    char const *what() const throw() BOOST_OVERRIDE
     {
         return "boost::wave::lexing_exception";
     }
-    virtual char const *description() const throw()
+    char const *description() const throw() BOOST_OVERRIDE
     {
         return buffer;
     }
-    virtual int get_severity() const throw()
+    int get_severity() const throw() BOOST_OVERRIDE
     {
         return level;
     }
-    virtual int get_errorcode() const throw()
+    int get_errorcode() const throw() BOOST_OVERRIDE
     {
         return code;
     }
-    virtual bool is_recoverable() const throw()
+    bool is_recoverable() const throw() BOOST_OVERRIDE
     {
         switch (get_errorcode()) {
         case lexing_exception::universal_char_invalid:
