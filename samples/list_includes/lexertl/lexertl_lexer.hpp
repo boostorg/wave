@@ -608,7 +608,7 @@ public:
     ~lexertl_functor() {}
 
 // get the next token from the input stream
-    token_type& get(token_type& result)
+    token_type& get(token_type& result) BOOST_OVERRIDE
     {
         if (lexer_.is_initialized() && !at_eof) {
             do {
@@ -728,7 +728,7 @@ public:
         return result = token_type();           // return T_EOI
     }
 
-    void set_position(Position const &pos)
+    void set_position(Position const &pos) BOOST_OVERRIDE
     {
         // set position has to change the file name and line number only
         first.get_position().set_file(pos.get_file());
@@ -736,7 +736,7 @@ public:
     }
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
-    bool has_include_guards(std::string& guard_name) const
+    bool has_include_guards(std::string& guard_name) const BOOST_OVERRIDE
         { return guards.detected(guard_name); }
 #endif
 

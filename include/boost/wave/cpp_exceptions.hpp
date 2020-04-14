@@ -76,7 +76,7 @@ public:
     }
     ~cpp_exception() throw() {}
 
-    virtual char const *what() const throw() = 0;           // to be overloaded
+    char const *what() const throw() BOOST_OVERRIDE = 0;    // to be overloaded
     virtual char const *description() const throw() = 0;
     virtual int get_errorcode() const throw() = 0;
     virtual int get_severity() const throw() = 0;
@@ -164,27 +164,27 @@ public:
     }
     ~preprocess_exception() throw() {}
 
-    virtual char const *what() const throw()
+    char const *what() const throw() BOOST_OVERRIDE
     {
         return "boost::wave::preprocess_exception";
     }
-    virtual char const *description() const throw()
+    char const *description() const throw() BOOST_OVERRIDE
     {
         return buffer;
     }
-    virtual int get_severity() const throw()
+    int get_severity() const throw() BOOST_OVERRIDE
     {
         return severity_level(code);
     }
-    virtual int get_errorcode() const throw()
+    int get_errorcode() const throw() BOOST_OVERRIDE
     {
         return code;
     }
-    virtual char const* get_related_name() const throw()
+    char const* get_related_name() const throw() BOOST_OVERRIDE
     {
         return "<unknown>";
     }
-    virtual bool is_recoverable() const throw()
+    bool is_recoverable() const throw() BOOST_OVERRIDE
     {
         switch (get_errorcode()) {
         // these are the exceptions thrown during processing not supposed to
@@ -395,11 +395,11 @@ public:
     }
     ~macro_handling_exception() throw() {}
 
-    virtual char const *what() const throw()
+    char const *what() const throw() BOOST_OVERRIDE
     {
         return "boost::wave::macro_handling_exception";
     }
-    char const* get_related_name() const throw()
+    char const* get_related_name() const throw() BOOST_OVERRIDE
     {
         return name;
     }
