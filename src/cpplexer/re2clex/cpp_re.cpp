@@ -17,13 +17,7 @@
 // disable stupid compiler warnings
 #include <boost/config/warning_disable.hpp>
 
-#include <ctime>
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <cstddef>
 
 #include <boost/wave/wave_config.hpp>          // configuration data
 
@@ -36,7 +30,6 @@
 #include <boost/detail/workaround.hpp>
 
 #include <boost/wave/token_ids.hpp>
-#include <boost/wave/cpplexer/re2clex/aq.hpp>
 #include <boost/wave/cpplexer/re2clex/scanner.hpp>
 #include <boost/wave/cpplexer/re2clex/cpp_re.hpp>
 

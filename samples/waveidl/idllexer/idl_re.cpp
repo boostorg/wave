@@ -10,14 +10,6 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#include <ctime>
-#include <cstdlib>
-#include <cstdio>
-#include <cstring>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-
 #include <boost/config.hpp>
 
 #if defined(BOOST_HAS_UNISTD_H)

@@ -43,7 +43,7 @@
     }                                                                         \
     /**/
 
-#include <iostream>
+#include <iosfwd>
 
 ///////////////////////////////////////////////////////////////////////////////
 #define BOOST_WAVE_UPDATE_CURSOR()                                            \

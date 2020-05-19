@@ -54,7 +54,9 @@
 #include <vector>
 #include <stack>
 #include <utility> // for pair
+#if defined(BOOST_SPIRIT_DEBUG)
 #include <iostream>
+#endif
 #include <fstream>
 #include <boost/assert.hpp>
 #include <boost/limits.hpp>

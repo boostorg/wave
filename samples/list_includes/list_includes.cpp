@@ -36,6 +36,8 @@
 // Include the default context trace policies
 #include <boost/wave/preprocessing_hooks.hpp>
 
+#include <iostream>
+
 ///////////////////////////////////////////////////////////////////////////////
 //  include lexer specifics, import lexer names
 #if BOOST_WAVE_SEPARATE_LEXER_INSTANTIATION == 0
