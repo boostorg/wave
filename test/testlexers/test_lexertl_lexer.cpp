@@ -9,8 +9,10 @@
 
 //  system headers
 #include <string>
-#include <iostream>
 #include <limits>
+#if defined(TESTLEXERS_TIMING)
+#include <iostream>
+#endif
 
 #include <boost/wave/wave_config.hpp>
 #undef BOOST_WAVE_SEPARATE_LEXER_INSTANTIATION

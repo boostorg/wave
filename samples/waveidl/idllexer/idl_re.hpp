@@ -13,16 +13,9 @@
 #if !defined(IDL_RE_HPP_BD62775D_1659_4684_872C_03C02543C9A5_INCLUDED)
 #define IDL_RE_HPP_BD62775D_1659_4684_872C_03C02543C9A5_INCLUDED
 
-#include <ctime>
-#include <cstdlib>
 #include <cstdio>
-#include <cstring>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
 #include <string>
-
 #include <boost/config.hpp>
 
 #if defined(BOOST_HAS_UNISTD_H)

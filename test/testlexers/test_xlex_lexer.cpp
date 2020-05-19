@@ -12,7 +12,9 @@
 
 //  system headers
 #include <string>
+#if defined(TESTLEXERS_TIMING)
 #include <iostream>
+#endif
 #include <limits>
 
 #include <boost/wave/wave_config.hpp>

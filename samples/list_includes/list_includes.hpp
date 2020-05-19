@@ -16,7 +16,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //  include often used files from the stdlib
-#include <iostream>
+#include <iosfwd>
 #include <fstream>
 #include <string>
 #include <vector>

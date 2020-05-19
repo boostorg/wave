@@ -13,6 +13,9 @@
 #define HANNIBAL_TRANSLATION_UNIT_GRAMMAR_H_INCLUDED
 
 #include <map>
+#if defined(HANNIBAL_TRACE_DECLARATIONS)
+#include <iostream>
+#endif
 
 #include <boost/assert.hpp>
 #include <boost/spirit/include/classic_core.hpp>

@@ -36,6 +36,8 @@
 #include <boost/wave/cpplexer/cpp_lex_token.hpp>      // token type
 #include <boost/wave/cpplexer/cpp_lex_iterator.hpp>   // lexer type
 
+#include <iostream>
+
 ///////////////////////////////////////////////////////////////////////////////
 //  Include serialization support, if requested
 #if BOOST_WAVE_SERIALIZATION != 0

@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <map>
+#include <iostream>
 
 #include <boost/assert.hpp>
 #include <boost/wave/token_ids.hpp>
