@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(CPP_MACROMAP_UTIL_HPP_HK041119)
-#define CPP_MACROMAP_UTIL_HPP_HK041119
+#if !defined(BOOST_CPP_MACROMAP_UTIL_HPP_HK041119)
+#define BOOST_CPP_MACROMAP_UTIL_HPP_HK041119
 
 #include <boost/assert.hpp>
 
@@ -593,4 +593,4 @@ to_string(Src const& src)
 #include BOOST_ABI_SUFFIX
 #endif
 
-#endif // !defined(CPP_MACROMAP_UTIL_HPP_HK041119)
+#endif // !defined(BOOST_CPP_MACROMAP_UTIL_HPP_HK041119)
