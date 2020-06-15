@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(CPP_RE2C_LEXER_HPP_B81A2629_D5B1_4944_A97D_60254182B9A8_INCLUDED)
-#define CPP_RE2C_LEXER_HPP_B81A2629_D5B1_4944_A97D_60254182B9A8_INCLUDED
+#if !defined(BOOST_CPP_RE2C_LEXER_HPP_B81A2629_D5B1_4944_A97D_60254182B9A8_INCLUDED)
+#define BOOST_CPP_RE2C_LEXER_HPP_B81A2629_D5B1_4944_A97D_60254182B9A8_INCLUDED
 
 #include <string>
 #include <cstdio>
@@ -420,4 +420,4 @@ new_lexer_gen<IteratorT, PositionT, TokenT>::new_lexer(IteratorT const &first,
 #include BOOST_ABI_SUFFIX
 #endif
 
-#endif // !defined(CPP_RE2C_LEXER_HPP_B81A2629_D5B1_4944_A97D_60254182B9A8_INCLUDED)
+#endif // !defined(BOOST_CPP_RE2C_LEXER_HPP_B81A2629_D5B1_4944_A97D_60254182B9A8_INCLUDED)

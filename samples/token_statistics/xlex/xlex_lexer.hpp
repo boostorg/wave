@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(XLEX_LEXER_HPP)
-#define XLEX_LEXER_HPP
+#if !defined(BOOST_XLEX_LEXER_HPP)
+#define BOOST_XLEX_LEXER_HPP
 
 #include <string>
 #include <cstdio>
@@ -592,4 +592,4 @@ new_lexer_gen<Iterator, Position>::new_lexer(Iterator const &first,
 }   // namespace wave
 }   // namespace boost
      
-#endif // !defined(XLEX_LEXER_HPP)
+#endif // !defined(BOOST_XLEX_LEXER_HPP)

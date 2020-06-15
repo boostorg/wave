@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(XPRESSIVE_LEXER_HPP)
-#define XPRESSIVE_LEXER_HPP
+#if !defined(BOOST_XPRESSIVE_LEXER_HPP)
+#define BOOST_XPRESSIVE_LEXER_HPP
 
 #include <string>
 #include <vector>
@@ -130,6 +130,6 @@ xpressive_lexer<Iterator, Token, Callback>::next_token(
 ///////////////////////////////////////////////////////////////////////////////
 }}}} // boost::wave::cpplexer::xlex
 
-#endif // !defined(XPRESSIVE_LEXER_HPP)
+#endif // !defined(BOOST_XPRESSIVE_LEXER_HPP)
 
 

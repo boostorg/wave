@@ -35,8 +35,8 @@
 //      - Removed the getline implementation which was borrowed from the SGI
 //        STL as the license for this code is not compatible with Boost.
 
-#ifndef FLEX_STRING_INC_
-#define FLEX_STRING_INC_
+#ifndef BOOST_FLEX_STRING_INC_
+#define BOOST_FLEX_STRING_INC_
 
 /*
 ////////////////////////////////////////////////////////////////////////////////
@@ -2577,4 +2577,4 @@ inline void serialize(Archive & ar, boost::wave::util::flex_string<E, T, A, S> &
 #include BOOST_ABI_SUFFIX
 #endif
 
-#endif // FLEX_STRING_INC_
+#endif // BOOST_FLEX_STRING_INC_
