@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
         ("help,h", "print out options")
         ("match", po::value<std::string>()->default_value("^BOOST_.*"),
          "pattern defined macros must match")
-        ("exclude", po::value<std::vector<std::string>>(), "subdirectory to skip");
+        ("exclude", po::value<std::vector<std::string> >(), "subdirectory to skip");
 
     // positional arguments
     po::positional_options_description p;
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
     boost::regex macro_regex(vm["match"].as<std::string>());
     std::vector<std::string> exclude_dirnames;
     if (vm.count("exclude"))
-        exclude_dirnames = vm["exclude"].as<std::vector<std::string>>();
+        exclude_dirnames = vm["exclude"].as<std::vector<std::string> >();
 
     // get our single positional parameter - the directory to process
     std::string dirname = vm["dirname"].as<std::string>();
