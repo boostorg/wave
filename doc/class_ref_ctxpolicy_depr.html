@@ -92,7 +92,7 @@ Time Configuration</a> section. By default the new interface is used starting Bo
 
         <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#returning_from_include_file">returning_from_include_file</a>();
 
-        <span class="comment">// interpretation of #pragma's of the form </span>
+        <span class="comment">// interpretation of #pragmas of the form </span>
         <span class="comment">// 'wave option[(value)]'</span>
         <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;
         bool <a href="class_reference_ctxpolicy.html#interpret_pragma">interpret_pragma</a>(ContextT <span class="keyword">const</span> &amp;ctx, ContainerT &amp;pending, 
@@ -264,7 +264,7 @@ Time Configuration</a> section. By default the new interface is used starting Bo
   <p>The function <tt>returning_from_include_file</tt> is called whenever an 
     included file is about to be closed after it's processing is complete.</p>
 </blockquote>
-<h3>Interpretation of #pragma's</h3>
+<h3>Interpretation of #pragmas</h3>
 <p><strong><a name="interpret_pragma"></a>interpret_pragma</strong></p>
 <pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;
     bool <a href="class_reference_ctxpolicy.html#interpret_pragma">interpret_pragma</a>(ContextT <span class="keyword">const</span> &amp;ctx, ContainerT &amp;pending, 
