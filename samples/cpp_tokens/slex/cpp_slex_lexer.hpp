@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(SLEX_LEXER_HPP_5E8E1DF0_BB41_4938_B7E5_A4BB68222FF6_INCLUDED)
-#define SLEX_LEXER_HPP_5E8E1DF0_BB41_4938_B7E5_A4BB68222FF6_INCLUDED
+#if !defined(BOOST_SLEX_LEXER_HPP_5E8E1DF0_BB41_4938_B7E5_A4BB68222FF6_INCLUDED)
+#define BOOST_SLEX_LEXER_HPP_5E8E1DF0_BB41_4938_B7E5_A4BB68222FF6_INCLUDED
 
 #include <string>
 #if defined(BOOST_SPIRIT_DEBUG)
@@ -142,13 +142,13 @@ private:
 
 #define INTEGER_SUFFIX      "(" "[uU][lL]?|[lL][uU]?" ")"
 #if BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
-#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "[lL][lL]" ")" OR \
-                                "(" "[lL][lL]" ")" "[uU]" "?" OR \
+#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "ll" OR "LL" ")" OR \
+                                "(" "ll" OR "LL" ")" "[uU]" "?" OR \
                                 "i64" \
                             ")"
 #else
-#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "[lL][lL]" ")" OR \
-                            "(" "[lL][lL]" ")" "[uU]" "?" ")"
+#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "ll" OR "LL" ")" OR \
+                            "(" "ll" OR "LL" ")" "[uU]" "?" ")"
 #endif
 #define FLOAT_SUFFIX        "(" "[fF][lL]?" OR "[lL][fF]?" ")"
 #define CHAR_SPEC           "L?"
@@ -624,7 +624,7 @@ public:
     virtual ~slex_functor() {}
 
 // get the next token from the input stream
-    token_type& get(token_type& result)
+    token_type& get(token_type& result) BOOST_OVERRIDE
     {
         if (!at_eof) {
             do {
@@ -740,7 +740,7 @@ public:
         return result = token_type();   // return T_EOI
     }
 
-    void set_position(PositionT const &pos)
+    void set_position(PositionT const &pos) BOOST_OVERRIDE
     {
         // set position has to change the file name and line number only
         first.get_position().set_file(pos.get_file());
@@ -748,7 +748,7 @@ public:
     }
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
-    bool has_include_guards(std::string& guard_name) const
+    bool has_include_guards(std::string& guard_name) const BOOST_OVERRIDE
         { return guards.detected(guard_name); }
 #endif
 
@@ -824,4 +824,4 @@ new_lexer_gen<IteratorT, PositionT>::new_lexer(IteratorT const &first,
 }   // namespace wave
 }   // namespace boost
 
-#endif // !defined(SLEX_LEXER_HPP_5E8E1DF0_BB41_4938_B7E5_A4BB68222FF6_INCLUDED)
+#endif // !defined(BOOST_SLEX_LEXER_HPP_5E8E1DF0_BB41_4938_B7E5_A4BB68222FF6_INCLUDED)

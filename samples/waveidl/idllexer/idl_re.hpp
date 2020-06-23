@@ -10,19 +10,12 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(IDL_RE_HPP_BD62775D_1659_4684_872C_03C02543C9A5_INCLUDED)
-#define IDL_RE_HPP_BD62775D_1659_4684_872C_03C02543C9A5_INCLUDED
+#if !defined(BOOST_IDL_RE_HPP_BD62775D_1659_4684_872C_03C02543C9A5_INCLUDED)
+#define BOOST_IDL_RE_HPP_BD62775D_1659_4684_872C_03C02543C9A5_INCLUDED
 
-#include <ctime>
-#include <cstdlib>
 #include <cstdio>
-#include <cstring>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
 #include <string>
-
 #include <boost/config.hpp>
 
 #if defined(BOOST_HAS_UNISTD_H)
@@ -368,4 +361,4 @@ BOOST_WAVE_DECL boost::wave::token_id scan(
 
 #undef RE2C_ASSERT
 
-#endif // !defined(IDL_RE_HPP_BD62775D_1659_4684_872C_03C02543C9A5_INCLUDED)
+#endif // !defined(BOOST_IDL_RE_HPP_BD62775D_1659_4684_872C_03C02543C9A5_INCLUDED)

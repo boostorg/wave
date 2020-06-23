@@ -37,9 +37,9 @@
 #include <boost/spirit/home/support/detail/lexer/state_machine.hpp>
 #include <boost/spirit/home/support/detail/lexer/consts.hpp>
 //#include "lexertl/examples/serialise.hpp>
-// #if BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE != 0
-// #include "lexertl/examples/cpp_code.hpp"
-// #endif
+#if BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE != 0
+#include <boost/spirit/home/support/detail/lexer/generate_cpp.hpp>
+#endif
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -161,9 +161,9 @@ lexertl<Iterator, Position>::init_macro_data[INIT_MACRO_DATA_SIZE] =
     MACRO_DATA("INTEGER", "(" "(0x|0X){HEXDIGIT}+" OR "0{OCTALDIGIT}*" OR "[1-9]{DIGIT}*" ")"),
     MACRO_DATA("INTEGER_SUFFIX", "(" "[uU][lL]?" OR "[lL][uU]?" ")"),
 #if BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
-    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU]([lL][lL])|([lL][lL])[uU]?|i64)"),
+    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU](ll|LL)|(ll|LL)[uU]?|i64)"),
 #else
-    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU]([lL][lL])|([lL][lL])[uU]?)"),
+    MACRO_DATA("LONGINTEGER_SUFFIX", "([uU](ll|LL)|(ll|LL)[uU]?)"),
 #endif
     MACRO_DATA("FLOAT_SUFFIX", "(" "[fF][lL]?" OR "[lL][fF]?" ")"),
     MACRO_DATA("CHAR_SPEC", "L?"),
@@ -499,12 +499,14 @@ lexertl<Iterator, Position>::next_token(Iterator &first, Iterator const &last,
 #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
     size_t const* const lookup = &state_machine_.data()._lookup[0]->front ();
     size_t const dfa_alphabet = state_machine_.data()._dfa_alphabet[0];
-
     size_t const* dfa = &state_machine_.data()._dfa[0]->front();
-    size_t const* ptr = dfa + dfa_alphabet + boost::lexer::dfa_offset;
 #else
-    const std::size_t *ptr = dfa + dfa_offset;
+    // set up pointers from static data
+    size_t const* lookup = lookup_;
+    size_t const dfa_alphabet = dfa_alphabet_;
+    size_t const* dfa = dfa_;
 #endif // BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
+    size_t const* ptr = dfa + dfa_alphabet;
 
     Iterator curr = first;
     Iterator end_token = first;
@@ -517,11 +519,7 @@ lexertl<Iterator, Position>::next_token(Iterator &first, Iterator const &last,
             break;
         ++curr;
 
-#if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
-        ptr = &dfa[state * (dfa_alphabet + boost::lexer::dfa_offset)];
-#else
-        ptr = &dfa[state * dfa_offset];
-#endif // BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
+        ptr = &dfa[state * dfa_alphabet];
 
         if (0 != *ptr) {
             end_state = true;
@@ -568,12 +566,12 @@ template <typename Iterator, typename Position>
 inline bool
 lexertl<Iterator, Position>::save (std::ostream& outstrm)
 {
-// #if defined(BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE)
-//     cpp_code::generate(state_machine_, outstrm);
-// #else
+#if defined(BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE)
+    boost::lexer::generate_cpp(state_machine_, outstrm);
+#else
 //     boost::lexer::serialise::save_as_binary(state_machine_, outstrm,
 //         (std::size_t)get_compilation_time());
-// #endif
+#endif
     return outstrm.good();
 }
 #endif // #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
@@ -598,11 +596,19 @@ public:
     :   first(first_, last_, pos_), language(language), at_eof(false)
     {
         lexer_.init_dfa(language, pos_);
+
+#if BOOST_WAVE_LEXERTL_GENERATE_CPP_CODE != 0
+        std::ofstream os("wave_lexertl_tables_next_token.hpp");
+        // generates a next_token function with an incompatible interface
+        // to lexertl::next_token(), but you can extract the necessary tables
+        // and replace them manually:
+        lexer_.save(os);
+#endif
     }
     ~lexertl_functor() {}
 
 // get the next token from the input stream
-    token_type& get(token_type& result)
+    token_type& get(token_type& result) BOOST_OVERRIDE
     {
         if (lexer_.is_initialized() && !at_eof) {
             do {
@@ -722,7 +728,7 @@ public:
         return result = token_type();           // return T_EOI
     }
 
-    void set_position(Position const &pos)
+    void set_position(Position const &pos) BOOST_OVERRIDE
     {
         // set position has to change the file name and line number only
         first.get_position().set_file(pos.get_file());
@@ -730,7 +736,7 @@ public:
     }
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
-    bool has_include_guards(std::string& guard_name) const
+    bool has_include_guards(std::string& guard_name) const BOOST_OVERRIDE
         { return guards.detected(guard_name); }
 #endif
 

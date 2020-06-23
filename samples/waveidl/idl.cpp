@@ -32,6 +32,8 @@
 #include "idllexer/idl_re2c_lexer.hpp"
 #endif 
 
+#include <iostream>
+
 ///////////////////////////////////////////////////////////////////////////////
 //  include the grammar definitions, if these shouldn't be compiled separately
 //  (ATTENTION: _very_ large compilation times!)

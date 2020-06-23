@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(XLEX_LEXER_HPP)
-#define XLEX_LEXER_HPP
+#if !defined(BOOST_XLEX_LEXER_HPP)
+#define BOOST_XLEX_LEXER_HPP
 
 #include <string>
 #include <cstdio>
@@ -35,7 +35,7 @@
 #include <boost/wave/cpplexer/cpp_lex_interface.hpp>
 
 // reuse the default token type 
-#include "../xlex_iterator.hpp"
+#include "../xlex_interface.hpp"
 
 // include the xpressive headers
 #include "xpressive_lexer.hpp"
@@ -71,9 +71,9 @@ public:
     token_type& get(token_type& t);
     void set_position(Position const &pos)
     {
-        // set position has to change the file name and line number only
         filename = pos.get_file();
         line = pos.get_line();
+        column = pos.get_column();
     }
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
@@ -91,6 +91,7 @@ private:
     
     string_type filename;
     int line;
+    int column;
     bool at_eof;
     boost::wave::language_support language;
 
@@ -124,7 +125,7 @@ private:
 #define TRI(c)              Q("?") Q("?") c
 
 // definition of some subtoken regexps to simplify the regex definitions
-#define BLANK               "[ \t]"
+#define BLANK               "[ \t\v\f]"
 #define CCOMMENT            Q("/") Q("*") ".*?" Q("*") Q("/")
         
 #define PPSPACE             "(" BLANK OR CCOMMENT ")*"
@@ -143,13 +144,13 @@ private:
             
 #define INTEGER_SUFFIX      "(" "[uU][lL]?|[lL][uU]?" ")"
 #if BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
-#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "[lL][lL]" ")" OR \
-                                "(" "[lL][lL]" ")" "[uU]" "?" OR \
+#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "ll" OR "LL" ")" OR \
+                                "(" "ll" OR "LL" ")" "[uU]" "?" OR \
                                 "i64" \
                             ")" 
 #else
-#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "[lL][lL]" ")" OR \
-                            "(" "[lL][lL]" ")" "[uU]" "?" ")"
+#define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "ll" OR "LL" ")" OR \
+                            "(" "ll" OR "LL" ")" "[uU]" "?" ")"
 #endif
 #define FLOAT_SUFFIX        "(" "[fF][lL]?|[lL][fF]?" ")"
 #define CHAR_SPEC           "L?"
@@ -360,7 +361,6 @@ lexer<Iterator, Position>::init_data[] =
     TOKEN_DATA(T_IDENTIFIER, "([a-zA-Z_$]" OR UNIVERSALCHAR ")([a-zA-Z0-9_$]" OR UNIVERSALCHAR ")*"),
 #endif
     TOKEN_DATA(T_SPACE, BLANK "+"),
-    TOKEN_DATA(T_SPACE2, "[\v\f]+"),
     TOKEN_DATA(T_CONTLINE, Q("\\") "\n"), 
     TOKEN_DATA(T_NEWLINE, NEWLINEDEF),
     TOKEN_DATA(T_POUND_POUND, "##"),
@@ -433,7 +433,8 @@ lexer<Iterator, Position>::lexer(Iterator const &first,
         Iterator const &last, Position const &pos, 
         boost::wave::language_support language) 
 :   first(first), last(last), 
-    filename(pos.get_file()), line(0), at_eof(false), language(language)
+    filename(pos.get_file()), line(pos.get_line()), column(pos.get_column()),
+    at_eof(false), language(language)
 {
 // if in C99 mode, some of the keywords/operators are not valid    
     if (!boost::wave::need_c99(language)) {
@@ -486,13 +487,19 @@ lexer<Iterator, Position>::get(boost::wave::cpplexer::lex_token<Position>& t)
         at_eof = true;
         value.clear();
     }
+    else if (T_NEWLINE == id) {
+        ++line;
+        column = 1;
+    } else {
+        column += value.size();
+    }
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
-    cpplexer::lex_token<Position> tok(id, value, Position(filename, line, -1));
+    cpplexer::lex_token<Position> tok(id, value, Position(filename, line, column));
     return t = guards.detect_guard(tok);
 #else
     return t = cpplexer::lex_token<Position>(id, value, 
-        Position(filename, line, -1));
+        Position(filename, line, column));
 #endif
 }
 
@@ -519,11 +526,11 @@ public:
     virtual ~xlex_functor() {}
     
 // get the next token from the input stream
-    token_type& get(token_type& t) { return lexer_.get(t); }
-    void set_position(Position const &pos) { lexer_.set_position(pos); }
+    token_type& get(token_type& t) BOOST_OVERRIDE { return lexer_.get(t); }
+    void set_position(Position const &pos) BOOST_OVERRIDE { lexer_.set_position(pos); }
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
-    bool has_include_guards(std::string& guard_name) const 
+    bool has_include_guards(std::string& guard_name) const BOOST_OVERRIDE
         { return lexer_.has_include_guards(guard_name); }
 #endif    
 
@@ -585,4 +592,4 @@ new_lexer_gen<Iterator, Position>::new_lexer(Iterator const &first,
 }   // namespace wave
 }   // namespace boost
      
-#endif // !defined(XLEX_LEXER_HPP)
+#endif // !defined(BOOST_XLEX_LEXER_HPP)

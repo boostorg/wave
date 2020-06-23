@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(CPP_MACROMAP_UTIL_HPP_HK041119)
-#define CPP_MACROMAP_UTIL_HPP_HK041119
+#if !defined(BOOST_CPP_MACROMAP_UTIL_HPP_HK041119)
+#define BOOST_CPP_MACROMAP_UTIL_HPP_HK041119
 
 #include <boost/assert.hpp>
 
@@ -345,6 +345,27 @@ is_whitespace_only (ContainerT const &argument)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  Tests whether the given token sequence consists only of whitespace
+//  and placemarkers
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename ContainerT>
+inline bool
+is_blank_only (ContainerT const &argument)
+{
+    typename ContainerT::const_iterator end = argument.end();
+    for (typename ContainerT::const_iterator it = argument.begin();
+          it != end; ++it)
+    {
+        if (!IS_CATEGORY(*it, WhiteSpaceTokenType) &&
+            (T_PLACEMARKER != token_id(*it)))
+            return false;
+    }
+    return true;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  Remove all placeholder tokens from the given token sequence
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -572,4 +593,4 @@ to_string(Src const& src)
 #include BOOST_ABI_SUFFIX
 #endif
 
-#endif // !defined(CPP_MACROMAP_UTIL_HPP_HK041119)
+#endif // !defined(BOOST_CPP_MACROMAP_UTIL_HPP_HK041119)

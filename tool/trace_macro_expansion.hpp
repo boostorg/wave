@@ -7,8 +7,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)
-#define TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED
+#if !defined(BOOST_TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)
+#define BOOST_TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED
 
 #include <cstdio>
 #include <cstdlib>
@@ -85,15 +85,15 @@ public:
     }
     ~bad_pragma_exception() throw() {}
 
-    virtual char const *what() const throw()
+    char const *what() const throw() BOOST_OVERRIDE
     {
         return "boost::wave::bad_pragma_exception";
     }
-    virtual bool is_recoverable() const throw()
+    virtual bool is_recoverable() const throw() BOOST_OVERRIDE
     {
         return true;
     }
-    virtual int get_severity() const throw()
+    virtual int get_severity() const throw() BOOST_OVERRIDE
     {
         return boost::wave::util::severity_remark;
     }
@@ -1207,9 +1207,7 @@ protected:
         using namespace boost::wave;
 
         typedef typename ContextT::token_type token_type;
-        typedef typename token_type::string_type string_type;
         typedef typename ContainerT::const_iterator const_iterator;
-        typedef typename ContainerT::iterator iterator;
 
         token_type* current = 0;
 
@@ -1438,7 +1436,7 @@ protected:
     {
         if (value.get_value() == "0" || value.get_value() == "restart") {
         // restart the timer
-            elapsed_time.restart();
+            elapsed_time.start();
         }
         else if (value.get_value() == "1") {
         // print out the current elapsed time
@@ -1449,7 +1447,7 @@ protected:
         }
         else if (value.get_value() == "suspend") {
         // suspend the timer
-            elapsed_time.suspend();
+            elapsed_time.stop();
         }
         else if (value.get_value() == "resume") {
         // resume the timer
@@ -1491,4 +1489,4 @@ private:
 #undef BOOST_WAVE_GETSTRING
 #undef BOOST_WAVE_OSSTREAM
 
-#endif // !defined(TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)
+#endif // !defined(BOOST_TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)

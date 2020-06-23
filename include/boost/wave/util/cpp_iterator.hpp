@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(CPP_ITERATOR_HPP_175CA88F_7273_43FA_9039_BCF7459E1F29_INCLUDED)
-#define CPP_ITERATOR_HPP_175CA88F_7273_43FA_9039_BCF7459E1F29_INCLUDED
+#if !defined(BOOST_CPP_ITERATOR_HPP_175CA88F_7273_43FA_9039_BCF7459E1F29_INCLUDED)
+#define BOOST_CPP_ITERATOR_HPP_175CA88F_7273_43FA_9039_BCF7459E1F29_INCLUDED
 
 #include <string>
 #include <vector>
@@ -1789,6 +1789,17 @@ position_type pos(act_token.get_position());
                         macroname.get_value().c_str(), (*pit).get_position());
                     return;
                 }
+
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
+                // can't use __VA_OPT__ either
+                if (boost::wave::need_va_opt(ctx.get_language()) &&
+                    ("__VA_OPT__" == (*pit).get_value())) {
+                    BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                        bad_define_statement_va_opt,
+                        macroname.get_value().c_str(), (*pit).get_position());
+                    return;
+                }
+#endif
             }
 
         // if there wasn't an ellipsis, then there shouldn't be a __VA_ARGS__
@@ -1797,6 +1808,9 @@ position_type pos(act_token.get_position());
                 typedef typename token_sequence_type::iterator definition_iterator_t;
 
                 bool seen_va_args = false;
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
+                bool seen_va_opt = false;
+#endif
                 definition_iterator_t pend = macrodefinition.end();
                 for (definition_iterator_t dit = macrodefinition.begin();
                      dit != pend; ++dit)
@@ -1806,6 +1820,13 @@ position_type pos(act_token.get_position());
                     {
                         seen_va_args = true;
                     }
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
+                    if (T_IDENTIFIER == token_id(*dit) &&
+                        "__VA_OPT__" == (*dit).get_value())
+                    {
+                        seen_va_opt = true;
+                    }
+#endif
                 }
                 if (seen_va_args) {
                 // must not have seen __VA_ARGS__ placeholder
@@ -1814,6 +1835,14 @@ position_type pos(act_token.get_position());
                         macroname.get_value().c_str(), act_token.get_position());
                     return;
                 }
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
+                if (seen_va_opt) {
+                    BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                        bad_define_statement_va_opt,
+                        macroname.get_value().c_str(), act_token.get_position());
+                    return;
+                }
+#endif
             }
         }
         else
@@ -2606,4 +2635,4 @@ public:
 #include BOOST_ABI_SUFFIX
 #endif
 
-#endif // !defined(CPP_ITERATOR_HPP_175CA88F_7273_43FA_9039_BCF7459E1F29_INCLUDED)
+#endif // !defined(BOOST_CPP_ITERATOR_HPP_175CA88F_7273_43FA_9039_BCF7459E1F29_INCLUDED)

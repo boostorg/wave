@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(WAVE_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED)
-#define WAVE_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED
+#if !defined(BOOST_WAVE_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED)
+#define BOOST_WAVE_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED
 
 #include <boost/config.hpp>
 #include <boost/detail/workaround.hpp>
@@ -38,6 +38,14 @@
 //
 #if !defined(BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS)
 #define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+//  Decide whether to support the C++20 __VA_OPT__ variadics feature
+//
+//
+#if !defined(BOOST_WAVE_SUPPORT_VA_OPT) && BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
+#define BOOST_WAVE_SUPPORT_VA_OPT 1
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -92,6 +100,25 @@
 #define BOOST_WAVE_SUPPORT_CPP0X 1
 #undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
 #define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+//  Decide whether to support C++20
+//
+#if !defined(BOOST_WAVE_SUPPORT_CPP2A)
+#  define BOOST_WAVE_SUPPORT_CPP2A 1
+#  undef BOOST_WAVE_SUPPORT_CPP0X
+#  define BOOST_WAVE_SUPPORT_CPP0X 1
+#  undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
+#  define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
+#  if !defined(BOOST_WAVE_SUPPORT_VA_OPT)
+#    undef BOOST_WAVE_SUPPORT_VA_OPT
+#    define BOOST_WAVE_SUPPORT_VA_OPT 1
+#  endif
+#elif BOOST_WAVE_SUPPORT_CPP2A == 0
+#  undef BOOST_WAVE_SUPPORT_VA_OPT
+#  define BOOST_WAVE_SUPPORT_VA_OPT 0
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -489,4 +516,4 @@ namespace boost { namespace wave
 #endif
 #endif
 
-#endif // !defined(WAVE_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED)
+#endif // !defined(BOOST_WAVE_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED)

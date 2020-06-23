@@ -47,7 +47,7 @@
 <ul>
   <li>a preprocessor directive has been recognized, </li>
   <li>a token is about to be returned from the preprocessor, </li>
-  <li>a macro get's defined or undefined, </li>
+  <li>a macro gets defined or undefined, </li>
   <li>a macro has been expanded or rescanned,</li>
   <li>an include file has been opened or closed, </li>
   <li>a conditional expression was evaluated,</li>
@@ -74,7 +74,7 @@
         <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> TokenT&gt;<br>        <span class="keyword">void</span> <a href="#detected_pragma_once">detected_pragma_once</a>(ContextT <span class="keyword">const</span> &amp;ctx,
             TokenT <span class="keyword">const</span>&amp; pragma_token, 
             std::string <span class="keyword">const</span>&amp; filename);<br><br>
-        <span class="comment">// interpretation of #pragma's of the form </span>
+        <span class="comment">// interpretation of #pragmas of the form </span>
         <span class="comment">// 'wave option[(value)]'</span>
         <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>        <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#interpret_pragma">interpret_pragma</a>(ContextT <span class="keyword">const</span> &amp;ctx, ContainerT &amp;pending, <br>            <span class="keyword">typename</span> ContextT::token_type <span class="keyword">const</span> &amp;option, <br>            ContainerT <span class="keyword">const</span> &amp;values, <br>            <span class="keyword">typename</span> ContextT::token_type <span class="keyword">const</span> &amp;pragma_token);<br><br>
         <span class="comment">// macro definition hooks</span>
@@ -326,7 +326,7 @@
 	(this is relative to the directory of the currently processed file or a 
 	absolute path depending on the paths given as the include search paths).</p>
 </blockquote>
-<h3>Interpretation of #pragma's</h3>
+<h3>Interpretation of #pragmas</h3>
 <p><strong><a name="interpret_pragma"></a>interpret_pragma</strong></p>
 <pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>    bool <a href="class_reference_ctxpolicy.html#interpret_pragma">interpret_pragma</a>(ContextT <span class="keyword">const</span> &amp;ctx, ContainerT &amp;pending, <br>        <span class="keyword">typename</span> ContextT::token_type <span class="keyword">const</span> &amp;option, <br>        ContainerT <span class="keyword">const</span> &amp;values, <br>        <span class="keyword">typename</span> ContextT::token_type<span class="keyword"> const</span> &amp;pragma_token);<br>
 </pre>
@@ -378,7 +378,7 @@
   <p>The parameter <tt>name</tt> holds the token of the macro which definition was removed.<br>
   </p>
 </blockquote>
-<p><strong><a name="found_warning_directive" id="found_warning_directive"></a>found_warning_drective</strong></p>
+<p><strong><a name="found_warning_directive" id="found_warning_directive"></a>found_warning_directive</strong></p>
 <pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>    <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#found_warning_directive">found_warning_directive</a>(ContextT <span class="keyword">const</span>&amp; ctx, <br>        ContainerT <span class="keyword">const</span> &amp;message);<br>
 </pre>
 <blockquote>
@@ -390,7 +390,7 @@
   <p>If the return value is <tt>false</tt>, the library throws a preprocessor 
     exception of the type <code>warning_directive</code> (normal execution continues), if the return value is <tt>true</tt> the execution continues as if no <span class="preprocessor">#warning</span> directive has been found and the overall directive is replaced by a single newline. </p>
 </blockquote>
-<p><strong><a name="found_error_directive" id="found_error_directive"></a>found_error_drective</strong></p>
+<p><strong><a name="found_error_directive" id="found_error_directive"></a>found_error_directive</strong></p>
 <pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>    <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#found_error_directive">found_error_directive</a>(ContextT <span class="keyword">const</span>&amp; ctx, <br>        ContainerT <span class="keyword">const</span> &amp;message);<br>
 </pre>
 <blockquote>
@@ -400,8 +400,8 @@
   <p>If the return value is <tt>false</tt>, the library throws a preprocessor 
     exception of the type <code>error_directive</code> (normal execution continues), if the return value is <tt>true</tt> the execution continues as if no <span class="preprocessor">#error</span> directive has been found and the overall directive is replaced by a single newline. </p>
 </blockquote>
-<p><strong><a name="found_line_directive" id="found_line_directive"></a>found_line_drective</strong></p>
-<pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>    <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#found_error_directive"><strong>found_line_drective</strong></a>(ContextT <span class="keyword">const</span>&amp; ctx, <br>        ContainerT <span class="keyword">const</span> &amp;arguments, <span class="keyword">unsigned int</span> line,<br>        std::string <span class="keyword">const</span>&amp; filename);
+<p><strong><a name="found_line_directive" id="found_line_directive"></a>found_line_directive</strong></p>
+<pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>    <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#found_error_directive"><strong>found_line_directive</strong></a>(ContextT <span class="keyword">const</span>&amp; ctx, <br>        ContainerT <span class="keyword">const</span> &amp;arguments, <span class="keyword">unsigned int</span> line,<br>        std::string <span class="keyword">const</span>&amp; filename);
 </pre>
 <blockquote>
   <p>The function <tt>found_line_directive </tt> is called whenever a <span class="preprocessor">#line </span>directive has been encountered. Note, this function was added for the Boost V1.35.0 release. </p>

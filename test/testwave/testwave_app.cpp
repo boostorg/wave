@@ -12,7 +12,7 @@
 
 // system headers
 #include <string>
-#include <iostream>
+#include <iosfwd>
 #include <vector>
 #include <ctime>
 
@@ -418,6 +418,9 @@ testwave_app::testwave_app(po::variables_map const& vm)
         ("skipped_token_hooks", "record skipped_token hook calls")
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
         ("c++11", "enable C++11 mode (implies --variadics and --long_long)")
+#endif
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+        ("c++20", "enable C++20 mode (implies --variadics and --long_long, adds __VA_OPT__)")
 #endif
         ("warning,W", po::value<std::vector<std::string> >()->composing(),
             "Warning settings.")
@@ -971,12 +974,9 @@ testwave_app::initialise_options(Context& ctx, po::variables_map const& vm,
 
 #if BOOST_WAVE_SUPPORT_CPP0X
     if (vm.count("c++11")) {
-        if (9 == debuglevel) {
-            std::cerr << "initialise_options: option: c++11" << std::endl;
-        }
         ctx.set_language(
             boost::wave::language_support(
-                boost::wave::support_cpp0x
+                 boost::wave::support_cpp0x
               |  boost::wave::support_option_convert_trigraphs
               |  boost::wave::support_option_long_long
               |  boost::wave::support_option_emit_line_directives
@@ -988,6 +988,34 @@ testwave_app::initialise_options(Context& ctx, po::variables_map const& vm,
 #endif
               |  boost::wave::support_option_insert_whitespace
             ));
+    } else {
+        if (9 == debuglevel) {
+            std::cerr << "initialise_options: option: c++11" << std::endl;
+        }
+    }
+#endif
+
+#if BOOST_WAVE_SUPPORT_CPP2A
+    if (vm.count("c++20")) {
+        ctx.set_language(
+            boost::wave::language_support(
+                 boost::wave::support_cpp2a
+              |  boost::wave::support_option_va_opt
+              |  boost::wave::support_option_convert_trigraphs
+              |  boost::wave::support_option_long_long
+              |  boost::wave::support_option_emit_line_directives
+ #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
+              |  boost::wave::support_option_include_guard_detection
+ #endif
+ #if BOOST_WAVE_EMIT_PRAGMA_DIRECTIVES != 0
+              |  boost::wave::support_option_emit_pragma_directives
+ #endif
+              |  boost::wave::support_option_insert_whitespace
+            ));
+
+            if (9 == debuglevel) {
+                std::cerr << "initialise_options: option: c++20" << std::endl;
+            }
     }
 #endif
 
