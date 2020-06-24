@@ -142,7 +142,7 @@ is_special_macroname (StringT const &name)
     if (name.size() < 7)
         return false;
 
-    if ("defined" == name)
+    if (("defined" == name) || ("__has_include" == name))
         return true;
 
     if ('_' == name[0] && '_' == name[1]) {

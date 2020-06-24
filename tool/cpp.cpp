@@ -80,6 +80,7 @@ typedef boost::archive::text_oarchive oarchive;
 #include <boost/wave/grammars/cpp_expression_grammar.hpp>
 #include <boost/wave/grammars/cpp_predef_macros_grammar.hpp>
 #include <boost/wave/grammars/cpp_defined_grammar.hpp>
+#include <boost/wave/grammars/cpp_has_include_grammar.hpp>
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////

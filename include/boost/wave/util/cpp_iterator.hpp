@@ -1715,8 +1715,9 @@ token_sequence_type toexpand;
         std::inserter(toexpand, toexpand.end()));
 
     typename token_sequence_type::iterator begin2 = toexpand.begin();
+    // expanding the computed include
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded,
-        false);
+                                   false, false);
 
 // now, include the file
 string_type s (impl::trim_whitespace(boost::wave::util::impl::as_string(expanded)));
@@ -2322,7 +2323,7 @@ token_sequence_type toexpand;
     // preprocess the body of this #line message
         typename token_sequence_type::iterator begin2 = toexpand.begin();
         ctx.expand_whole_tokensequence(begin2, toexpand.end(),
-            expanded, false);
+                                       expanded, false, false);
 
         error = preprocess_exception::no_error;
         if (!impl::retrieve_line_info(expanded.begin(), expanded.end(),
@@ -2404,7 +2405,7 @@ token_sequence_type toexpand;
 
     typename token_sequence_type::iterator begin2 = toexpand.begin();
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded,
-        false);
+                                   false, false);
     if (!ctx.get_hooks().found_error_directive(ctx.derived(), toexpand))
 #else
 // simply copy the body of this #error message to the issued diagnostic
@@ -2453,7 +2454,7 @@ token_sequence_type toexpand;
 
     typename token_sequence_type::iterator begin2 = toexpand.begin();
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded,
-        false);
+                                   false, false);
     if (!ctx.get_hooks().found_warning_directive(ctx.derived(), toexpand))
 #else
 // simply copy the body of this #warning message to the issued diagnostic
@@ -2523,7 +2524,7 @@ const_tree_iterator_t last = make_ref_transform_iterator(end, get_value);
 
             typename token_sequence_type::iterator begin2 = toexpand.begin();
             ctx.expand_whole_tokensequence(begin2, toexpand.end(),
-                expanded, false);
+                                           expanded, false, false);
 #else
         // do _not_ preprocess the token sequence
             std::copy(first, last, std::inserter(expanded, expanded.end()));
