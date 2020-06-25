@@ -211,4 +211,4 @@ has_include_grammar_gen<LexIteratorT>::parse_operator_has_include (
 #include BOOST_ABI_SUFFIX
 #endif
 
-#endif // !has_include(BOOST_CPP_HAS_INCLUDE_GRAMMAR_HPP_F48287B2_DC67_40A8_B4A1_800EFBD67869_INCLUDED)
+#endif // !defined(BOOST_CPP_HAS_INCLUDE_GRAMMAR_HPP_F48287B2_DC67_40A8_B4A1_800EFBD67869_INCLUDED)
