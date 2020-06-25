@@ -51,7 +51,7 @@ struct has_include_grammar :
                         bool &is_quoted_filename_,
                         bool &is_system_)
     :   tokens_seq(tokens_seq_), is_quoted_filename(is_quoted_filename_),
-        is_system(is_system_)
+        is_system(is_system_), true_(true)
     {
         BOOST_SPIRIT_DEBUG_TRACE_GRAMMAR_NAME(*this, "has_include_grammar",
             TRACE_CPP_HAS_INCLUDE_GRAMMAR);
@@ -133,7 +133,7 @@ struct has_include_grammar :
     ContainerT &tokens_seq;
     bool &is_quoted_filename;
     bool &is_system;
-    const bool true_ = true;  // Spirit Classic actors operate on references, not values
+    const bool true_;  // Spirit Classic actors operate on references, not values
 };
 
 ///////////////////////////////////////////////////////////////////////////////
