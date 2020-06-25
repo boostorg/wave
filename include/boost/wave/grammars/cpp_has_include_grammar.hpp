@@ -81,6 +81,7 @@ struct has_include_grammar :
                         ch_p(T_LEFTPAREN) >>
                         (system_include | nonsystem_include | computed_include)
                         )
+                    >> end_p
                 ;
 
             system_include

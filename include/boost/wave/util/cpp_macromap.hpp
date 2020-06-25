@@ -1817,7 +1817,7 @@ macromap<ContextT>::resolve_has_include(IteratorT &first,
             parse_operator_has_include(start, rparen_it, result, is_quoted_filename, is_system);
     }
 
-    if (!hit.hit || (hit.stop != rparen_it)) {
+    if (!hit.hit) {
         string_type msg ("__has_include(): ");
         msg = msg + util::impl::as_string<string_type>(first, last);
         BOOST_WAVE_THROW_CTX(ctx, preprocess_exception, ill_formed_expression,
