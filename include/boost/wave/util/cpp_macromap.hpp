@@ -33,7 +33,6 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/trim.hpp>
 
 #include <boost/wave/util/time_conversion_helper.hpp>
 #include <boost/wave/util/unput_queue_iterator.hpp>
@@ -530,14 +529,6 @@ macromap<ContextT>::is_defined(string_type const &str) const
     return is_defined(str, cit, 0);
 }
 
-template <typename ContextT>
-bool
-macromap<ContextT>::is_space(char c)
-{
-    // leave out CR/LF to be consistent with on_include()
-    return ((c == ' ') || (c == '\t') || (c == '\v') || (c == '\f'));
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  has_include(): returns whether a path expression is an valid include file
@@ -560,11 +551,9 @@ macromap<ContextT>::has_include(
         ctx.expand_whole_tokensequence(first, last, filetoks);
     }
 
-    // extract tokens into string
-    std::string fn(boost::wave::util::impl::as_string(filetoks).c_str());
-
-    // trim leading and trailing blanks
-    boost::algorithm::trim_if(fn, is_space);
+    // extract tokens into string and trim whitespace
+    using namespace boost::wave::util::impl;
+    std::string fn(trim_whitespace(as_string(filetoks)).c_str());
 
     // remove initial and final delimiters
     fn = fn.substr(1, fn.size() - 2);

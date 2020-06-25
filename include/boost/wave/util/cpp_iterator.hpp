@@ -1680,23 +1680,6 @@ char const *current_name = 0;   // never try to match current file name
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace impl {
-
-    // trim all whitespace from the beginning and the end of the given string
-    template <typename StringT>
-    inline StringT
-    trim_whitespace(StringT const &s)
-    {
-        typedef typename StringT::size_type size_type;
-
-        size_type first = s.find_first_not_of(" \t\v\f");
-        if (StringT::npos == first)
-            return StringT();
-        size_type last = s.find_last_not_of(" \t\v\f");
-        return s.substr(first, last-first+1);
-    }
-}
-
 template <typename ContextT>
 inline void
 pp_iterator_functor<ContextT>::on_include(
@@ -1719,9 +1702,10 @@ token_sequence_type toexpand;
     ctx.expand_whole_tokensequence(begin2, toexpand.end(), expanded,
                                    false, false);
 
-// now, include the file
-string_type s (impl::trim_whitespace(boost::wave::util::impl::as_string(expanded)));
-bool is_system = '<' == s[0] && '>' == s[s.size()-1];
+    // now, include the file
+    using namespace boost::wave::util::impl;
+    string_type s (trim_whitespace(as_string(expanded)));
+    bool is_system = '<' == s[0] && '>' == s[s.size()-1];
 
     if (!is_system && !('\"' == s[0] && '\"' == s[s.size()-1])) {
     // should resolve into something like <...> or "..."
