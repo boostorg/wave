@@ -20,8 +20,8 @@
 
 //H 10: t_2_026.cpp(15): #if
 //H 01: <built-in>(1): __FILE__
-//H 02: "/home/jet/boost_git/libs/wave/test/testwave/testfiles/t_2_026.cpp"
-//H 03: "/home/jet/boost_git/libs/wave/test/testwave/testfiles/t_2_026.cpp"
+//H 02: "$F"
+//H 03: "$F"
 //H 11: t_2_026.cpp(15): #if __has_include(/* comment */ __FILE__ /* comment */): 1
 //H 10: t_2_026.cpp(16): #define
 //H 08: t_2_026.cpp(16): GOTTHISFILE_WITHCOMMENTS=

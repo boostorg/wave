@@ -24,8 +24,8 @@
 
 //H 10: t_2_025.cpp(19): #if
 //H 01: <built-in>(1): __FILE__
-//H 02: "/home/jet/boost_git/libs/wave/test/testwave/testfiles/t_2_025.cpp"
-//H 03: "/home/jet/boost_git/libs/wave/test/testwave/testfiles/t_2_025.cpp"
+//H 02: "$F"
+//H 03: "$F"
 //H 11: t_2_025.cpp(19): #if __has_include(__FILE__): 1
 //H 10: t_2_025.cpp(20): #define
 //H 08: t_2_025.cpp(20): GOTTHISFILE=
