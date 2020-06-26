@@ -581,7 +581,13 @@ macromap<ContextT>::has_include(
     using namespace boost::wave::util::impl;
     std::string fn(trim_whitespace(as_string(filetoks)).c_str());
 
-    // remove initial and final delimiters
+    // verify and remove initial and final delimiters
+    if (!((fn.size() >= 3) &&
+          (((fn[0] == '"') && (*fn.rbegin() == '"')) ||
+           ((fn[0] == '<') && (*fn.rbegin() == '>')))))
+        BOOST_WAVE_THROW_CTX(ctx, preprocess_exception, bad_has_include_expression,
+                             fn.c_str(), ctx.get_main_pos());
+
     fn = fn.substr(1, fn.size() - 2);
 
     // test header existence
