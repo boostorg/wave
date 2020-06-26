@@ -329,6 +329,15 @@ macromap<ContextT>::add_macro(token_type const &name, bool has_parameters,
             name.get_value().c_str());
         return false;
     }
+    if (boost::wave::need_variadics(ctx.get_language()) &&
+        "__has_include" == name.get_value())
+    {
+    // can't use __has_include as a macro name
+        BOOST_WAVE_THROW_NAME_CTX(ctx, macro_handling_exception,
+            bad_define_statement_va_opt, name.get_value().c_str(), main_pos,
+            name.get_value().c_str());
+        return false;
+    }
     if (AltExtTokenType == (token_id(name) & ExtTokenOnlyMask)) {
     // exclude special operator names
         BOOST_WAVE_THROW_NAME_CTX(ctx, macro_handling_exception,
