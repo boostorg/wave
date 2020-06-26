@@ -419,7 +419,7 @@ testwave_app::testwave_app(po::variables_map const& vm)
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
         ("c++11", "enable C++11 mode (implies --variadics and --long_long)")
 #endif
-#if BOOST_WAVE_SUPPORT_CPP2A != 0
+#if BOOST_WAVE_SUPPORT_CPP1Z != 0
         ("c++17", "enable C++17 mode (implies --variadics and --long_long, adds __has_include)")
 #endif
 #if BOOST_WAVE_SUPPORT_CPP2A != 0

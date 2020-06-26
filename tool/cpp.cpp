@@ -900,7 +900,7 @@ const bool treat_warnings_as_error = vm.count("warning") &&
         }
 #endif // BOOST_WAVE_SUPPORT_CPP0X != 0
 
-#if BOOST_WAVE_SUPPORT_CPP1Z
+#if BOOST_WAVE_SUPPORT_CPP1Z != 0
     if (vm.count("c++17")) {
         ctx.set_language(
             boost::wave::language_support(
@@ -1379,6 +1379,9 @@ main (int argc, char *argv[])
 #endif
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
             ("c++11", "enable C++11 mode (implies --variadics and --long_long)")
+#endif
+#if BOOST_WAVE_SUPPORT_CPP1Z != 0
+        ("c++17", "enable C++17 mode (implies --variadics and --long_long, adds __has_include)")
 #endif
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
             ("c++20", "enable C++20 mode (implies --variadics and --long_long, adds __VA_OPT__)")
