@@ -7,10 +7,10 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-// Test error reporting on undefinition of '__has_include'
+// Test error reporting during redefinition of '__has_include'
 
 //O --c++17
 //O -Werror
 
-#undef __has_include
-//E t_2_027.cpp(15): warning: #undef may not be used on this predefined name: __has_include
+#define __has_include(X) something
+//E t_2_028.cpp(15): warning: this predefined name may not be redefined: __has_include

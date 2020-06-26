@@ -7,10 +7,19 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-// Test error reporting on undefinition of '__has_include'
+// Test that __has_include is an available macro name before C++17
 
-//O --c++17
+//O --c++11
 //O -Werror
 
-#undef __has_include
-//E t_2_027.cpp(15): warning: #undef may not be used on this predefined name: __has_include
+#ifdef __has_include
+#warning has_include is available in C++11 mode
+#endif
+
+#define __has_include(X) something
+
+//H 10: t_2_029.cpp(15): #ifdef
+//H 11: t_2_029.cpp(15): #ifdef __has_include: 0
+//H 10: t_2_029.cpp(19): #define
+//H 08: t_2_029.cpp(19): __has_include(X)=something
+

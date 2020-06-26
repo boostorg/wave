@@ -43,7 +43,9 @@
 #include <boost/wave/util/cpp_macromap_predef.hpp>
 #include <boost/wave/util/filesystem_compatibility.hpp>
 #include <boost/wave/grammars/cpp_defined_grammar_gen.hpp>
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
 #include <boost/wave/grammars/cpp_has_include_grammar_gen.hpp>
+#endif
 
 #include <boost/wave/wave_version.hpp>
 #include <boost/wave/cpp_exceptions.hpp>
@@ -110,10 +112,12 @@ public:
 // expects an arbitrary string as its parameter
     bool is_defined(string_type const &str) const;
 
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
 // expects a token sequence as its parameters
     template <typename IteratorT>
     bool has_include(IteratorT const &begin, IteratorT const &end,
                      bool is_quoted_filename, bool is_system) const;
+#endif
 
 //  Get the macro definition for the given macro scope
     bool get_macro(string_type const &name, bool &has_parameters,
@@ -233,10 +237,12 @@ protected:
     token_type const &resolve_defined(IteratorT &first, IteratorT const &last,
         ContainerT &expanded);
 
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
 //  Resolves the operator __has_include() and replaces the token with "0" or "1"
     template <typename IteratorT, typename ContainerT>
     token_type const &resolve_has_include(IteratorT &first, IteratorT const &last,
         ContainerT &expanded);
+#endif
 
 //  Resolve operator _Pragma or the #pragma directive
     template <typename IteratorT, typename ContainerT>
@@ -304,7 +310,7 @@ macromap<ContextT>::add_macro(token_type const &name, bool has_parameters,
     parameter_container_type &parameters, definition_container_type &definition,
     bool is_predefined, defined_macros_type *scope)
 {
-    if (!is_predefined && impl::is_special_macroname (name.get_value())) {
+    if (!is_predefined && impl::is_special_macroname (ctx, name.get_value())) {
     // exclude special macro names
         BOOST_WAVE_THROW_NAME_CTX(ctx, macro_handling_exception,
             illegal_redefinition, name.get_value().c_str(), main_pos,
@@ -329,7 +335,8 @@ macromap<ContextT>::add_macro(token_type const &name, bool has_parameters,
             name.get_value().c_str());
         return false;
     }
-    if (boost::wave::need_variadics(ctx.get_language()) &&
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
+    if (boost::wave::need_has_include(ctx.get_language()) &&
         "__has_include" == name.get_value())
     {
     // can't use __has_include as a macro name
@@ -338,6 +345,7 @@ macromap<ContextT>::add_macro(token_type const &name, bool has_parameters,
             name.get_value().c_str());
         return false;
     }
+#endif
     if (AltExtTokenType == (token_id(name) & ExtTokenOnlyMask)) {
     // exclude special operator names
         BOOST_WAVE_THROW_NAME_CTX(ctx, macro_handling_exception,
@@ -489,8 +497,16 @@ macromap<ContextT>::is_defined(typename token_type::string_type const &name,
     if (name.size() < 8 || '_' != name[0] || '_' != name[1])
         return false;       // quick check failed
 
-    return name == "__LINE__" || name == "__FILE__" ||
-        name == "__INCLUDE_LEVEL__" || name == "__has_include";
+    if (name == "__LINE__" || name == "__FILE__" ||
+        name == "__INCLUDE_LEVEL__")
+        return true;
+
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
+    return (boost::wave::need_has_include(ctx.get_language()) &&
+            (name == "__has_include"));
+#else
+    return false;
+#endif
 }
 
 template <typename ContextT>
@@ -538,6 +554,7 @@ macromap<ContextT>::is_defined(string_type const &str) const
     return is_defined(str, cit, 0);
 }
 
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  has_include(): returns whether a path expression is an valid include file
@@ -574,6 +591,7 @@ macromap<ContextT>::has_include(
         ctx, fn, is_system, 0, dir_path, native_path);
 
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -616,7 +634,7 @@ macromap<ContextT>::remove_macro(string_type const &name,
 
     if (it != current_macros->end()) {
         if ((*it).second->is_predefined) {
-            if (!even_predefined || impl::is_special_macroname(name)) {
+            if (!even_predefined || impl::is_special_macroname(ctx, name)) {
                 BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
                     bad_undefine_statement, name.c_str(), main_pos);
                 return false;
@@ -634,7 +652,7 @@ macromap<ContextT>::remove_macro(string_type const &name,
 #endif
         return true;
     }
-    else if (impl::is_special_macroname(name)) {
+    else if (impl::is_special_macroname(ctx, name)) {
         BOOST_WAVE_THROW_CTX(ctx, preprocess_exception, bad_undefine_statement,
             name.c_str(), pos);
     }
@@ -730,10 +748,14 @@ macromap<ContextT>::expand_tokensequence_worker(
             // resolve operator defined()
                 return resolve_defined(first, last, pending);
             }
-            else if (expand_operator_has_include && (*first).get_value() == "__has_include") {
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
+            else if (boost::wave::need_has_include(ctx.get_language()) &&
+                     expand_operator_has_include &&
+                     (*first).get_value() == "__has_include") {
                 // resolve operator __has_include()
                 return resolve_has_include(first, last, pending);
             }
+#endif
             else if (boost::wave::need_variadics(ctx.get_language()) &&
                 (*first).get_value() == "_Pragma")
             {
@@ -1790,6 +1812,7 @@ on_exit::pop_front<definition_container_type> pop_front_token(pending);
     return act_token = pending.front();
 }
 
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
 ///////////////////////////////////////////////////////////////////////////////
 //
 //  resolve_has_include(): resolve the operator __has_include() and replace
@@ -1850,6 +1873,7 @@ macromap<ContextT>::resolve_has_include(IteratorT &first,
 
     return act_token = pending.front();
 }
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //

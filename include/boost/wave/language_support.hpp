@@ -41,13 +41,23 @@ enum language_support {
     support_cpp0x = support_option_variadics | support_option_long_long |
         support_option_no_newline_at_end_of_file | 0x10,
     support_cpp11 = support_cpp0x,
+#if BOOST_WAVE_SUPPORT_CPP1Z != 0
+// support flags for C++17
+    support_option_has_include = 0x10000,
+
+    support_cpp1z = support_option_variadics | support_option_long_long |
+        support_option_no_newline_at_end_of_file | support_option_has_include |
+        0x20000,
+    support_cpp17 = support_cpp1z,
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
 //  support flags for C++20
-    support_option_va_opt = 0x10000,
+    support_option_va_opt = 0x40000,
 
     support_cpp2a = support_option_variadics | support_option_long_long |
-        support_option_no_newline_at_end_of_file | support_option_va_opt | 0x20000,
+        support_option_no_newline_at_end_of_file | support_option_has_include |
+        support_option_va_opt | 0x80000,
     support_cpp20 = support_cpp2a,
+#endif
 #endif
 #endif
 
@@ -241,6 +251,9 @@ BOOST_WAVE_OPTION(insert_whitespace)         // support_option_insert_whitespace
 BOOST_WAVE_OPTION(emit_contnewlines)         // support_option_emit_contnewlines
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
 BOOST_WAVE_OPTION(no_newline_at_end_of_file) // support_no_newline_at_end_of_file
+#endif
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
+BOOST_WAVE_OPTION(has_include)               // support_option_has_include
 #endif
 
 #undef BOOST_WAVE_NEED_OPTION

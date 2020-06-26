@@ -102,6 +102,22 @@
 #define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
 #endif
 
+///////////////////////////////////////////////////////////////////////////////
+//  Decide whether to support C++17
+//
+#if !defined(BOOST_WAVE_SUPPORT_CPP1Z)
+#  define BOOST_WAVE_SUPPORT_CPP1Z 1
+#  undef BOOST_WAVE_SUPPORT_CPP0X
+#  define BOOST_WAVE_SUPPORT_CPP0X 1
+#  undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
+#  define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
+#  if !defined(BOOST_WAVE_SUPPORT_HAS_INCLUDE)
+#    define BOOST_WAVE_SUPPORT_HAS_INCLUDE 1
+#  endif
+#elif BOOST_WAVE_SUPPORT_CPP1Z == 0
+#  undef BOOST_WAVE_SUPPORT_HAS_INCLUDE
+#  define BOOST_WAVE_SUPPORT_HAS_INCLUDE 0
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Decide whether to support C++20
@@ -112,8 +128,12 @@
 #  define BOOST_WAVE_SUPPORT_CPP0X 1
 #  undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
 #  define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
+#  undef BOOST_WAVE_SUPPORT_CPP1Z
+#  define BOOST_WAVE_SUPPORT_CPP1Z 1
+#  if !defined(BOOST_WAVE_SUPPORT_HAS_INCLUDE)
+#    define BOOST_WAVE_SUPPORT_HAS_INCLUDE 1
+#  endif
 #  if !defined(BOOST_WAVE_SUPPORT_VA_OPT)
-#    undef BOOST_WAVE_SUPPORT_VA_OPT
 #    define BOOST_WAVE_SUPPORT_VA_OPT 1
 #  endif
 #elif BOOST_WAVE_SUPPORT_CPP2A == 0

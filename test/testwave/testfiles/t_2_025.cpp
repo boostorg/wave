@@ -7,7 +7,7 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-//O --c++20
+//O --c++17
 //O -Werror
 
 // Test __has_include() with computed includes

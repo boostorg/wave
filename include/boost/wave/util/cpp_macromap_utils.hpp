@@ -18,6 +18,7 @@
 #include <boost/wave/wave_config.hpp>
 #include <boost/wave/token_ids.hpp>
 #include <boost/wave/util/unput_queue_iterator.hpp>
+#include <boost/wave/language_support.hpp>
 
 // this must occur after all of the includes and before any code appears
 #ifdef BOOST_HAS_ABI_HEADERS
@@ -135,15 +136,21 @@ namespace impl {
 //  Test, whether a given identifier resolves to a predefined name
 //
 ///////////////////////////////////////////////////////////////////////////////
-template <typename StringT>
+template <typename ContextT, typename StringT>
 inline bool
-is_special_macroname (StringT const &name)
+is_special_macroname (ContextT const & ctx, StringT const &name)
 {
     if (name.size() < 7)
         return false;
 
-    if (("defined" == name) || ("__has_include" == name))
+    if ("defined" == name)
         return true;
+
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
+    if (boost::wave::need_has_include(ctx.get_language()) &&
+        ("__has_include" == name))
+        return true;
+#endif
 
     if ('_' == name[0] && '_' == name[1]) {
     StringT str = name.substr(2);
