@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
     fs::recursive_directory_iterator dir_beg(dirname);
     for (fs::recursive_directory_iterator it = dir_beg; it != dir_end; ++it) {
         if (it->status().type() == fs::regular_file) {
-            std::string fn = it->path().native();
+            std::string fn = it->path().string();
             if (regex_match(fn, header_regex))
                 process_header(fn, macro_regex);
         }
