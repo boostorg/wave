@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(COLLECT_TOKEN_STATISTICS_VERSION_HPP)
-#define COLLECT_TOKEN_STATISTICS_VERSION_HPP
+#if !defined(BOOST_COLLECT_TOKEN_STATISTICS_VERSION_HPP)
+#define BOOST_COLLECT_TOKEN_STATISTICS_VERSION_HPP
 
 #include <algorithm>
 #include <map>
@@ -69,4 +69,4 @@ private:
     int token_count[count];
 };
 
-#endif // !defined(COLLECT_TOKEN_STATISTICS_VERSION_HPP)
+#endif // !defined(BOOST_COLLECT_TOKEN_STATISTICS_VERSION_HPP)

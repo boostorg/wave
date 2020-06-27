@@ -7,8 +7,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(STOP_WATCH_HPP_HK040911_INCLUDED)
-#define STOP_WATCH_HPP_HK040911_INCLUDED
+#if !defined(BOOST_STOP_WATCH_HPP_HK040911_INCLUDED)
+#define BOOST_STOP_WATCH_HPP_HK040911_INCLUDED
 
 #include <boost/config.hpp>
 #include <boost/timer/timer.hpp>
@@ -50,4 +50,4 @@ public:
     
 };
 
-#endif // !defined(STOP_WATCH_HPP_HK040911_INCLUDED)
+#endif // !defined(BOOST_STOP_WATCH_HPP_HK040911_INCLUDED)

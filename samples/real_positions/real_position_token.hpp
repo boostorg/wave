@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(REAL_POSITION_TOKEN_HPP_HK_061109_INCLUDED)
-#define REAL_POSITION_TOKEN_HPP_HK_061109_INCLUDED
+#if !defined(BOOST_REAL_POSITION_TOKEN_HPP_HK_061109_INCLUDED)
+#define BOOST_REAL_POSITION_TOKEN_HPP_HK_061109_INCLUDED
 
 #include <boost/wave/wave_config.hpp>
 #include <boost/wave/util/file_position.hpp>
@@ -215,4 +215,4 @@ token_is_valid(lex_token<Position> const& t)
     return t.is_valid();
 }
 
-#endif // !defined(REAL_POSITION_TOKEN_HPP_HK_061109_INCLUDED)
+#endif // !defined(BOOST_REAL_POSITION_TOKEN_HPP_HK_061109_INCLUDED)

@@ -10,8 +10,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(TOKEN_IDS_HPP_414E9A58_F079_4789_8AFF_513815CE475B_INCLUDED)
-#define TOKEN_IDS_HPP_414E9A58_F079_4789_8AFF_513815CE475B_INCLUDED
+#if !defined(BOOST_TOKEN_IDS_HPP_414E9A58_F079_4789_8AFF_513815CE475B_INCLUDED)
+#define BOOST_TOKEN_IDS_HPP_414E9A58_F079_4789_8AFF_513815CE475B_INCLUDED
 
 #include <string>
 
@@ -378,5 +378,5 @@ char const *get_token_value(token_id tokid);
 #include BOOST_ABI_SUFFIX
 #endif
 
-#endif // !defined(TOKEN_IDS_HPP_414E9A58_F079_4789_8AFF_513815CE475B_INCLUDED)
+#endif // !defined(BOOST_TOKEN_IDS_HPP_414E9A58_F079_4789_8AFF_513815CE475B_INCLUDED)
 

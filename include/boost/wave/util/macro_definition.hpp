@@ -8,8 +8,8 @@
     LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 
-#if !defined(MACRO_DEFINITION_HPP_D68A639E_2DA5_4E9C_8ACD_CFE6B903831E_INCLUDED)
-#define MACRO_DEFINITION_HPP_D68A639E_2DA5_4E9C_8ACD_CFE6B903831E_INCLUDED
+#if !defined(BOOST_MACRO_DEFINITION_HPP_D68A639E_2DA5_4E9C_8ACD_CFE6B903831E_INCLUDED)
+#define BOOST_MACRO_DEFINITION_HPP_D68A639E_2DA5_4E9C_8ACD_CFE6B903831E_INCLUDED
 
 #include <vector>
 #include <list>
@@ -209,4 +209,4 @@ intrusive_ptr_release(macro_definition<TokenT, ContainerT>* p)
 #include BOOST_ABI_SUFFIX
 #endif
 
-#endif // !defined(MACRO_DEFINITION_HPP_D68A639E_2DA5_4E9C_8ACD_CFE6B903831E_INCLUDED)
+#endif // !defined(BOOST_MACRO_DEFINITION_HPP_D68A639E_2DA5_4E9C_8ACD_CFE6B903831E_INCLUDED)
