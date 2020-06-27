@@ -106,6 +106,7 @@ public:
         macro_insertion_error,
         bad_include_file,
         bad_include_statement,
+        bad_has_include_expression,
         ill_formed_directive,
         error_directive,
         warning_directive,
@@ -198,6 +199,7 @@ public:
         case preprocess_exception::invalid_macroname:
         case preprocess_exception::bad_include_file:
         case preprocess_exception::bad_include_statement:
+        case preprocess_exception::bad_has_include_expression:
         case preprocess_exception::ill_formed_directive:
         case preprocess_exception::error_directive:
         case preprocess_exception::warning_directive:
@@ -252,6 +254,7 @@ public:
             "macro definition failed (out of memory?)", // macro_insertion_error
             "could not find include file",              // bad_include_file
             "ill formed #include directive",            // bad_include_statement
+            "ill formed __has_include expression",      // bad_has_include_expression
             "ill formed preprocessor directive",        // ill_formed_directive
             "encountered #error directive or #pragma wave stop()", // error_directive
             "encountered #warning directive",           // warning_directive
@@ -321,6 +324,7 @@ public:
             util::severity_fatal,              // macro_insertion_error
             util::severity_error,              // bad_include_file
             util::severity_error,              // bad_include_statement
+            util::severity_error,              // bad_has_include_expression
             util::severity_error,              // ill_formed_directive
             util::severity_fatal,              // error_directive
             util::severity_warning,            // warning_directive

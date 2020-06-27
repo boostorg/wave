@@ -102,6 +102,22 @@
 #define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
 #endif
 
+///////////////////////////////////////////////////////////////////////////////
+//  Decide whether to support C++17
+//
+#if !defined(BOOST_WAVE_SUPPORT_CPP1Z)
+#  define BOOST_WAVE_SUPPORT_CPP1Z 1
+#  undef BOOST_WAVE_SUPPORT_CPP0X
+#  define BOOST_WAVE_SUPPORT_CPP0X 1
+#  undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
+#  define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
+#  if !defined(BOOST_WAVE_SUPPORT_HAS_INCLUDE)
+#    define BOOST_WAVE_SUPPORT_HAS_INCLUDE 1
+#  endif
+#elif BOOST_WAVE_SUPPORT_CPP1Z == 0
+#  undef BOOST_WAVE_SUPPORT_HAS_INCLUDE
+#  define BOOST_WAVE_SUPPORT_HAS_INCLUDE 0
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Decide whether to support C++20
@@ -112,8 +128,12 @@
 #  define BOOST_WAVE_SUPPORT_CPP0X 1
 #  undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
 #  define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
+#  undef BOOST_WAVE_SUPPORT_CPP1Z
+#  define BOOST_WAVE_SUPPORT_CPP1Z 1
+#  if !defined(BOOST_WAVE_SUPPORT_HAS_INCLUDE)
+#    define BOOST_WAVE_SUPPORT_HAS_INCLUDE 1
+#  endif
 #  if !defined(BOOST_WAVE_SUPPORT_VA_OPT)
-#    undef BOOST_WAVE_SUPPORT_VA_OPT
 #    define BOOST_WAVE_SUPPORT_VA_OPT 1
 #  endif
 #elif BOOST_WAVE_SUPPORT_CPP2A == 0
@@ -287,6 +307,7 @@
 #define BOOST_SPIRIT_DEBUG_FLAGS_CHLIT_GRAMMAR          0x0010
 #define BOOST_SPIRIT_DEBUG_FLAGS_DEFINED_GRAMMAR        0x0020
 #define BOOST_SPIRIT_DEBUG_FLAGS_PREDEF_MACROS_GRAMMAR  0x0040
+#define BOOST_SPIRIT_DEBUG_FLAGS_HAS_INCLUDE_GRAMMAR    0x0080
 
 #if !defined(BOOST_SPIRIT_DEBUG_FLAGS_CPP)
 #define BOOST_SPIRIT_DEBUG_FLAGS_CPP    0    // default is no debugging

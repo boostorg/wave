@@ -14,6 +14,7 @@ exe real_positions
         ../instantiate_cpp_grammar.cpp
         ../instantiate_cpp_literalgrs.cpp
         ../instantiate_defined_grammar.cpp
+        ../instantiate_has_include_grammar.cpp
         ../instantiate_re2c_lexer.cpp
         ../instantiate_re2c_lexer_str.cpp 
         /boost/wave//boost_wave
