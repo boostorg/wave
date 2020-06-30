@@ -14,6 +14,7 @@
 #define BOOST_WAVE_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED
 
 #include <boost/config.hpp>
+#include <boost/config/pragma_message.hpp>
 #include <boost/detail/workaround.hpp>
 #include <boost/version.hpp>
 #include <boost/spirit/include/classic_version.hpp>
@@ -516,6 +517,16 @@ namespace boost { namespace wave
 #endif  // BOOST_VERSION
 
 ///////////////////////////////////////////////////////////////////////////////
+//  Deprecate C++03
+///////////////////////////////////////////////////////////////////////////////
+
+#if defined(BOOST_NO_CXX11_VARIADIC_TEMPLATES) || defined(BOOST_NO_CXX11_RVALUE_REFERENCES) || defined(BOOST_NO_CXX11_HDR_MEMORY)
+
+BOOST_PRAGMA_MESSAGE("C++03 support is deprecated in Boost.Wave 1.74 and will be removed in Boost.Wave 1.77.")
+
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
 //  Compatibility macros
 //  (ensure interface compatibility to older Wave versions)
 ///////////////////////////////////////////////////////////////////////////////
@@ -535,6 +546,8 @@ namespace boost { namespace wave
 #else
 #define BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS 0
 #endif
+#elif BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
+BOOST_PRAGMA_MESSAGE("The old preprocessing hooks were deprecated in Boost 1.35 and will be removed in 1.76. See https://www.boost.org/doc/libs/1_74_0/libs/wave/doc/class_ref_ctxpolicy_depr.html for details")
 #endif
 
 #endif // !defined(BOOST_WAVE_CONFIG_HPP_F143F90A_A63F_4B27_AC41_9CA4F14F538D_INCLUDED)
