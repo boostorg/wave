@@ -24,6 +24,7 @@ Boost V1.74:
   - Repaired two samples and added a new one for macro naming enforcement
   - Implemented C++20 changes for variadic macros, including __VA_OPT__()
   - Added C++17 feature __has_include()
+  - Deprecate C++98 and C++03. Support will end with 1.77.
 
 Boost V1.73:
   - Fixed TRAC #7822: waveidl sample does not use the IDL lexer
