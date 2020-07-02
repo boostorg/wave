@@ -318,6 +318,7 @@ public:
 protected:
     friend class boost::wave::pp_iterator<context>;
     friend class boost::wave::impl::pp_iterator_functor<context>;
+    friend class boost::wave::util::macromap<context>;
 #endif
 
 // make sure the context has been initialized
@@ -371,25 +372,28 @@ protected:
 //      and '#' pp operators and re-scans the resulting sequence
 //      (essentially pre-processes the token sequence).
 //
-//      The expand_undefined parameter is true during macro expansion inside
+//      The expand_defined parameter is true during macro expansion inside
 //      a C++ expression given for a #if or #elif statement.
 //
 ///////////////////////////////////////////////////////////////////////////////
     template <typename IteratorT2>
     token_type expand_tokensequence(IteratorT2 &first_, IteratorT2 const &last_,
         token_sequence_type &pending, token_sequence_type &expanded,
-        bool& seen_newline, bool expand_undefined = false)
+        bool& seen_newline, bool expand_defined = false,
+        bool expand_has_include = false)
     {
         return macros.expand_tokensequence(first_, last_, pending, expanded,
-            seen_newline, expand_undefined);
+            seen_newline, expand_defined, expand_has_include);
     }
 
     template <typename IteratorT2>
     void expand_whole_tokensequence(IteratorT2 &first_, IteratorT2 const &last_,
-        token_sequence_type &expanded, bool expand_undefined = true)
+        token_sequence_type &expanded, bool expand_defined = true,
+        bool expand_has_include = true)
     {
-        macros.expand_whole_tokensequence(expanded, first_, last_,
-            expand_undefined);
+        macros.expand_whole_tokensequence(
+            expanded, first_, last_,
+            expand_defined, expand_has_include);
 
     // remove any contained placeholder
         boost::wave::util::impl::remove_placeholders(expanded);

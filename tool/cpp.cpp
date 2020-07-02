@@ -80,6 +80,7 @@ typedef boost::archive::text_oarchive oarchive;
 #include <boost/wave/grammars/cpp_expression_grammar.hpp>
 #include <boost/wave/grammars/cpp_predef_macros_grammar.hpp>
 #include <boost/wave/grammars/cpp_defined_grammar.hpp>
+#include <boost/wave/grammars/cpp_has_include_grammar.hpp>
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -899,12 +900,39 @@ const bool treat_warnings_as_error = vm.count("warning") &&
         }
 #endif // BOOST_WAVE_SUPPORT_CPP0X != 0
 
+#if BOOST_WAVE_SUPPORT_CPP1Z != 0
+        if (vm.count("c++17")) {
+            ctx.set_language(
+                boost::wave::language_support(
+                    boost::wave::support_cpp1z
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
+                    |  boost::wave::support_option_has_include
+#endif
+                    |  boost::wave::support_option_convert_trigraphs
+                    |  boost::wave::support_option_long_long
+                    |  boost::wave::support_option_emit_line_directives
+#if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
+                    |  boost::wave::support_option_include_guard_detection
+#endif
+#if BOOST_WAVE_EMIT_PRAGMA_DIRECTIVES != 0
+                    |  boost::wave::support_option_emit_pragma_directives
+#endif
+                    |  boost::wave::support_option_insert_whitespace
+                    ));
+        }
+#endif // BOOST_WAVE_SUPPORT_CPP1Z
+
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
         if (vm.count("c++20")) {
             ctx.set_language(
                 boost::wave::language_support(
                     boost::wave::support_cpp2a
+#if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
+                 |  boost::wave::support_option_has_include
+#endif
+#if BOOST_WAVE_SUPPORT_VA_OPT != 0
                  |  boost::wave::support_option_va_opt
+#endif
                  |  boost::wave::support_option_convert_trigraphs
                  |  boost::wave::support_option_long_long
                  |  boost::wave::support_option_emit_line_directives
@@ -1351,6 +1379,9 @@ main (int argc, char *argv[])
 #endif
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
             ("c++11", "enable C++11 mode (implies --variadics and --long_long)")
+#endif
+#if BOOST_WAVE_SUPPORT_CPP1Z != 0
+        ("c++17", "enable C++17 mode (implies --variadics and --long_long, adds __has_include)")
 #endif
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
             ("c++20", "enable C++20 mode (implies --variadics and --long_long, adds __VA_OPT__)")

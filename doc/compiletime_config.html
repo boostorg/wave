@@ -89,9 +89,14 @@
     <td class="table_cells"><p>If defined, then the preprocessor library supports 
         C++0x keywords and C++0x specific features, such as variadics, placemarkers, extended character and string literals. This implies the definitions of the <code>BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS</code> constant.</p></td>
   </tr>  <tr>
+    <td class="table_cells"><code>BOOST_WAVE_SUPPORT_CPP1Z</code></td>
+    <td class="table_cells"><p>If defined, then the preprocessor library supports
+        C++17 keywords - currently just <code>__has_include</code>. It implies <code>BOOST_WAVE_SUPPORT_CPP0X</code>.</p></td>
+  </tr>
+  </tr>  <tr>
     <td class="table_cells"><code>BOOST_WAVE_SUPPORT_CPP2A</code></td>
     <td class="table_cells"><p>If defined, then the preprocessor library supports
-        C++2A keywords, specifically __VA_OPT__. It implies BOOST_WAVE_SUPPORT_CPP0X.</p></td>
+        C++20 keywords, specifically <code>__VA_OPT__</code>. It implies <code>BOOST_WAVE_SUPPORT_CPP1Z</code>.</p></td>
   </tr>
   </tr>  <tr> 
     <td class="table_cells"><code>BOOST_WAVE_MAX_INCLUDE_LEVEL_DEPTH</code></td>
@@ -239,6 +244,8 @@ even if these do not have the <span class="literal">'ll'</span> suffix.</p>
   where the <span class="string">'...somthing'</span> is a hint, which grammars 
   are explicitly instantiated inside. By using the separation model the compilation
   times required to build the <tt>Wave</tt> example are dropped by up to 90%.</p>
+<P dir="ltr"><b><a name="compiler_requirements"></a>Compiler Requirements</b></P>
+<p>Beginning with version 1.77, Wave will require building with C++11 features, and will no longer support the use of older compilers. However, Wave will continue to <em>emulate</em> the features of older preprocessors indefinitely.<p>
 <table border="0">
   <tr> 
     <td width="10"></td>

@@ -14,6 +14,7 @@ SOURCES =
         ../instantiate_cpp_grammar 
         ../instantiate_cpp_literalgrs
         ../instantiate_defined_grammar
+        ../instantiate_has_include_grammar
         ../instantiate_lexertl_lexer 
     ;
 
