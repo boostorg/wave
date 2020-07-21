@@ -20,6 +20,7 @@
 #include <boost/wave/token_ids.hpp>  
 #include <boost/wave/language_support.hpp>
 #include <boost/wave/util/file_position.hpp>
+#include <boost/optional.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace boost {
@@ -61,12 +62,19 @@ public:
     operator token_id() const { return id; }
     string_type const &get_value() const { return value; }
     position_type const &get_position() const { return pos; }
+    position_type const &get_expand_position() const {
+        if (expand_pos)
+            return *expand_pos;
+        else
+            return pos;
+    }
     bool is_eoi() const { return id == T_EOI; }
     bool is_valid() const { return id != T_UNKNOWN; }
 
     void set_token_id (token_id id_) { id = id_; }
     void set_value (string_type const &newval) { value = newval; }
     void set_position (position_type const &pos_) { pos = pos_; }
+    void set_expand_position (position_type const &pos_) { expand_pos = pos_; }
 
     friend bool operator== (slex_token const& lhs, slex_token const& rhs)
     {
@@ -115,6 +123,7 @@ private:
     boost::wave::token_id id;   // the token id
     string_type value;             // the text, which was parsed into this token
     PositionT pos;              // the original file position
+    boost::optional<PositionT> expand_pos;
 };
 
 template <typename PositionT>
