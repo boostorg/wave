@@ -56,7 +56,7 @@ main(int argc, char *argv[])
         token_type::string_type instr(data->token);
 
         lexer_type it = lexer_type(instr.begin(), instr.end(), pos, 
-            boost::wave::support_option_long_long);
+            boost::wave::support_cpp0x);
         lexer_type end = lexer_type();
 
         // verify the correct outcome of the tokenization

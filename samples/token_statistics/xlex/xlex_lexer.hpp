@@ -104,6 +104,7 @@ private:
     
     static lexer_data const init_data[];        // common patterns
     static lexer_data const init_data_cpp[];    // C++ only patterns
+    static lexer_data const init_data_cpp0x[];  // C++11 only patterns
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
     boost::wave::cpplexer::include_guards<token_type> guards;
@@ -154,6 +155,7 @@ private:
 #endif
 #define FLOAT_SUFFIX        "(" "[fF][lL]?|[lL][fF]?" ")"
 #define CHAR_SPEC           "L?"
+#define EXTCHAR_SPEC        "(" "[uU]" OR "u8" ")"
 
 #define BACKSLASH           "(" Q("\\") OR TRI(Q("/")) ")"
 #define ESCAPESEQ           BACKSLASH "(" \
@@ -398,6 +400,37 @@ lexer<Iterator, Position>::init_data_cpp[] =
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+// C++11 only token definitions
+#define T_EXTCHARLIT      token_id(T_CHARLIT|AltTokenType)
+#define T_EXTSTRINGLIT    token_id(T_STRINGLIT|AltTokenType)
+#define T_EXTRAWSTRINGLIT token_id(T_RAWSTRINGLIT|AltTokenType)
+
+template <typename Iterator, typename Position>
+typename lexer<Iterator, Position>::lexer_data const
+lexer<Iterator, Position>::init_data_cpp0x[] =
+{
+    TOKEN_DATA(T_EXTCHARLIT, EXTCHAR_SPEC "'"
+                "(" ESCAPESEQ OR UNIVERSALCHAR OR "[^\\n\\r\\\\']" ")+" "'"),
+    TOKEN_DATA(T_EXTSTRINGLIT, EXTCHAR_SPEC Q("\"")
+                "(" ESCAPESEQ OR UNIVERSALCHAR OR "[^\\n\\r\\\\\"]" ")*" Q("\"")),
+    TOKEN_DATA(T_RAWSTRINGLIT, CHAR_SPEC "R" Q("\"")
+                "(" ESCAPESEQ OR UNIVERSALCHAR OR "[^\\\\\"]" ")*" Q("\"")),
+    TOKEN_DATA(T_EXTRAWSTRINGLIT, EXTCHAR_SPEC "R" Q("\"")
+                "(" ESCAPESEQ OR UNIVERSALCHAR OR "[^\\\\\"]" ")*" Q("\"")),
+    TOKEN_DATA(T_ALIGNAS, "alignas"),
+    TOKEN_DATA(T_ALIGNOF, "alignof"),
+    TOKEN_DATA(T_CHAR16_T, "char16_t"),
+    TOKEN_DATA(T_CHAR32_T, "char32_t"),
+    TOKEN_DATA(T_CONSTEXPR, "constexpr"),
+    TOKEN_DATA(T_DECLTYPE, "decltype"),
+    TOKEN_DATA(T_NOEXCEPT, "noexcept"),
+    TOKEN_DATA(T_NULLPTR, "nullptr"),
+    TOKEN_DATA(T_STATICASSERT, "static_assert"),
+    TOKEN_DATA(T_THREADLOCAL, "thread_local"),
+    { token_id(0) }       // this should be the last entry
+};
+
+///////////////////////////////////////////////////////////////////////////////
 //  undefine macros, required for regular expression definitions
 #undef INCLUDEDEF
 #undef POUNDDEF
@@ -413,6 +446,7 @@ lexer<Iterator, Position>::init_data_cpp[] =
 #undef INTEGER
 #undef FLOAT_SUFFIX
 #undef CHAR_SPEC
+#undef EXTCHAR_SPEC
 #undef BACKSLASH    
 #undef ESCAPESEQ    
 #undef HEXQUAD      
@@ -425,6 +459,9 @@ lexer<Iterator, Position>::init_data_cpp[] =
 #undef TOKEN_DATA
 #undef TOKEN_DATA_EX
 
+#undef T_EXTCHARLIT
+#undef T_EXTSTRINGLIT
+#undef T_EXTRAWSTRINGLIT
 ///////////////////////////////////////////////////////////////////////////////
 // initialize cpp lexer 
 template <typename Iterator, typename Position>
@@ -443,6 +480,15 @@ lexer<Iterator, Position>::lexer(Iterator const &first,
                 init_data_cpp[j].tokenid, init_data_cpp[j].tokencb);
         }
     }
+
+#if BOOST_WAVE_SUPPORT_CPP0X != 0
+    if (boost::wave::need_cpp0x(language)) {
+        for (int j = 0; 0 != init_data_cpp0x[j].tokenid; ++j) {
+            xlexer.register_regex(init_data_cpp0x[j].tokenregex,
+                init_data_cpp0x[j].tokenid, init_data_cpp[j].tokencb);
+        }
+    }
+#endif
 
 // tokens valid for C++ and C99    
     for (int i = 0; 0 != init_data[i].tokenid; ++i) {
