@@ -459,7 +459,7 @@ lexer<IteratorT, PositionT>::init_data_cpp0x[INIT_DATA_CPP0X_SIZE] =
     TOKEN_DATA(NOEXCEPT, "noexcept"),
     TOKEN_DATA(NULLPTR, "nullptr"),
     TOKEN_DATA(STATICASSERT, "static_assert"),
-    TOKEN_DATA(THREADLOCAL, "threadlocal"),
+    TOKEN_DATA(THREADLOCAL, "thread_local"),
     { token_id(0) }       // this should be the last entry
 };
 

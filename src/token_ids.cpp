@@ -422,7 +422,7 @@ static char const *tok_values[] = {
     /* 428 */   "noexcept",
     /* 429 */   "nullptr",
     /* 430 */   "static_assert",
-    /* 431 */   "threadlocal",
+    /* 431 */   "thread_local",
     /* 432 */   "",   // extrawstringlit
     };
 
