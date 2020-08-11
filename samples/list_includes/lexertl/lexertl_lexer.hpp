@@ -58,6 +58,7 @@ namespace boost { namespace wave { namespace cpplexer { namespace lexertl
 #define INIT_DATA_CPP_SIZE          15
 #define INIT_DATA_PP_NUMBER_SIZE    2
 #define INIT_DATA_CPP0X_SIZE        15
+#define INIT_DATA_CPP2A_SIZE        9
 #define INIT_MACRO_DATA_SIZE        28
 #endif // #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
 
@@ -119,6 +120,7 @@ private:
     static lexer_data const init_data_cpp[INIT_DATA_CPP_SIZE];      // C++ only patterns
     static lexer_data const init_data_pp_number[INIT_DATA_PP_NUMBER_SIZE];  // pp-number only patterns
     static lexer_data const init_data_cpp0x[INIT_DATA_CPP0X_SIZE];  // C++0X only patterns
+    static lexer_data const init_data_cpp2a[INIT_DATA_CPP2A_SIZE];  // C++2A only patterns
 
 // helper for calculation of the time of last compilation
     static boost::wave::util::time_conversion_helper compilation_time;
@@ -447,6 +449,23 @@ lexertl<Iterator, Position>::init_data_cpp0x[INIT_DATA_CPP0X_SIZE] =
     { token_id(0) }       // this should be the last entry
 };
 
+// C++20 specific token definitions
+
+template <typename Iterator, typename Position>
+typename lexertl<Iterator, Position>::lexer_data const
+lexertl<Iterator, Position>::init_data_cpp2a[INIT_DATA_CPP2A_SIZE] =
+{
+    TOKEN_DATA(T_CHAR8_T, "char8_t"),
+    TOKEN_DATA(T_CONCEPT, "concept"),
+    TOKEN_DATA(T_CONSTEVAL, "consteval"),
+    TOKEN_DATA(T_CONSTINIT, "constinit"),
+    TOKEN_DATA(T_CO_AWAIT, "co_await"),
+    TOKEN_DATA(T_CO_RETURN, "co_return"),
+    TOKEN_DATA(T_CO_YIELD, "co_yield"),
+    TOKEN_DATA(T_REQUIRES, "requires"),
+    { token_id(0) }       // this should be the last entry
+};
+
 #undef MACRO_DATA
 #undef TOKEN_DATA
 #undef OR
@@ -493,12 +512,22 @@ std::ifstream dfa_in("wave_lexertl_lexer.dfa", std::ios::in|std::ios::binary);
             }
         }
 
-    // if in C++0x mode, add all new keywords
+    // if in C++0x mode, add appropriate keywords
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
-        if (wave::need_cpp0x(lang)) {
+        if (wave::need_cpp0x(lang) || wave::need_cpp2a(lang)) {
             for (int j = 0; 0 != init_data_cpp0x[j].tokenid; ++j) {
                 rules.add(init_data_cpp0x[j].tokenregex,
                           init_data_cpp0x[j].tokenid);
+        }
+    }
+#endif
+
+    // if in C++2a mode, add those keywords
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+        if (wave::need_cpp2a(lang)) {
+            for (int j = 0; 0 != init_data_cpp2a[j].tokenid; ++j) {
+                rules.add(init_data_cpp2a[j].tokenregex,
+                          init_data_cpp2a[j].tokenid);
         }
     }
 #endif

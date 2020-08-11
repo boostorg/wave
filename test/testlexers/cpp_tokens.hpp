@@ -210,6 +210,16 @@ lexem const lexems[] =
     { "nullptr", boost::wave::T_NULLPTR },
     { "thread_local", boost::wave::T_THREADLOCAL },
 #endif // BOOST_WAVE_SUPPORT_CPP0X != 0
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+    { "char8_t", boost::wave::T_CHAR8_T },
+    { "concept", boost::wave::T_CONCEPT },
+    { "consteval", boost::wave::T_CONSTEVAL },
+    { "constinit", boost::wave::T_CONSTINIT },
+    { "co_await", boost::wave::T_CO_AWAIT },
+    { "co_return", boost::wave::T_CO_RETURN },
+    { "co_yield", boost::wave::T_CO_YIELD },
+    { "requires", boost::wave::T_REQUIRES },
+#endif
     { "#define", boost::wave::T_PP_DEFINE },
     { "#ifdef", boost::wave::T_PP_IFDEF },
     { "#ifndef", boost::wave::T_PP_IFNDEF },

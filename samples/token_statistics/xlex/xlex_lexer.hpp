@@ -105,6 +105,7 @@ private:
     static lexer_data const init_data[];        // common patterns
     static lexer_data const init_data_cpp[];    // C++ only patterns
     static lexer_data const init_data_cpp0x[];  // C++11 only patterns
+    static lexer_data const init_data_cpp2a[];  // C++20 only patterns
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
     boost::wave::cpplexer::include_guards<token_type> guards;
@@ -431,6 +432,24 @@ lexer<Iterator, Position>::init_data_cpp0x[] =
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+// C++11 only token definitions
+
+template <typename Iterator, typename Position>
+typename lexer<Iterator, Position>::lexer_data const
+lexer<Iterator, Position>::init_data_cpp2a[] =
+{
+    TOKEN_DATA(T_CHAR8_T, "char8_t"),
+    TOKEN_DATA(T_CONCEPT, "concept"),
+    TOKEN_DATA(T_CONSTEVAL, "consteval"),
+    TOKEN_DATA(T_CONSTINIT, "constinit"),
+    TOKEN_DATA(T_CO_AWAIT, "co_await"),
+    TOKEN_DATA(T_CO_RETURN, "co_return"),
+    TOKEN_DATA(T_CO_YIELD, "co_yield"),
+    TOKEN_DATA(T_REQUIRES, "requires"),
+    { token_id(0) }       // this should be the last entry
+};
+
+///////////////////////////////////////////////////////////////////////////////
 //  undefine macros, required for regular expression definitions
 #undef INCLUDEDEF
 #undef POUNDDEF
@@ -482,10 +501,19 @@ lexer<Iterator, Position>::lexer(Iterator const &first,
     }
 
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
-    if (boost::wave::need_cpp0x(language)) {
+    if (boost::wave::need_cpp0x(language) || boost::wave::need_cpp2a(language)) {
         for (int j = 0; 0 != init_data_cpp0x[j].tokenid; ++j) {
             xlexer.register_regex(init_data_cpp0x[j].tokenregex,
                 init_data_cpp0x[j].tokenid, init_data_cpp[j].tokencb);
+        }
+    }
+#endif
+
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+    if (boost::wave::need_cpp2a(language) || boost::wave::need_cpp2a(language)) {
+        for (int j = 0; 0 != init_data_cpp2a[j].tokenid; ++j) {
+            xlexer.register_regex(init_data_cpp2a[j].tokenregex,
+                init_data_cpp2a[j].tokenid, init_data_cpp[j].tokencb);
         }
     }
 #endif
