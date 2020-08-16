@@ -18,6 +18,7 @@
 #include <boost/wave/token_ids.hpp>  
 #include <boost/wave/language_support.hpp>
 #include <boost/detail/atomic_count.hpp>
+#include <boost/optional.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 namespace impl {
@@ -61,6 +62,13 @@ public:
     position_type const &get_position() const { return pos; }
     position_type const &get_corrected_position() const 
         { return corrected_pos; }
+    position_type const &get_expand_position() const
+    {
+        if (expand_pos)
+            return *expand_pos;
+        else
+            return pos;
+    }
     bool is_eoi() const
     {
         return id == boost::wave::T_EOI;
@@ -71,6 +79,8 @@ public:
     void set_position (position_type const &pos_) { pos = pos_; }
     void set_corrected_position (position_type const &pos_) 
         { corrected_pos = pos_; }
+    void set_expand_position (position_type const & pos_)
+        { expand_pos = pos_; }
 
     friend bool operator== (token_data const& lhs, token_data const& rhs)
     {
@@ -84,6 +94,7 @@ private:
     string_type value;            // the text, which was parsed into this token
     position_type pos;            // the original file position
     position_type corrected_pos;  // the original file position
+    boost::optional<position_type> expand_pos;  // where this token was expanded
     boost::detail::atomic_count refcnt;
 };
 
@@ -157,6 +168,8 @@ public:
         { return data->get_position(); }
     position_type const &get_corrected_position() const 
         { return data->get_corrected_position(); }
+    position_type const &get_expand_position() const
+        { return data->get_expand_position(); }
     bool is_valid() const
     {
         using namespace boost::wave;
@@ -171,6 +184,8 @@ public:
         { make_unique(); data->set_position(pos_); }
     void set_corrected_position (position_type const &pos_) 
         { make_unique(); data->set_corrected_position(pos_); }
+    void set_expand_position (position_type const &pos_)
+        { make_unique(); data->set_expand_position(pos_); }
 
     friend bool operator== (lex_token const& lhs, lex_token const& rhs)
     {
