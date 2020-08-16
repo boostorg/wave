@@ -153,6 +153,14 @@ lexer<IteratorT, PositionT, TokenT>::lexer(IteratorT const &first,
 #else
     scanner.act_in_cpp0x_mode = false;
 #endif
+
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+    scanner.act_in_cpp2a_mode = boost::wave::need_cpp2a(language_);
+    scanner.act_in_cpp0x_mode = boost::wave::need_cpp2a(language_)
+        || boost::wave::need_cpp0x(language_);
+#else
+    scanner.act_in_cpp2a_mode = false;
+#endif
 }
 
 template <typename IteratorT, typename PositionT, typename TokenT>
