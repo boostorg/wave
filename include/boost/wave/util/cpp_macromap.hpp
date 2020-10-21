@@ -33,6 +33,7 @@
 
 #include <boost/filesystem/path.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/optional.hpp>
 
 #include <boost/wave/util/time_conversion_helper.hpp>
 #include <boost/wave/util/unput_queue_iterator.hpp>
@@ -175,7 +176,8 @@ protected:
         unput_queue_iterator<IteratorT, token_type, ContainerT> &first,
         unput_queue_iterator<IteratorT, token_type, ContainerT> const &last,
         bool& seen_newline, bool expand_operator_defined,
-        bool expand_operator_has_include);
+        bool expand_operator_has_include,
+        boost::optional<position_type> expanding_pos);
 
 //  Collect all arguments supplied to a macro invocation
 #if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
@@ -199,6 +201,7 @@ protected:
         IteratorT &first, IteratorT const &last,
         bool& seen_newline, bool expand_operator_defined,
         bool expand_operator_has_include,
+        boost::optional<position_type> expanding_pos,
         defined_macros_type *scope = 0, ContainerT *queue_symbol = 0);
 
 //  Expand a predefined macro (__LINE__, __FILE__ and __INCLUDE_LEVEL__)
@@ -258,6 +261,10 @@ protected:
         position_type const &pos, ContainerT &rescanned);
 
     static bool is_space(char);
+
+// batch update tokens with a single expand position
+    template <typename ContainerT>
+    static void set_expand_positions(ContainerT &tokens, position_type pos);
 
 #if BOOST_WAVE_SERIALIZATION != 0
 public:
@@ -695,7 +702,8 @@ macromap<ContextT>::expand_tokensequence(IteratorT &first,
 on_exit::assign<IteratorT, iterator_type> on_exit(first, first_it);
 
     return expand_tokensequence_worker(pending, first_it, last_it,
-        seen_newline, expand_operator_defined, expand_operator_has_include);
+        seen_newline, expand_operator_defined, expand_operator_has_include,
+        boost::none);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -718,7 +726,8 @@ macromap<ContextT>::expand_tokensequence_worker(
     unput_queue_iterator<IteratorT, token_type, ContainerT> &first,
     unput_queue_iterator<IteratorT, token_type, ContainerT> const &last,
     bool& seen_newline, bool expand_operator_defined,
-    bool expand_operator_has_include)
+    bool expand_operator_has_include,
+    boost::optional<position_type> expanding_pos)
 {
 // if there exist pending tokens (tokens, which are already preprocessed), then
 // return the next one from there
@@ -791,7 +800,8 @@ macromap<ContextT>::expand_tokensequence_worker(
             // defined as a macro
                 if (expand_macro(pending, name_token, it, first, last,
                                  seen_newline, expand_operator_defined,
-                                 expand_operator_has_include))
+                                 expand_operator_has_include,
+                                 expanding_pos))
                 {
                 // the tokens returned by expand_macro should be rescanned
                 // beginning at the last token of the returned replacement list
@@ -818,10 +828,17 @@ macromap<ContextT>::expand_tokensequence_worker(
                 }
 
             // return the next preprocessed token
-                return expand_tokensequence_worker(
-                    pending, first, last,
-                    seen_newline, expand_operator_defined,
-                    expand_operator_has_include);
+                if (!expanding_pos)
+                    expanding_pos = name_token.get_expand_position();
+
+                typename ContextT::token_type const & result =
+                    expand_tokensequence_worker(
+                        pending, first, last,
+                        seen_newline, expand_operator_defined,
+                        expand_operator_has_include,
+                        expanding_pos);
+
+                return result;
             }
             else {
                 act_token = name_token;
@@ -1032,7 +1049,8 @@ macromap<ContextT>::expand_whole_tokensequence(ContainerT &expanded,
             expand_tokensequence_worker(
                 pending_queue, first_it,
                 last_it, seen_newline, expand_operator_defined,
-                expand_operator_has_include)
+                expand_operator_has_include,
+                boost::none)
         );
     }
 
@@ -1436,6 +1454,7 @@ macromap<ContextT>::expand_macro(ContainerT &expanded,
     IteratorT &first, IteratorT const &last,
     bool& seen_newline, bool expand_operator_defined,
     bool expand_operator_has_include,
+    boost::optional<position_type> expanding_pos,
     defined_macros_type *scope, ContainerT *queue_symbol)
 {
     using namespace boost::wave;
@@ -1589,6 +1608,10 @@ ContainerT replacement_list;
                 arguments, expand_operator_defined,
                 expand_operator_has_include,
                 replacement_list);
+
+            if (!expanding_pos)
+                expanding_pos = curr_token.get_expand_position();
+            set_expand_positions(replacement_list, *expanding_pos);
         }
         else {
         // defined as an object-like macro
@@ -1683,6 +1706,14 @@ ContainerT expanded_list;
 #else
     ctx.get_hooks().rescanned_macro(ctx.derived(), expanded_list);
 #endif
+
+    if (!expanding_pos)
+        // set the expanding position for rescan
+        expanding_pos = curr_token.get_expand_position();
+
+    // record the location where all the tokens were expanded from
+    set_expand_positions(expanded_list, *expanding_pos);
+
     expanded.splice(expanded.end(), expanded_list);
     return true;        // rescan is required
 }
@@ -1712,7 +1743,7 @@ string_type const &value = curr_token.get_value();
 
 #if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
     ctx.get_hooks().expanding_object_like_macro(
-        deftoken, Container(), curr_token);    // BOZO check params
+        deftoken, Container(), curr_token);
 #else
     if (ctx.get_hooks().expanding_object_like_macro(ctx.derived(),
             deftoken, ContainerT(), curr_token))
@@ -1727,7 +1758,7 @@ string_type const &value = curr_token.get_value();
 
     if (value == "__LINE__") {
     // expand the __LINE__ macro
-        std::string buffer = lexical_cast<std::string>(main_pos.get_line());
+        std::string buffer = lexical_cast<std::string>(curr_token.get_expand_position().get_line());
 
         replacement = token_type(T_INTLIT, buffer.c_str(), curr_token.get_position());
     }
@@ -1736,7 +1767,8 @@ string_type const &value = curr_token.get_value();
         namespace fs = boost::filesystem;
 
     std::string file("\"");
-    fs::path filename(wave::util::create_path(main_pos.get_file().c_str()));
+    fs::path filename(
+        wave::util::create_path(curr_token.get_expand_position().get_file().c_str()));
 
         using boost::wave::util::impl::escape_lit;
         file += escape_lit(wave::util::native_file_string(filename)) + "\"";
@@ -2052,6 +2084,25 @@ macromap<ContextT>::is_valid_concat(string_type new_value,
 
 // test if the newly generated token sequence contains more than 1 token
     return 1 == rescanned.size();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  Bulk update expand positions
+//
+///////////////////////////////////////////////////////////////////////////////
+// batch update tokens with a single expand position
+template <typename ContextT>
+template <typename ContainerT>
+void macromap<ContextT>::set_expand_positions(ContainerT &tokens, position_type pos)
+{
+    typename ContainerT::iterator ex_end = tokens.end();
+    for (typename ContainerT::iterator it = tokens.begin();
+         it != ex_end; ++it) {
+        // expand positions are only used for __LINE__, __FILE__, and macro names
+        if (token_id(*it) == T_IDENTIFIER)
+            it->set_expand_position(pos);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

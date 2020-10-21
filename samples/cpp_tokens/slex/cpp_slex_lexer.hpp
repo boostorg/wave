@@ -58,6 +58,7 @@ namespace lexer {
 #define INIT_DATA_CPP_SIZE          15
 #define INIT_DATA_PP_NUMBER_SIZE    2
 #define INIT_DATA_CPP0X_SIZE        15
+#define INIT_DATA_CPP2A_SIZE        9
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -114,6 +115,7 @@ private:
     static typename base_type::lexer_data const init_data_cpp[INIT_DATA_CPP_SIZE];  // C++ only patterns
     static typename base_type::lexer_data const init_data_pp_number[INIT_DATA_PP_NUMBER_SIZE];  // pp-number only patterns
     static typename base_type::lexer_data const init_data_cpp0x[INIT_DATA_CPP0X_SIZE];  // C++0X only patterns
+    static typename base_type::lexer_data const init_data_cpp2a[INIT_DATA_CPP2A_SIZE];  // C++2A only patterns
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -432,7 +434,7 @@ lexer<IteratorT, PositionT>::init_data_pp_number[INIT_DATA_PP_NUMBER_SIZE] =
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// C++ only token definitions
+// C++11 only token definitions
 
 #define T_EXTCHARLIT      token_id(T_CHARLIT|AltTokenType)
 #define T_EXTSTRINGLIT    token_id(T_STRINGLIT|AltTokenType)
@@ -459,9 +461,29 @@ lexer<IteratorT, PositionT>::init_data_cpp0x[INIT_DATA_CPP0X_SIZE] =
     TOKEN_DATA(NOEXCEPT, "noexcept"),
     TOKEN_DATA(NULLPTR, "nullptr"),
     TOKEN_DATA(STATICASSERT, "static_assert"),
-    TOKEN_DATA(THREADLOCAL, "threadlocal"),
+    TOKEN_DATA(THREADLOCAL, "thread_local"),
     { token_id(0) }       // this should be the last entry
 };
+
+///////////////////////////////////////////////////////////////////////////////
+// C++11 only token definitions
+
+template <typename IteratorT, typename PositionT>
+typename lexer_base<IteratorT, PositionT>::lexer_data const
+lexer<IteratorT, PositionT>::init_data_cpp2a[INIT_DATA_CPP2A_SIZE] =
+{
+    TOKEN_DATA(CHAR8_T, "char8_t"),
+    TOKEN_DATA(CONCEPT, "concept"),
+    TOKEN_DATA(CONSTEVAL, "consteval"),
+    TOKEN_DATA(CONSTINIT, "constinit"),
+    TOKEN_DATA(CO_AWAIT, "co_await"),
+    TOKEN_DATA(CO_RETURN, "co_return"),
+    TOKEN_DATA(CO_YIELD, "co_yield"),
+    TOKEN_DATA(REQUIRES, "requires"),
+
+    { token_id(0) }       // this should be the last entry
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //  undefine macros, required for regular expression definitions
@@ -528,13 +550,25 @@ lexer<IteratorT, PositionT>::init_dfa(boost::wave::language_support lang)
         }
     }
 
-// if in C++0x mode, add all new keywords
+// if in C++0x mode, add appropriate keywords
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
-    if (boost::wave::need_cpp0x(lang)) {
+    if (boost::wave::need_cpp0x(lang) || boost::wave::need_cpp2a(lang)) {
         for (int j = 0; 0 != init_data_cpp0x[j].tokenid; ++j) {
             this->register_regex(init_data_cpp0x[j].tokenregex,
                 init_data_cpp0x[j].tokenid, init_data_cpp0x[j].tokencb,
                 init_data_cpp0x[j].lexerstate);
+        }
+    }
+#endif
+
+    // if in C++2a mode, add those keywords
+#if BOOST_WAVE_SUPPORT_CPP2A != 0
+        if (wave::need_cpp2a(lang)) {
+            for (int j = 0; 0 != init_data_cpp2a[j].tokenid; ++j) {
+                this->register_regex(init_data_cpp2a[j].tokenregex,
+                                     init_data_cpp2a[j].tokenid,
+                                     init_data_cpp2a[j].tokencb,
+                                     init_data_cpp2a[j].lexerstate);
         }
     }
 #endif
