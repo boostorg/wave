@@ -88,7 +88,7 @@ public:
     }
 #endif
 
-// error reporting from the re2c generated lexer
+    // error reporting from the re2c generated lexer
     static int report_error(Scanner<IteratorT> const* s, int code, char const *, ...);
 
 private:
@@ -248,8 +248,8 @@ lexer<IteratorT, PositionT, TokenT>::get(TokenT& result)
         break;
 
     case T_EOF:
-    // T_EOF is returned as a valid token, the next call will return T_EOI,
-    // i.e. the actual end of input
+        // T_EOF is returned as a valid token, the next call will return T_EOI,
+        // i.e. the actual end of input
         at_eof = true;
         value.clear();
         break;
@@ -325,7 +325,7 @@ lexer<IteratorT, PositionT, TokenT>::report_error(Scanner<IteratorT> const *s, i
 
     BOOST_WAVE_LEXER_THROW_VAR(lexing_exception, errcode, buffer, s->line,
         s->column, s->file_name);
-//    BOOST_UNREACHABLE_RETURN(0);
+    //    BOOST_UNREACHABLE_RETURN(0);
     return 0;
 }
 
@@ -350,7 +350,7 @@ public:
     {}
     virtual ~lex_functor() {}
 
-// get the next token from the input stream
+    // get the next token from the input stream
     token_type& get(token_type& result) BOOST_OVERRIDE { return re2c_lexer.get(result); }
     void set_position(PositionT const &pos) BOOST_OVERRIDE { re2c_lexer.set_position(pos); }
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0

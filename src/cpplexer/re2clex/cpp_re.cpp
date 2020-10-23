@@ -108,4 +108,3 @@ operator- (uchar_wrapper const& lhs, uchar_wrapper const& rhs)
 #ifdef BOOST_HAS_ABI_HEADERS
 #include BOOST_ABI_SUFFIX
 #endif
-

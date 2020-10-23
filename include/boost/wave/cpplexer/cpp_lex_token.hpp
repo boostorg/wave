@@ -72,7 +72,7 @@ public:
     std::size_t release() { return --refcnt; }
     std::size_t get_refcnt() const { return refcnt; }
 
-// accessors
+    // accessors
     operator token_id() const { return id; }
     string_type const &get_value() const { return value; }
     position_type const &get_position() const { return pos; }
@@ -116,7 +116,7 @@ public:
     static void operator delete(void *p, std::size_t size);
 
 #if defined(BOOST_SPIRIT_DEBUG)
-// debug support
+    // debug support
     void print (std::ostream &stream) const
     {
         stream << get_token_name(id) << "(";
@@ -249,7 +249,7 @@ public:
         return *this;
     }
 
-// accessors
+    // accessors
     operator token_id() const { return 0 != data ? token_id(*data) : T_EOI; }
     string_type const &get_value() const { return data->get_value(); }
     position_type const &get_position() const { return data->get_position(); }
@@ -273,7 +273,7 @@ public:
 
 // debug support
 #if BOOST_WAVE_DUMP_PARSE_TREE != 0
-// access functions for the tree_to_xml functionality
+    // access functions for the tree_to_xml functionality
     static int get_token_id(lex_token const &t)
         { return token_id(t); }
     static string_type get_token_value(lex_token const &t)
@@ -281,7 +281,7 @@ public:
 #endif
 
 #if defined(BOOST_SPIRIT_DEBUG)
-// debug support
+    // debug support
     void print (std::ostream &stream) const
     {
         data->print(stream);
