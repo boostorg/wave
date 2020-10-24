@@ -49,4 +49,3 @@ template struct BOOST_SYMBOL_VISIBLE boost::wave::grammars::has_include_grammar_
 #endif
 
 #endif // #if BOOST_WAVE_SEPARATE_GRAMMAR_INSTANTIATION != 0
-
