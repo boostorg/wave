@@ -58,7 +58,7 @@ namespace lexer {
 #define INIT_DATA_CPP_SIZE          15
 #define INIT_DATA_PP_NUMBER_SIZE    2
 #define INIT_DATA_CPP0X_SIZE        15
-#define INIT_DATA_CPP2A_SIZE        9
+#define INIT_DATA_CPP2A_SIZE        10
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -466,7 +466,7 @@ lexer<IteratorT, PositionT>::init_data_cpp0x[INIT_DATA_CPP0X_SIZE] =
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-// C++11 only token definitions
+// C++20 only token definitions
 
 template <typename IteratorT, typename PositionT>
 typename lexer_base<IteratorT, PositionT>::lexer_data const
@@ -480,6 +480,7 @@ lexer<IteratorT, PositionT>::init_data_cpp2a[INIT_DATA_CPP2A_SIZE] =
     TOKEN_DATA(CO_RETURN, "co_return"),
     TOKEN_DATA(CO_YIELD, "co_yield"),
     TOKEN_DATA(REQUIRES, "requires"),
+    TOKEN_DATA(SPACESHIP, "<=>"),
 
     { token_id(0) }       // this should be the last entry
 };

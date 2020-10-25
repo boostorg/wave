@@ -446,6 +446,7 @@ lexer<Iterator, Position>::init_data_cpp2a[] =
     TOKEN_DATA(T_CO_RETURN, "co_return"),
     TOKEN_DATA(T_CO_YIELD, "co_yield"),
     TOKEN_DATA(T_REQUIRES, "requires"),
+    TOKEN_DATA(T_SPACESHIP, "<=>"),
     { token_id(0) }       // this should be the last entry
 };
 

@@ -231,6 +231,16 @@ NonDigit           = [a-zA-Z_] | UniversalChar;
     "=="            { BOOST_WAVE_RET(T_EQUAL); }
     "!="            { BOOST_WAVE_RET(T_NOTEQUAL); }
     "not_eq"        { BOOST_WAVE_RET(s->act_in_c99_mode ? T_IDENTIFIER : T_NOTEQUAL_ALT); }
+    "<=>"
+        {
+            if (s->act_in_cpp2a_mode) {
+                BOOST_WAVE_RET(T_SPACESHIP);
+            }
+            else {
+                --YYCURSOR;
+                BOOST_WAVE_RET(T_LESSEQUAL);
+            }
+        }
     "<="            { BOOST_WAVE_RET(T_LESSEQUAL); }
     ">="            { BOOST_WAVE_RET(T_GREATEREQUAL); }
     "&&"            { BOOST_WAVE_RET(T_ANDAND); }
