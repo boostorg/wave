@@ -58,7 +58,7 @@ namespace boost { namespace wave { namespace cpplexer { namespace lexertl
 #define INIT_DATA_CPP_SIZE          15
 #define INIT_DATA_PP_NUMBER_SIZE    2
 #define INIT_DATA_CPP0X_SIZE        15
-#define INIT_DATA_CPP2A_SIZE        9
+#define INIT_DATA_CPP2A_SIZE        10
 #define INIT_MACRO_DATA_SIZE        28
 #endif // #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
 
@@ -463,6 +463,7 @@ lexertl<Iterator, Position>::init_data_cpp2a[INIT_DATA_CPP2A_SIZE] =
     TOKEN_DATA(T_CO_RETURN, "co_return"),
     TOKEN_DATA(T_CO_YIELD, "co_yield"),
     TOKEN_DATA(T_REQUIRES, "requires"),
+    TOKEN_DATA(T_SPACESHIP, "<=>"),
     { token_id(0) }       // this should be the last entry
 };
 
