@@ -219,6 +219,7 @@ lexem const lexems[] =
     { "co_return", boost::wave::T_CO_RETURN },
     { "co_yield", boost::wave::T_CO_YIELD },
     { "requires", boost::wave::T_REQUIRES },
+    { "<=>", boost::wave::T_SPACESHIP },
 #endif
     { "#define", boost::wave::T_PP_DEFINE },
     { "#ifdef", boost::wave::T_PP_IFDEF },

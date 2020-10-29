@@ -231,6 +231,7 @@ static char const *tok_names[] = {
     /* 438 */   "T_CO_RETURN",
     /* 439 */   "T_CO_YIELD",
     /* 440 */   "T_REQUIRES",
+    /* 441 */   "T_SPACESHIP",
     };
 
     // make sure, I have not forgotten any commas (as I did more than once)
@@ -442,6 +443,7 @@ static char const *tok_values[] = {
     /* 438 */   "co_return",
     /* 439 */   "co_yield",
     /* 440 */   "requires",
+    /* 441 */   "<=>",
     };
 
     // make sure, I have not forgotten any commas (as I did more than once)
@@ -461,5 +463,3 @@ static char const *tok_values[] = {
 #ifdef BOOST_HAS_ABI_HEADERS
 #include BOOST_ABI_SUFFIX
 #endif
-
-

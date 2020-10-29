@@ -311,6 +311,8 @@ enum token_id {
     T_CO_YIELD     = TOKEN_FROM_ID(439, KeywordTokenType),
     T_REQUIRES     = TOKEN_FROM_ID(440, KeywordTokenType),
 
+// C++20 operators
+    T_SPACESHIP    = TOKEN_FROM_ID(441, OperatorTokenType),
 
     T_LAST_TOKEN_ID,
     T_LAST_TOKEN = ID_FROM_TOKEN(T_LAST_TOKEN_ID & ~PPTokenFlag),

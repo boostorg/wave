@@ -24,30 +24,29 @@ public:
         boost::timer::cpu_times times = elapsed();
         double current = static_cast<double>(times.user + times.system) / 1.e9;
 
-    char time_buffer[sizeof("1234:56:78.90 abcd.")+1];
+        char time_buffer[sizeof("1234:56:78.90 abcd.") + 1];
 
         using namespace std;
         if (current >= 3600) {
-        // show hours
+            // show hours
             sprintf (time_buffer, "%d:%02d:%02d.%03d hrs.",
                 (int)(current) / 3600, ((int)(current) % 3600) / 60,
                 ((int)(current) % 3600) % 60, 
                 (int)(current * 1000) % 1000);
         }
         else if (current >= 60) {
-        // show minutes
+            // show minutes
             sprintf (time_buffer, "%d:%02d.%03d min.", 
                 (int)(current) / 60, (int)(current) % 60, 
                 (int)(current * 1000) % 1000);
         }
         else {
-        // show seconds
+            // show seconds
             sprintf(time_buffer, "%d.%03d sec.", (int)current, 
                 (int)(current * 1000) % 1000);
         }
         return time_buffer;
     }
-    
 };
 
 #endif // !defined(BOOST_STOP_WATCH_HPP_HK040911_INCLUDED)
