@@ -24,7 +24,7 @@
     <td width="30"><a href="references.html"><img src="theme/r_arr.gif" border="0"></a></td>
   </tr>
 </table>
-<p dir="ltr">The <tt>Wave</tt> library contains several samples illustrating how to use the different features. This section describes these samples and its main characteristics. </p>
+<p dir="ltr">The <tt>Wave</tt> library contains several samples illustrating how to use the different features. This section describes these samples and their main characteristics. </p>
 <h2 dir="ltr">The quick_start sample</h2>
  <p>The <tt>quick_start</tt> sample shows a minimal way to use the <tt>Wave</tt> preprocessor library. It simply opens the file given as the first command line argument, preprocesses it assuming that there aren't any additional include paths or macros defined and outputs the textual representation of the tokens generated from the given input file. This sample may be used to introduce yourself to <tt>Wave</tt>, because it does not contain all the potential additional complexity exposed by more complex samples. </p>
  <h2>The lexed_tokens sample</h2>
@@ -49,7 +49,7 @@
 <span class="preprocessor">    #  include</span> <span class="literal">&quot;file_b.h&quot;</span>
 <span class="preprocessor">    #endif</span></pre>
 <h2 dir="ltr">The advanced_hooks sample</h2>
-<p dir="ltr">The <tt>advanced_hooks</tt> sample is based on the <tt>quick_start</tt> sample mentioned above. It shows how you may want to use the advanced preprocessing hooks of the <tt>Wave</tt> library to get in the output not only the preprocessed tokens from the evaluated conditional blocks, but also the tokens recognized inside the non-evaluated conditional blocks. To make the generated token stream useful for further processing the tokens from the non-evaluated conditional blocks are commented out. </p>
+<p dir="ltr">The <tt>advanced_hooks</tt> sample is based on the <tt>quick_start</tt> sample mentioned above. It shows how you may want to use the <a href="class_reference_ctxpolicy.html#introduction">advanced preprocessing hooks</a> of the <tt>Wave</tt> library to get in the output not only the preprocessed tokens from the evaluated conditional blocks, but also the tokens recognized inside the non-evaluated conditional blocks. To make the generated token stream useful for further processing the tokens from the non-evaluated conditional blocks are commented out. </p>
 <p dir="ltr">Here is a small sample what the <tt>advanced_hooks</tt> sample does. Consider the following input: </p>
 <pre>    <span class="preprocessor">#define</span> TEST 1
 <span class="preprocessor">    #if</span> <span class="keyword">defined</span>(TEST)
@@ -67,7 +67,7 @@
 <h2 dir="ltr">The  wave sample</h2>
 <p dir="ltr">Because of its general usefulness the <tt>wave</tt> sample is not located in the sample directory of the library, but inside the tools directory of Boost. The wave sample is usable as a full fledged preprocessor executable 
   on top of any other C++ compiler. It outputs the textual representation of the 
-preprocessed tokens generated from a given input file. It is described in more details <a href="wave_driver.html">here</a>. </p>
+preprocessed tokens generated from a given input file. It is described in more detail <a href="wave_driver.html">here</a>. </p>
 <h2 dir="ltr">The  waveidl sample </h2>
 <p dir="ltr">The main point of the <tt>waveidl</tt> sample is to show, how a completely independent lexer type may be used in conjunction with the default token type of the <tt>Wave</tt> library. The lexer used in this sample is supposed to be used for an IDL language based preprocessor. It is based on the <tt>Re2C</tt> tool too, but recognizes a different set of tokens as the default C++ lexer contained within the <tt>Wave</tt> library. So this lexer does not recognize any keywords (except <tt>true</tt> and <tt>false</tt>, which are needed by the preprocessor itself). This is needed because there exist different IDL languages, where identifiers of one language may be keywords of others. Certainly this implies to postpone keyword identification after the preprocessing, but allows to use <tt>Wave</tt> for all of the IDL derivatives. </p>
 <p dir="ltr">It is only possible to use the <tt>Wave</tt> library to write an IDL preprocessor, because the token sets for both languages are very similar. The tokens to be recognized by the <tt>waveidl</tt> IDL language preprocessor is nearly a complete subset of the full C++ token set. </p>
@@ -95,7 +95,7 @@ preprocessed tokens generated from a given input file. It is described in more d
 <p>It may be a good starting point for a grammar that can be used for things like   reverse engineering as some UML modelling tools do. Or whatever use you may find   for a grammar that gives you a list of all templates and classes in a file and their members. <br>
 </p>
 <h2 dir="ltr">The check_macro_naming sample</h2>
-<p>The <tt>check_macro_naming</tt> sample demonstrates the use of context hooks to understand how macros are defined within a codebase. Some projects (such as Boost itself) have conventions on the names of macros. This sample will recursively search a directory, looking for header files and searching each for macro definitions. Any that do not match the supplied convention (which defaults to <tt>^BOOST_.*</tt>) are reported, along with an annotation if they are used as an include guard. The user can also specify any number of directories to ignore in the process.</p>
+<p>The <tt>check_macro_naming</tt> sample demonstrates the use of <a href="class_reference_ctxpolicy.html#introduction">context hooks</a> to understand how macros are defined within a codebase. Some projects (such as Boost itself) have conventions on the names of macros. This sample will recursively search a directory, looking for header files and searching each for macro definitions. Any that do not match the supplied convention (which defaults to <tt>^BOOST_.*</tt>) are reported, along with an annotation if they are used as an include guard. The user can also specify any number of directories to ignore in the process.</p>
 <p dir="ltr">Command line syntax:</p>
 <pre>
 Usage: check_macro_naming [options] directory:
@@ -113,6 +113,33 @@ TRACE_CPP_TIME_CONVERSION include/boost/wave/util/time_conversion_helper.hpp
 spirit_append_actor include/boost/wave/util/time_conversion_helper.hpp
 spirit_assign_actor include/boost/wave/util/time_conversion_helper.hpp
 </pre>
+<h2 dir="ltr">The custom_directives sample</h2>
+<p>The <tt>custom_directives</tt> sample shows how to define your own directives by overriding the <a href="class_reference_ctxpolicy.html#found_unknown_directive">found_unknown_directive</a> hook to add <tt>#version</tt> and <tt>#extension</tt> directives (from GLSL).</p>
+<h2 dir="ltr">The emit_custom_line_directives sample</h2>
+<p>The <tt>emit_custom_line_directives</tt> sample shows how to use the <a href="class_reference_ctxpolicy.html#emit_line_directive">emit_line_directive</a> preprocessing hook
+  to customize the format of any generated <span class="preprocessor">#line</span> directive. The sample will
+  emit #line directives formatted compatible with those generated by gcc:</p>
+<pre>
+    # &lt;lineno&gt; &lt;rel_file_name&gt;
+</pre>
+<h2 dir="ltr">The preprocess_pragma_output sample</h2>
+<p>The <tt>preprocess_pragma_output</tt> sample demonstrates using the <a href="class_reference_ctxpolicy.html#interpret_pragma">interpret_pragma</a> hook to install custom pragma handling code. Specifically it defines a new <tt>&num;pragma wave pp()</tt> that interprets a string in the current preprocessor context. The sample input uses this mechanism to define new macros from within a quoted string passed to <tt>pp</tt>.
+<h2 dir="ltr">The real_positions sample</h2>
+The <tt>real_positions</tt> sample demonstrates:
+<ul>
+  <li>the use of the <a href="class_reference_ctxpolicy.html#generated_token">generated_token</a> hook</li>
+  <li>how to use Wave with a new token type without changing the lexer</li>
+</ul>
+<p>by showing how to correct the positions inside the returned tokens in
+    a way that these appear to be consecutive (ignoring positions from macro
+  definitions).</p>
+
+<h2 dir="ltr">The token_statistics sample</h2>
+The <tt>token_statistics</tt> sample collects counts of each type of token in the preprocessed input and reports it. It demonstrates:
+<ul>
+  <li>Using the Xpressive lexer</li>
+  <li>Setting custom local and system include search paths</li>
+</ul>
 <table border="0">
   <tr>
     <td width="10"></td>
