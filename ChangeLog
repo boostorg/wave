@@ -18,6 +18,10 @@ TODO (known issues):
 
 CHANGELOG
 
+Boost V1.75:
+  - Introduced C++20 tokens, including the spaceship operator
+  - Fixed #94: Tricky line number tracking logic for __LINE__ and __FILE__
+
 Boost V1.74:
   - Fixed TRAC #10733: Hooks not called for expanding specific predefined macros
   - Fixed #58: C++11 long long literals must use consistent case
