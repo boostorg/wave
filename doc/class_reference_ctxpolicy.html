@@ -45,27 +45,38 @@
   look <a href="class_ref_ctxpolicy_depr.html">here</a>. </p>
 <p>The context policy is used to provide callback hooks, which are called from inside the library into the user code, whenever</p>
 <ul>
-  <li>a preprocessor directive has been recognized, </li>
+  <li>a preprocessor directive has been recognized (or <b>not</b> recognized), </li>
   <li>a token is about to be returned from the preprocessor, </li>
   <li>a macro gets defined or undefined, </li>
   <li>a macro has been expanded or rescanned,</li>
+  <li>a <span class="preprocessor">#line</span> directive is emitted,</li>
+  <li>an include file is searched for in the filesystem,</li>
   <li>an include file has been opened or closed, </li>
   <li>a conditional expression was evaluated,</li>
-  <li>a token has to be skipped because it is contained in a non-evaluated conditional block, </li>
-  <li> a pragma of the form <tt>'wave option[(value)]'</tt> has been recognized. </li>
+  <li>a token has to be skipped because it is contained in a non-evaluated conditional block, or</li>
+  <li>a pragma of the form <tt>'wave option[(value)]'</tt> has been recognized. </li>
 </ul>
 <p>This policy type is used as a template parameter to the <a href="class_reference_context.html"><tt>boost::wave::context&lt;&gt;</tt></a> object, where the default policy provides empty hook functions only.</p>
 <h2><a name="header_synopsis"></a>Header <a href="http://svn.boost.org/trac/boost/browser/trunk/boost/wave/preprocessing_hooks.hpp">wave/preprocessing_hooks.hpp</a> synopsis</h2>
 <pre><span class="keyword">namespace</span> boost {<br><span class="keyword">namespace</span> wave {<br><span class="keyword">namespace</span> context_policies {<br> <br>    <span class="keyword">struct</span> default_preprocessing_hooks {<br><br>        <span class="comment">// general hook functions</span>
         <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> TokenT&gt;<br>        <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#found_directive">found_directive</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            TokenT <span class="keyword">const </span>&amp;directive);<br>
+        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> <span class="type">ContextT</span>, <span class="keyword">typename</span> <span class="type">ContainerT</span>&gt;
+        <span class="type">bool</span> <a href="class_reference_ctxpolicy.html#found_unknown_directive">found_unknown_directive</a>(<span class="type">ContextT</span> <span class="keyword">const</span>&amp; <span class="variable-name">ctx</span>,
+            <span class="type">ContainerT</span> <span class="keyword">const</span>&amp; <span class="variable-name">line</span>, <span class="type">ContainerT</span>&amp; <span class="variable-name">pending</span>);
+</span>
         <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ExceptionT&gt;<br>        void <a href="class_reference_ctxpolicy.html#trow_exception">throw_exception</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            ExceptionT <span class="keyword">const</span>&amp; e);<br><br>        <span class="comment">// test, whether a given token may be skipped</span><br>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT&gt;<br>        <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#may_skip_whitespace">may_skip_whitespace</a> (ContextT <span class="keyword">const</span>&amp; ctx,<br>            TokenT &amp;token, <span class="keyword">bool</span> &amp;skipped_newline);<br>
+
         <span class="comment">// Conditional compilation</span><span class="keyword">
         template</span> &lt;<br>            <span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> TokenT, <br>            <span class="keyword">typename</span> ContainerT<br>        &gt;<br>        <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#evaluated_conditional_expression">evaluated_conditional_expression</a>(<br>            ContextT <span class="keyword">const</span> &amp;ctx, TokenT <span class="keyword">const</span>&amp; directive, <br>            ContainerT <span class="keyword">const</span>&amp; expression, <span class="keyword">bool</span> expression_value);<br>
-        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> TokenT&gt;<br>            <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#skipped_token">skipped_token</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            TokenT <span class="keyword">const</span>&amp; token);<br><br>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> TokenT&gt;<br>        TokenT <span class="keyword">const</span>&amp; <a href="class_reference_ctxpolicy.html#generated_token">generated_token</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            TokenT <span class="keyword">const</span>&amp; token);<br><br>        <span class="comment">// macro expansion tracing</span><span class="keyword">
+        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> TokenT&gt;<br>            <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#skipped_token">skipped_token</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            TokenT <span class="keyword">const</span>&amp; token);<br><br>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> TokenT&gt;<br>        TokenT <span class="keyword">const</span>&amp; <a href="class_reference_ctxpolicy.html#generated_token">generated_token</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            TokenT <span class="keyword">const</span>&amp; token);<br><br><br>        <span class="comment">// macro expansion tracing</span><span class="keyword">
         template</span> &lt;<span class="keyword">
             typename</span> ContextT, <span class="keyword">typename</span> TokenT, <span class="keyword">typename</span> ContainerT,<br>            <span class="keyword">typename</span> IteratorT<br>        &gt;<br>        <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#expanding_function_like_macro">expanding_function_like_macro</a>(<br>            ContextT <span class="keyword">const</span> &amp;ctx, TokenT <span class="keyword">const</span> &amp;macrodef, <br>            <span class="keyword">std::vector</span>&lt;TokenT&gt; <span class="keyword">const</span> &amp;formal_args, <br>            ContainerT <span class="keyword">const</span> &amp;definition, TokenT <span class="keyword">const</span> &amp;macrocall, <br>            <span class="keyword">std::vector</span>&lt;ContainerT&gt; <span class="keyword">const</span> &amp;arguments,<br>            IteratorT <span class="keyword">const</span> &amp;seqstart, Iterator <span class="keyword">const</span> &amp;seqend);<br> <br>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> TokenT, <span class="keyword">typename</span> ContainerT&gt;<br>        <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#expanding_object_like_macro">expanding_object_like_macro</a>(<br>            ContextT <span class="keyword">const</span> &amp;ctx, TokenT <span class="keyword">const</span> &amp;macro, <br>            ContainerT <span class="keyword">const</span> &amp;definition, TokenT <span class="keyword">const</span> &amp;macrocall);<br> <br>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>        <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#expanded_macro">expanded_macro</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            ContainerT <span class="keyword">const</span> &amp;result);<br> <br>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>        <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#expanded_macro">rescanned_macro</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            ContainerT <span class="keyword">const</span> &amp;result);<br><br>
         <span class="comment">// include file tracing functions</span>
         <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT&gt;<br>        <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#opened_include_file">found_include_directive</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            std::string <span class="keyword">const</span> &amp;filename, <span class="keyword">bool</span> include_next);<br>
+        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> <span class="type">ContextT</span>&gt;
+        <span class="type">bool</span> <a href="class_reference_ctxpolicy.html#locate_include_file">locate_include_file</a>(<span class="type">ContextT</span>&amp; <span class="variable-name">ctx</span>, <span class="constant">std</span>::<span class="type">string</span> &amp;<span class="variable-name">file_path</span>, 
+            <span class="type">bool</span> <span class="variable-name">is_system</span>, <span class="type">char</span> <span class="keyword">const</span> *<span class="variable-name">current_name</span>,
+            <span class="constant">std</span>::<span class="type">string</span> &amp;<span class="variable-name">dir_path</span>, <span class="constant">std</span>::<span class="type">string</span> &amp;<span class="variable-name">native_name</span>);<br>
         <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT&gt;<br>        <span class="keyword">void </span><a href="class_reference_ctxpolicy.html#opened_include_file">opened_include_file</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            std::string <span class="keyword">const</span> &amp;relname, std::string <span class="keyword">const</span>&amp; absname,<br>            <span class="keyword">bool</span> is_system_include); <br>
         <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT&gt;<br>        <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#returning_from_include_file">returning_from_include_file</a>(ContextT <span class="keyword">const</span> &amp;ctx);<br>
         <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT&gt;<br>        <span class="keyword">void</span> <a href="#detected_include_guard">detected_include_guard</a>(ContextT <span class="keyword">const</span> &amp;ctx, 
@@ -82,8 +93,13 @@
             typename</span> ParametersT, <span class="keyword">typename</span> DefinitionT<br>        &gt;<br>        <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#defined_macro">defined_macro</a>(ContextT <span class="keyword">const</span> &amp;ctx, TokenT <span class="keyword">const</span> &amp;name, <span class="keyword">
             bool</span> is_functionlike, ParametersT <span class="keyword">const</span> &amp;parameters, <br>            DefinitionT <span class="keyword">const</span> &amp;definition, <span class="keyword">bool</span> is_predefined);<br><br>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> TokenT&gt;<br>        <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#undefined_macro">undefined_macro</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            TokenT<span class="keyword"> const</span> &amp;name);<br><br>
         <span class="comment">// #error and #warning directive hooks</span>
-        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>        <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#found_warning_directive">found_warning_directive</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            ContainerT <span class="keyword">const</span> &amp;message);<br><br>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>        <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#found_error_directive">found_error_directive</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            ContainerT <span class="keyword">const</span> &amp;message);<br><br>        <span class="comment">// #line directive hook</span>
-        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>        <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#found_line_directive">found_line_directive</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            ContainerT <span class="keyword">const</span> &amp;arguments, <span class="keyword">unsigned int</span> line,<br>            std::string <span class="keyword">const</span>&amp; filename);<br>    };<br><br>}}}   <span class="comment">// namespace boost::wave::context_policies</span></pre>
+        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>        <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#found_warning_directive">found_warning_directive</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            ContainerT <span class="keyword">const</span> &amp;message);<br><br>        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>        <span class="keyword">bool</span> <a href="class_reference_ctxpolicy.html#found_error_directive">found_error_directive</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            ContainerT <span class="keyword">const</span> &amp;message);<br><br>        <span class="comment">// #line directive hooks</span>
+        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>        <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#found_line_directive">found_line_directive</a>(ContextT <span class="keyword">const</span> &amp;ctx, <br>            ContainerT <span class="keyword">const</span> &amp;arguments, <span class="keyword">unsigned int</span> line,<br>            std::string <span class="keyword">const</span>&amp; filename);<br>
+        <span class="keyword">template</span> &lt;<span class="keyword">typename</span> <span class="type">ContextT</span>, <span class="keyword">typename</span> <span class="type">ContainerT</span>&gt;
+        <span class="type">bool</span> <a href="class_reference_ctxpolicy.html#emit_line_directive">emit_line_directive</a>(<span class="type">ContextT</span> <span class="keyword">const</span>&amp; <span class="variable-name">ctx</span>, <span class="type">ContainerT</span> &amp;<span class="variable-name">pending</span>, 
+            <span class="keyword">typename</span> <span class="constant">ContextT</span>::<span class="type">token_type</span> <span class="keyword">const</span>&amp; <span class="variable-name">act_token</span>);
+
+    };<br><br>}}}   <span class="comment">// namespace boost::wave::context_policies</span></pre>
 <h2><a name="member_functions"></a>Member functions</h2>
 <h3>General hook functions </h3>
 <p><a name="found_directive"></a><strong>found_directive</strong></p>
@@ -99,18 +115,33 @@
     directive is replaced by a single newline character. If the return
     value is <tt>false</tt>, the directive is processed in the normal manner. </p>
 </blockquote>
-<p><a name="throw_exception"></a><strong>throw_exception</strong></p>
-<pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ExceptionT&gt;<br>    void throw_exception(ContextT <span class="keyword">const</span> &amp;ctx, <br>            ExceptionT <span class="keyword">const</span>&amp; e);</pre>
+
+<p><a name="found_unknown_directive"></a><strong>found_unknown_directive</strong></p>
+<pre>
+    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> <span class="type">ContextT</span>, <span class="keyword">typename</span> <span class="type">ContainerT</span>&gt;
+    <span class="type">bool</span> <span class="function-name">found_unknown_directive</span>(<span class="type">ContextT</span> <span class="keyword">const</span>&amp; <span class="variable-name">ctx</span>,
+        <span class="type">ContainerT</span> <span class="keyword">const</span>&amp; <span class="variable-name">line</span>, <span class="type">ContainerT</span>&amp; <span class="variable-name">pending</span>);
+</pre>
 <blockquote>
-  <p>he function&nbsp;<tt>throw_exception</tt> is called, whenever a preprocessing exception occurs .</p>
+  <p>The function &nbsp;<tt>found_unknown_directive</tt> is called, whenever an unknown preprocessor directive was encountered.</p>
+  <p>The parameter &nbsp;<tt>ctx</tt> is a reference to the context object used for instantiating the preprocessing iterators by the user.</p>
+  <p>The parameter &nbsp;<tt>line</tt> holds the tokens of the entire source line containing the unknown directive.</p>
+  <p>The parameter &nbsp;<tt>pending</tt> may be used to push tokens back into the input stream, which are to be used as the replacement text for the whole line containing the unknown directive.</p>
+  <p>The return value defines whether the given expression has been properly interpreted by the hook function or not. If this function returns &nbsp;<tt>false</tt>, the library will raise an &nbsp;<tt>ill_formed_directive</tt> exception. Otherwise the tokens pushed back into &nbsp;<tt>pending</tt> are passed on to the user program.</p>
+</blockquote>
+
+<p><a name="throw_exception"></a><strong>throw_exception</strong></p>
+<pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ExceptionT&gt;<br>    void throw_exception(ContextT <span class="keyword">const</span> &amp;ctx, <br>        ExceptionT <span class="keyword">const</span>&amp; e);</pre>
+<blockquote>
+  <p>The function&nbsp;<tt>throw_exception</tt> is called, whenever a preprocessing exception occurs .</p>
   <p>The <tt>ctx</tt> parameter provides a reference to the <tt>context_type</tt> used during instantiation of the preprocessing iterators by the user.&nbsp; </p>
   <p>The parameter&nbsp;<tt>e</tt> is the exception object containing detailed error information. </p>
 </blockquote>
-<p><a name="may_skip_whitespace" id="may_skip"></a><strong>may_skipwhitespace</strong></p>
+<p><a name="may_skip_whitespace" id="may_skip"></a><strong>may_skip_whitespace</strong></p>
 <pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> TokenT&gt;<br>    <span class="keyword">bool</span> may_skip_whitespace(ContextT <span class="keyword">const</span>&amp; ctx, TokenT &amp;token, <br>        <span class="keyword">bool</span>&amp; skipped_newline);
 </pre>
 <blockquote>
-  <p>The function <tt>may_skipwhitespace</tt> will be called by the library, whenever a token is about to be returned to the calling application. </p>
+  <p>The function <tt>may_skip_whitespace</tt> will be called by the library, whenever a token is about to be returned to the calling application. </p>
   <p>The <tt>ctx</tt> parameter provides a reference to the <tt>context_type</tt> used during instantiation of the preprocessing iterators by the user.
     Note, this parameter was added for the Wave V1.2.4 release. </p>
   <p>The <tt>token</tt> parameter holds a reference to the current token. The policy is free to change this token if needed.</p>
@@ -263,6 +294,47 @@
     return value is <tt>false</tt>, the directive is executed in a normal manner. <br>
   </p>
 </blockquote>
+<p><a name="locate_include_file" id="locate_include_file"></a><strong>locate_include_file</strong></p>
+<pre>
+    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> <span class="type">ContextT</span>&gt;
+    <span class="type">bool</span> <span class="function-name">locate_include_file</span>(<span class="type">ContextT</span>&amp; <span class="variable-name">ctx</span>, <span class="constant">std</span>::<span class="type">string</span> &amp;<span class="variable-name">file_path</span>, 
+        <span class="type">bool</span> <span class="variable-name">is_system</span>, <span class="type">char</span> <span class="keyword">const</span> *<span class="variable-name">current_name</span>, <span class="constant">std</span>::<span class="type">string</span> &amp;<span class="variable-name">dir_path</span>, 
+        <span class="constant">std</span>::<span class="type">string</span> &amp;<span class="variable-name">native_name</span>)
+</pre>
+<blockquote>
+  <p>The function &nbsp;<tt>locate_include_file</tt> is called, whenever a <span class="preprocessor">#include</span>
+directive was encountered. It is supposed to locate the given file and
+should return the full file name of the located file. This file name
+is expected to uniquely identify the referenced file.</p>
+
+<p>The parameter &nbsp;<tt>ctx</tt> is a reference to the context object used for
+instantiating the preprocessing iterators by the user.</p>
+
+<p>The parameter &nbsp;<tt>file_path</tt> contains the (expanded) file name found after
+  the <tt>#include</tt> directive. This parameter holds the string as it is
+  specified in the <span class="preprocessor">#include</span> directive, i.e. <tt>&lt;file&gt;</tt> or <tt>"file"</tt> will result
+  in a parameter value 'file'.</p>
+
+<p>The parameter &nbsp;<tt>is_system</tt> is set to &nbsp;<tt>true</tt> if this call happens as a
+  result of a <span class="preprocessor">#include &lt;file&gt;</span> directive, it is &nbsp;<tt>false</tt> otherwise, i.e.
+  for <span class="preprocessor">#include "file"</span> directives.</p>
+
+<p>The parameter &nbsp;<tt>current_name</tt> is only used if a <span class="preprocessor">#include_next</span> directive
+  was encountered (and <tt>BOOST_WAVE_SUPPORT_INCLUDE_NEXT</tt> was defined to be
+non-zero). In this case it points to unique full name of the current
+  include file (if any). Otherwise this parameter is set to <tt>NULL</tt>.</p>
+
+<p>The parameter &nbsp;<tt>dir_path</tt> on return is expected to hold the directory
+  part of the located file.</p>
+
+<p>The parameter &nbsp;<tt>native_name</tt> on return is expected to hold the unique
+  full file name of the located file.</p>
+
+<p>The return value defines whether the file was located successfully.</p>
+
+</blockquote>
+
+
 <p><a name="opened_include_file" id="opened_include_file"></a><strong>opened_include_file</strong></p>
 <pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT&gt;<br>    <span class="keyword">void</span> opened_include_file(ContextT <span class="keyword">const</span>&amp; ctx, <br>        std::string <span class="keyword">const</span> &amp;rel_filename, std::string <span class="keyword">const</span> &amp;abs_filename, <br>        <span class="keyword">bool</span> is_system_include);
 </pre>
@@ -398,7 +470,7 @@
   <p>The <tt>ctx</tt> parameter provides a reference to the <tt>context_type</tt> used during instantiation of the preprocessing iterators by the user. </p>
   <p>The parameter <tt>message</tt> references the argument token sequence of the encountered <span class="preprocessor">#error</span> directive.</p>
   <p>If the return value is <tt>false</tt>, the library throws a preprocessor 
-    exception of the type <code>error_directive</code> (normal execution continues), if the return value is <tt>true</tt> the execution continues as if no <span class="preprocessor">#error</span> directive has been found and the overall directive is replaced by a single newline. </p>
+    exception of the type <code>error_directive</code> (normal execution continues), if the return value is <tt>true</tt> the execution continues as if no <span class="preprocessor">#error</span> directive has been found, and the overall directive is replaced by a single newline. </p>
 </blockquote>
 <p><strong><a name="found_line_directive" id="found_line_directive"></a>found_line_directive</strong></p>
 <pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> ContainerT&gt;<br>    <span class="keyword">void</span> <a href="class_reference_ctxpolicy.html#found_error_directive"><strong>found_line_directive</strong></a>(ContextT <span class="keyword">const</span>&amp; ctx, <br>        ContainerT <span class="keyword">const</span> &amp;arguments, <span class="keyword">unsigned int</span> line,<br>        std::string <span class="keyword">const</span>&amp; filename);
@@ -411,6 +483,33 @@
   <p>The parameter <tt>filename</tt> references the recognized file name from the <span class="preprocessor">#line</span> directive (if there was one given).<br>
   </p>
 </blockquote>
+<p><strong><a name="emit_line_directive" id="emit_line_directive"></a>emit_line_directive</strong></p>
+<pre>
+    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> <span class="type">ContextT</span>, <span class="keyword">typename</span> <span class="type">ContainerT</span>&gt;
+    <span class="type">bool</span> <span class="function-name">emit_line_directive</span>(<span class="type">ContextT</span> <span class="keyword">const</span>&amp; <span class="variable-name">ctx</span>, <span class="type">ContainerT</span> &amp;<span class="variable-name">pending</span>, 
+        <span class="keyword">typename</span> <span class="constant">ContextT</span>::<span class="type">token_type</span> <span class="keyword">const</span>&amp; <span class="variable-name">act_token</span>);
+</pre>
+<blockquote>
+  <p>The function <tt>emit_line_directive</tt> is called whenever a <span class="preprocessor">#line</span> directive
+  has to be emitted into the generated output.</p>
+
+<p>The parameter &nbsp;<tt>ctx</tt> is a reference to the context object used for
+  instantiating the preprocessing iterators by the user.</p>
+
+<p>The parameter &nbsp;<tt>pending</tt> may be used to push tokens back into the input
+stream, which are to be used instead of the default output generated
+  for the <span class="preprocessor">#line</span> directive.</p>
+
+  <p>The parameter &nbsp;<tt>act_token</tt> contains the actual <span class="preprocessor">#pragma</span> token, which may
+be used for error output. The line number stored in this token can be
+    used as the line number emitted as part of the <span class="preprocessor">#line</span> directive.</p>
+
+  <p>If the return value is &nbsp;<tt>false</tt>, a default <span class="preprocessor">#line</span> directive is emitted
+by the library. A return value of &nbsp;<tt>true</tt> will inhibit any further
+actions, the tokens contained in &nbsp;<tt>pending</tt> will be copied verbatim
+    to the output.</p>
+</blockquote>
+
 <table border="0">
   <tbody>
     <tr>
