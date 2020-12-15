@@ -26,9 +26,6 @@
 
 //  include Wave
 
-// always use new hooks
-#define BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS 0
-
 #include <boost/wave.hpp>
 
 //  include the lexer related stuff

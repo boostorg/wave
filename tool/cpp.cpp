@@ -1069,7 +1069,6 @@ do_actual_work (std::string file_name, std::istream &instream,
             }
         }
 
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS == 0
         // suppress expansion of specified macros
         if (vm.count("noexpand")) {
             vector<std::string> const &noexpandmacros =
@@ -1081,7 +1080,6 @@ do_actual_work (std::string file_name, std::istream &instream,
                 ctx.get_hooks().add_noexpandmacro(*cit);
             }
         }
-#endif
 
         // maximal include nesting depth
         if (vm.count("nesting")) {
@@ -1355,10 +1353,8 @@ main (int argc, char *argv[])
                 "specify a macro to predefine (as macro[=[value]])")
             ("undefine,U", po::value<std::vector<std::string> >()->composing(),
                 "specify a macro to undefine")
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS == 0
             ("noexpand,N", po::value<std::vector<std::string> >()->composing(),
                 "specify a macro name, which should not be expanded")
-#endif
             ("nesting,n", po::value<int>(),
                 "specify a new maximal include nesting depth")
             ("warning,W", po::value<std::vector<std::string> >()->composing(),
