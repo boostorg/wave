@@ -229,20 +229,6 @@ public:
     //        without any further processing.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
-    template <typename ContainerT>
-    void expanding_function_like_macro(
-        TokenT const &macrodef, std::vector<TokenT> const &formal_args,
-        ContainerT const &definition,
-        TokenT const &macrocall, std::vector<ContainerT> const &arguments)
-    {
-        if (enabled_macro_counting())
-            count_invocation(macrodef.get_value().c_str());
-
-        if (!enabled_macro_tracing())
-            return;
-#else
     // new signature
     template <typename ContextT, typename ContainerT, typename IteratorT>
     bool
@@ -264,7 +250,6 @@ public:
 
         if (!enabled_macro_tracing())
             return false;
-#endif
         if (0 == get_level()) {
             // output header line
             BOOST_WAVE_OSSTREAM stream;
@@ -337,9 +322,7 @@ public:
         }
         open_trace_body();
 
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS == 0
         return false;
-#endif
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -359,18 +342,6 @@ public:
     //  The parameter 'macrocall' marks the position, where this macro invoked.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
-    template <typename ContainerT>
-    void expanding_object_like_macro(TokenT const &macrodef,
-        ContainerT const &definition, TokenT const &macrocall)
-    {
-        if (enabled_macro_counting())
-            count_invocation(macrodef.get_value().c_str());
-
-        if (!enabled_macro_tracing())
-            return;
-#else
     // new signature
     template <typename ContextT, typename ContainerT>
     bool
@@ -390,7 +361,6 @@ public:
 
         if (!enabled_macro_tracing())
             return false;
-#endif
         if (0 == get_level()) {
         // output header line
         BOOST_WAVE_OSSTREAM stream;
@@ -413,9 +383,7 @@ public:
         }
         open_trace_body();
 
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS == 0
         return false;
-#endif
     }
 
     ///////////////////////////////////////////////////////////////////////////
@@ -430,15 +398,9 @@ public:
     //  result of the macro expansion.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
-    template <typename ContainerT>
-    void expanded_macro(ContainerT const &result)
-#else
     // new signature
     template <typename ContextT, typename ContainerT>
     void expanded_macro(ContextT const& ctx,ContainerT const &result)
-#endif
     {
         if (!enabled_macro_tracing()) return;
 
@@ -461,15 +423,9 @@ public:
     //  result of the rescanning.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
-    template <typename ContainerT>
-    void rescanned_macro(ContainerT const &result)
-#else
     // new signature
     template <typename ContextT, typename ContainerT>
     void rescanned_macro(ContextT const& ctx,ContainerT const &result)
-#endif
     {
         if (!enabled_macro_tracing() || get_level() == 0)
             return;
@@ -662,13 +618,6 @@ public:
     //  found as a result of a #include <...> directive.
     //
     ///////////////////////////////////////////////////////////////////////////
-#if BOOST_WAVE_USE_DEPRECIATED_PREPROCESSING_HOOKS != 0
-    // old signature
-    void
-    opened_include_file(std::string const &relname, std::string const &absname,
-        std::size_t include_depth, bool is_system_include)
-    {
-#else
     // new signature
     template <typename ContextT>
     void
@@ -676,7 +625,6 @@ public:
         std::string const &absname, bool is_system_include)
     {
         std::size_t include_depth = ctx.get_iteration_depth();
-#endif
         if (enabled_include_tracing()) {
             // print indented filename
             for (std::size_t i = 0; i < include_depth; ++i)
