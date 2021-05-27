@@ -18,6 +18,9 @@ add_library(boost_wave
   src/instantiate_re2c_lexer_str.cpp
   src/token_ids.cpp
   src/wave_config_constant.cpp
+
+  src/cpplexer/re2clex/aq.cpp
+  src/cpplexer/re2clex/cpp_re.cpp
 )
 
 add_library(Boost::wave ALIAS boost_wave)
