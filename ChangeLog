@@ -18,8 +18,8 @@ TODO (known issues):
 
 CHANGELOG
 
-Boost V1.78:
-  - Removed support for C++03 (as a compiler), previously deprecated in 1.74
+Boost V1.79:
+  - Removed support for C++03 (as a compiler) - previously deprecated in 1.74
 	
 Boost V1.75:
   - Introduced C++20 tokens, including the spaceship operator

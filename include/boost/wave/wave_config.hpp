@@ -524,7 +524,7 @@ namespace boost { namespace wave
     || defined(BOOST_NO_CXX11_HDR_THREAD) \
     || defined(BOOST_NO_CXX11_HDR_MUTEX) || defined(BOOST_NO_CXX11_HDR_REGEX)
 
-#error "C++03 support is deprecated in Boost.Wave 1.74 and was removed in Boost.Wave 1.78."
+#error "C++03 support is deprecated in Boost.Wave 1.74 and was removed in Boost.Wave 1.79."
 
 #endif
 
