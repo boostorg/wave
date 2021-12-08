@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "TOOLSET=gcc CXXSTD=03,11 Job 0"
+          - name: "TOOLSET=gcc CXXSTD=11 Job 0"
             buildtype: "boost"
             packages: ""
             packages_to_remove: ""
@@ -28,8 +28,8 @@ jobs:
             llvm_os: ""
             llvm_ver: ""
             toolset: "gcc"
-            cxxstd: "03,11"
-          - name: "TOOLSET=gcc-5 CXXSTD=03,11,14,1z Job 1"
+            cxxstd: "11"
+          - name: "TOOLSET=gcc-5 CXXSTD=11,14,1z Job 1"
             buildtype: "boost"
             packages: "g++-5"
             packages_to_remove: ""
@@ -40,8 +40,8 @@ jobs:
             llvm_os: ""
             llvm_ver: ""
             toolset: "gcc-5"
-            cxxstd: "03,11,14,1z"
-          - name: "TOOLSET=gcc-6 CXXSTD=03,11,14,1z Job 2"
+            cxxstd: "11,14,1z"
+          - name: "TOOLSET=gcc-6 CXXSTD=11,14,1z Job 2"
             buildtype: "boost"
             packages: "g++-6"
             packages_to_remove: ""
@@ -52,8 +52,8 @@ jobs:
             llvm_os: ""
             llvm_ver: ""
             toolset: "gcc-6"
-            cxxstd: "03,11,14,1z"
-          - name: "TOOLSET=gcc-7 CXXSTD=03,11,14,17 Job 3"
+            cxxstd: "11,14,1z"
+          - name: "TOOLSET=gcc-7 CXXSTD=11,14,17 Job 3"
             buildtype: "boost"
             packages: "g++-7"
             packages_to_remove: ""
@@ -64,8 +64,8 @@ jobs:
             llvm_os: ""
             llvm_ver: ""
             toolset: "gcc-7"
-            cxxstd: "03,11,14,17"
-          - name: "TOOLSET=clang CXXSTD=03,11,14,1z Job 4"
+            cxxstd: "11,14,17"
+          - name: "TOOLSET=clang CXXSTD=11,14,1z Job 4"
             buildtype: "boost"
             packages: ""
             packages_to_remove: ""
@@ -75,7 +75,7 @@ jobs:
             llvm_os: ""
             llvm_ver: ""
             toolset: "clang"
-            cxxstd: "03,11,14,1z"
+            cxxstd: "11,14,1z"
 
     runs-on: ${{ matrix.os }}
     container: ${{ matrix.container }}
@@ -178,7 +178,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "TOOLSET=clang CXXSTD=03,11,14,1z Job 5"
+          - name: "TOOLSET=clang CXXSTD=11,14,1z Job 5"
             buildtype: "boost"
             packages: ""
             os: "macos-10.15"
@@ -188,7 +188,7 @@ jobs:
             llvm_ver: ""
             xcode_version: 11.7
             toolset: "clang"
-            cxxstd: "03,11,14,1z"
+            cxxstd: "11,14,1z"
 
     runs-on: ${{ matrix.os }}
 
