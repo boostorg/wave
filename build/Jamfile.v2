@@ -8,8 +8,17 @@
 # Software License, Version 1.0. (See accompanying file 
 # LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+import ../../config/checks/config : requires ;
+
 project boost/wave
     : requirements
+      [ requires
+        cxx11_variadic_templates
+        cxx11_rvalue_references
+        cxx11_hdr_thread
+        cxx11_hdr_mutex
+        cxx11_hdr_regex
+      ]
       <link>shared:<define>BOOST_ALL_DYN_LINK=1
       <link>static:<define>BOOST_THREAD_USE_LIB=1
       <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
