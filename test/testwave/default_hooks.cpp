@@ -36,7 +36,7 @@ int main()
         "#ifndef __FILE__\n"
         "int cc;\n"
         "#endif\n"
-        "char c3;\n"     // #LINE 13
+        "char c3;\n"     // #LINE 12
     );
 
     using namespace boost::wave;
@@ -60,7 +60,7 @@ int main()
         {T_SPACE, " "},
         {T_INTLIT, "8"},
         {T_SPACE, " "},
-        {T_STRINGLIT, nullptr},  // exact filepath is not interesting
+        {T_STRINGLIT, nullptr},
         {T_NEWLINE, "\n"},
         {T_CHAR, "char"},
         {T_SPACE, " "},
@@ -72,7 +72,7 @@ int main()
         {T_SPACE, " "},
         {T_INTLIT, "12"},
         {T_SPACE, " "},
-        {T_STRINGLIT, nullptr},  // exact filepath is not interesting
+        {T_STRINGLIT, nullptr},
         {T_NEWLINE, "\n"},
         {T_CHAR, "char"},
         {T_SPACE, " "},
