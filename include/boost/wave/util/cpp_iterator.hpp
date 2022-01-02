@@ -959,15 +959,14 @@ namespace impl {
                 return true;    // no more significant tokens on this line
             }
 
-            if (!IS_CATEGORY(id, WhiteSpaceTokenType))  // ccomment, cppcomment, space, space2, placeholder
+            if (!IS_CATEGORY(id, WhiteSpaceTokenType))
                 break;
 
             // this token gets skipped
             if (call_hook)
                 util::impl::call_skipped_token_hook(ctx, *it);
         }
-        return need_no_newline_at_end_of_file(ctx.get_language()) &&
-            ((it == end) || (T_EOF == token_id(*it)));
+        return need_no_newline_at_end_of_file(ctx.get_language());
     }
 
     ///////////////////////////////////////////////////////////////////////////
