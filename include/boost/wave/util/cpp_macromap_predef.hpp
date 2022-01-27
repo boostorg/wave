@@ -15,6 +15,7 @@
 
 #include <cstdio>
 #include <boost/assert.hpp>
+#include <boost/format.hpp>
 
 #include <boost/wave/wave_config.hpp>
 #include <boost/wave/wave_config_constant.hpp>
@@ -68,6 +69,11 @@ namespace util {
         string_type version_;     // __SPIRIT_PP_VERSION__/__WAVE_VERSION__
         string_type versionstr_;  // __SPIRIT_PP_VERSION_STR__/__WAVE_VERSION_STR__
 
+        static string_type strconv(std::string const & ss)
+        {
+            return string_type(ss.c_str());
+        }
+
     protected:
         void reset_datestr()
         {
@@ -83,12 +89,11 @@ namespace util {
             struct tm *tb = 0;
 
             if (tt != (time_t)-1) {
-                char buffer[sizeof("\"Oct 11 1347\"")+1];
-
                 tb = localtime (&tt);
-                sprintf (buffer, "\"%s %2d %4d\"",
-                         monthnames[tb->tm_mon], tb->tm_mday, tb->tm_year + 1900);
-                datestr_ = buffer;
+                datestr_ = strconv((boost::format("\"%s %2d %4d\"")
+                                    % monthnames[tb->tm_mon]
+                                    % tb->tm_mday
+                                    % (tb->tm_year + 1900)).str());
             }
             else {
                 datestr_ = "\"??? ?? ????\"";
@@ -104,12 +109,11 @@ namespace util {
             struct tm *tb = 0;
 
             if (tt != (time_t)-1) {
-                char buffer[sizeof("\"12:34:56\"")+1];
-
                 tb = localtime (&tt);
-                sprintf (buffer, "\"%02d:%02d:%02d\"", tb->tm_hour,
-                         tb->tm_min, tb->tm_sec);
-                timestr_ = buffer;
+                timestr_ = strconv((boost::format("\"%02d:%02d:%02d\"")
+                                    % tb->tm_hour
+                                    % tb->tm_min
+                                    % tb->tm_sec).str());
             }
             else {
                 timestr_ = "\"??:??:??\"";
@@ -118,8 +122,6 @@ namespace util {
 
         void reset_version()
         {
-        char buffer[sizeof("0x00000000")+1];
-
             // for some systems sprintf, time_t etc. is in namespace std
             using namespace std;
 
@@ -135,16 +137,15 @@ namespace util {
 
             long seconds = long(difftime(compilation_time_.get_time(), mktime(&first_day)));
 
-            sprintf(buffer, "0x%02d%1d%1d%04ld", BOOST_WAVE_VERSION_MAJOR,
-                 BOOST_WAVE_VERSION_MINOR, BOOST_WAVE_VERSION_SUBMINOR,
-                 seconds/(3600*24));
-            version_ = buffer;
+            version_ = strconv((boost::format("0x%02d%1d%1d%04ld")
+                                % BOOST_WAVE_VERSION_MAJOR
+                                % BOOST_WAVE_VERSION_MINOR
+                                % BOOST_WAVE_VERSION_SUBMINOR
+                                % (seconds/(3600*24))).str());
         }
 
         void reset_versionstr()
         {
-            char buffer[sizeof("\"00.00.00.0000 \"")+sizeof(BOOST_PLATFORM)+sizeof(BOOST_COMPILER)+4];
-
             // for some systems sprintf, time_t etc. is in namespace std
             using namespace std;
 
@@ -159,10 +160,13 @@ namespace util {
 
             long seconds = long(difftime(compilation_time_.get_time(), mktime(&first_day)));
 
-            sprintf(buffer, "\"%d.%d.%d.%ld [%s/%s]\"", BOOST_WAVE_VERSION_MAJOR,
-                    BOOST_WAVE_VERSION_MINOR, BOOST_WAVE_VERSION_SUBMINOR,
-                    seconds/(3600*24), BOOST_PLATFORM, BOOST_COMPILER);
-            versionstr_ = buffer;
+            versionstr_ = strconv((boost::format("\"%d.%d.%d.%ld [%s/%s]\"")
+                                   % BOOST_WAVE_VERSION_MAJOR
+                                   % BOOST_WAVE_VERSION_MINOR
+                                   % BOOST_WAVE_VERSION_SUBMINOR
+                                   % (seconds/(3600*24))
+                                   % BOOST_PLATFORM
+                                   % BOOST_COMPILER).str());
         }
 
         // dynamic predefined macros
@@ -172,22 +176,16 @@ namespace util {
         // __SPIRIT_PP__/__WAVE__
         string_type get_version() const
         {
-            char buffer[sizeof("0x0000")+1];
-
-            using namespace std;    // for some systems sprintf is in namespace std
-            sprintf(buffer, "0x%02d%1d%1d", BOOST_WAVE_VERSION_MAJOR,
-                    BOOST_WAVE_VERSION_MINOR, BOOST_WAVE_VERSION_SUBMINOR);
-            return buffer;
+            return strconv((boost::format("0x%02d%1d%1d")
+                            % BOOST_WAVE_VERSION_MAJOR
+                            % BOOST_WAVE_VERSION_MINOR
+                            % BOOST_WAVE_VERSION_SUBMINOR).str());
         }
 
         // __WAVE_CONFIG__
         string_type get_config() const
         {
-            char buffer[sizeof("0x00000000")+1];
-
-            using namespace std;     // for some systems sprintf is in namespace std
-            sprintf(buffer, "0x%08x", BOOST_WAVE_CONFIG);
-            return buffer;
+            return strconv((boost::format("0x%08x") % BOOST_WAVE_CONFIG).str());
         }
 
     public:
