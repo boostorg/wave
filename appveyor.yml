@@ -11,6 +11,7 @@ branches:
     - master
     - develop
     - /feature\/.*/
+    - /bugfix\/.*/
 
 environment:
   matrix:
