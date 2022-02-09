@@ -1261,8 +1261,8 @@ protected:
         if (0 == values.size()) return false;   // ill_formed_pragma_option
 
         namespace fs = boost::filesystem;
-        string_type stdout_file = (fs::temp_directory_path() / fs::unique_path()).native().c_str();
-        string_type stderr_file = (fs::temp_directory_path() / fs::unique_path()).native().c_str();
+        string_type stdout_file = (fs::temp_directory_path() / fs::unique_path()).string().c_str();
+        string_type stderr_file = (fs::temp_directory_path() / fs::unique_path()).string().c_str();
         string_type system_str(boost::wave::util::impl::as_string(values));
         string_type native_cmd(system_str);
 
