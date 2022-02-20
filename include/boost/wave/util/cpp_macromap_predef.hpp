@@ -17,9 +17,6 @@
 #include <boost/assert.hpp>
 #include <boost/format.hpp>
 
-#include <boost/chrono/io/timezone.hpp>
-#include <boost/chrono/io/time_point_io.hpp>
-
 #include <boost/wave/wave_config.hpp>
 #include <boost/wave/wave_config_constant.hpp>
 #include <boost/wave/token_ids.hpp>
@@ -80,20 +77,47 @@ namespace util {
     protected:
         void reset_datestr()
         {
-            std::stringstream datestream;
-            using namespace boost::chrono;
-            // format as abbreviated (3 letter for en-us) month, day, 4-number year:
-            datestream << time_fmt(timezone::local, "\"%b %d %Y\"") << system_clock::now();
-            datestr_ = strconv(datestream.str());
+            static const char *const monthnames[] = {
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            };
+
+            // for some systems sprintf, time_t etc. is in namespace std
+            using namespace std;
+
+            time_t tt = time(0);
+            struct tm *tb = 0;
+
+            if (tt != (time_t)-1) {
+                tb = localtime (&tt);
+                datestr_ = strconv((boost::format("\"%s %2d %4d\"")
+                                    % monthnames[tb->tm_mon]
+                                    % tb->tm_mday
+                                    % (tb->tm_year + 1900)).str());
+            }
+            else {
+                datestr_ = "\"??? ?? ????\"";
+            }
         }
 
         void reset_timestr()
         {
-            std::stringstream timestream;
-            using namespace boost::chrono;
-            // format time as HH:MM:SS
-            timestream << time_fmt(timezone::local, "\"%T\"") << system_clock::now();
-            timestr_ = strconv(timestream.str());
+            // for some systems sprintf, time_t etc. is in namespace std
+            using namespace std;
+
+            time_t tt = time(0);
+            struct tm *tb = 0;
+
+            if (tt != (time_t)-1) {
+                tb = localtime (&tt);
+                timestr_ = strconv((boost::format("\"%02d:%02d:%02d\"")
+                                    % tb->tm_hour
+                                    % tb->tm_min
+                                    % tb->tm_sec).str());
+            }
+            else {
+                timestr_ = "\"??:??:??\"";
+            }
         }
 
         void reset_version()
