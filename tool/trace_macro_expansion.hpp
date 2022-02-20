@@ -10,7 +10,6 @@
 #if !defined(BOOST_TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)
 #define BOOST_TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED
 
-#include <cstdio>
 #include <cstdlib>
 #include <ctime>
 
@@ -572,16 +571,11 @@ public:
         pos.set_column(column);      // account for '#line'
         pending.push_back(result_type(T_SPACE, " ", pos));
 
-        // 21 is the max required size for a 64 bit integer represented as a
-        // string
-        char buffer[22];
-
-        using namespace std;    // for some systems sprintf is in namespace std
-        sprintf (buffer, "%zd", pos.get_line());
+        std::string lineno = std::to_string(pos.get_line());
 
         pos.set_column(++column);                 // account for ' '
-        pending.push_back(result_type(T_INTLIT, buffer, pos));
-        pos.set_column(column += (unsigned int)strlen(buffer)); // account for <number>
+        pending.push_back(result_type(T_INTLIT, lineno.c_str(), pos));
+        pos.set_column(column += (unsigned int)lineno.size()); // account for <number>
         pending.push_back(result_type(T_SPACE, " ", pos));
         pos.set_column(++column);                 // account for ' '
 

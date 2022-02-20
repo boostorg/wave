@@ -13,6 +13,7 @@
 #include <fstream>
 
 #include <boost/iterator/iterator_traits.hpp>
+#include <boost/format.hpp>
 
 #include <boost/wave/wave_config.hpp>
 #include <boost/wave/language_support.hpp>
@@ -773,15 +774,11 @@ public:
                     case T_ANYCTRL:
                         // matched some unexpected character
                         {
-                            // 21 is the max required size for a 64 bit integer
-                            // represented as a string
-                            char buffer[22];
                             string_type msg("invalid character in input stream: '0x");
 
-                            // for some systems sprintf is in namespace std
-                            using namespace std;
-                            sprintf(buffer, "%02x'", token_val[0]);
-                            msg += buffer;
+                            std::string buffer = (boost::format("%02x'") % token_val[0]).str();
+
+                            msg += buffer.c_str();
                             BOOST_WAVE_LEXER_THROW(
                                 wave::cpplexer::lexing_exception,
                                 generic_lexing_error,
