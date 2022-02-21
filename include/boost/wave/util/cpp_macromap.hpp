@@ -14,7 +14,6 @@
 #define BOOST_CPP_MACROMAP_HPP_CB8F51B0_A3F0_411C_AEF4_6FF631B8B414_INCLUDED
 
 #include <cstdlib>
-#include <cstdio>
 #include <ctime>
 
 #include <list>
@@ -23,6 +22,7 @@
 #include <vector>
 #include <iterator>
 #include <algorithm>
+#include <string>
 
 #include <boost/assert.hpp>
 #include <boost/wave/wave_config.hpp>
@@ -1701,11 +1701,8 @@ macromap<ContextT>::expand_predefined_macro(token_type const &curr_token,
     }
     else if (value == "__INCLUDE_LEVEL__") {
         // expand the __INCLUDE_LEVEL__ macro
-        char buffer[22]; // 21 bytes holds all NUL-terminated unsigned 64-bit numbers
-
-        using namespace std;    // for some systems sprintf is in namespace std
-        sprintf(buffer, "%d", (int)ctx.get_iteration_depth());
-        replacement = token_type(T_INTLIT, buffer, curr_token.get_position());
+        std::string buffer = std::to_string(ctx.get_iteration_depth());
+        replacement = token_type(T_INTLIT, buffer.c_str(), curr_token.get_position());
     }
 
     // post-expansion hooks
