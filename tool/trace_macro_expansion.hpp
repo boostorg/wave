@@ -10,7 +10,6 @@
 #if !defined(BOOST_TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED)
 #define BOOST_TRACE_MACRO_EXPANSION_HPP_D8469318_8407_4B9D_A19F_13CA60C1661F_INCLUDED
 
-#include <cstdio>
 #include <cstdlib>
 #include <ctime>
 
@@ -572,16 +571,11 @@ public:
         pos.set_column(column);      // account for '#line'
         pending.push_back(result_type(T_SPACE, " ", pos));
 
-        // 21 is the max required size for a 64 bit integer represented as a
-        // string
-        char buffer[22];
-
-        using namespace std;    // for some systems sprintf is in namespace std
-        sprintf (buffer, "%zd", pos.get_line());
+        std::string lineno = std::to_string(pos.get_line());
 
         pos.set_column(++column);                 // account for ' '
-        pending.push_back(result_type(T_INTLIT, buffer, pos));
-        pos.set_column(column += (unsigned int)strlen(buffer)); // account for <number>
+        pending.push_back(result_type(T_INTLIT, lineno.c_str(), pos));
+        pos.set_column(column += (unsigned int)lineno.size()); // account for <number>
         pending.push_back(result_type(T_SPACE, " ", pos));
         pos.set_column(++column);                 // account for ' '
 
@@ -1260,8 +1254,9 @@ protected:
 
         if (0 == values.size()) return false;   // ill_formed_pragma_option
 
-        string_type stdout_file(std::tmpnam(0));
-        string_type stderr_file(std::tmpnam(0));
+        namespace fs = boost::filesystem;
+        string_type stdout_file = (fs::temp_directory_path() / fs::unique_path()).string().c_str();
+        string_type stderr_file = (fs::temp_directory_path() / fs::unique_path()).string().c_str();
         string_type system_str(boost::wave::util::impl::as_string(values));
         string_type native_cmd(system_str);
 

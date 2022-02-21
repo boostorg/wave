@@ -12,6 +12,7 @@
 
 #include <boost/config.hpp>
 #include <boost/timer/timer.hpp>
+#include <boost/format.hpp>
 
 ///////////////////////////////////////////////////////////////////////////////
 //  
@@ -24,28 +25,27 @@ public:
         boost::timer::cpu_times times = elapsed();
         double current = static_cast<double>(times.user + times.system) / 1.e9;
 
-        char time_buffer[sizeof("1234:56:78.90 abcd.") + 1];
-
-        using namespace std;
         if (current >= 3600) {
             // show hours
-            sprintf (time_buffer, "%d:%02d:%02d.%03d hrs.",
-                (int)(current) / 3600, ((int)(current) % 3600) / 60,
-                ((int)(current) % 3600) % 60, 
-                (int)(current * 1000) % 1000);
+            return (boost::format("%d:%02d:%02d.%03d hrs.")
+                    % ((int)(current) / 3600)
+                    % (((int)(current) % 3600) / 60)
+                    % (((int)(current) % 3600) % 60)
+                    % ((int)(current * 1000) % 1000)).str();
         }
         else if (current >= 60) {
             // show minutes
-            sprintf (time_buffer, "%d:%02d.%03d min.", 
-                (int)(current) / 60, (int)(current) % 60, 
-                (int)(current * 1000) % 1000);
+            return (boost::format("%d:%02d.%03d min.")
+                    % ((int)(current) / 60)
+                    % ((int)(current) % 60)
+                    % ((int)(current * 1000) % 1000)).str();
         }
         else {
             // show seconds
-            sprintf(time_buffer, "%d.%03d sec.", (int)current, 
-                (int)(current * 1000) % 1000);
+            return (boost::format("%d.%03d sec.")
+                    % (int)current
+                    % ((int)(current * 1000) % 1000)).str();
         }
-        return time_buffer;
     }
 };
 

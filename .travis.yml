@@ -26,11 +26,11 @@ matrix:
   include:
     - os: linux
       compiler: g++
-      env: TOOLSET=gcc CXXSTD=03,11
+      env: TOOLSET=gcc CXXSTD=11
 
     - os: linux
       compiler: g++-5
-      env: TOOLSET=gcc-5 CXXSTD=03,11,14,1z
+      env: TOOLSET=gcc-5 CXXSTD=11,14,1z
       addons:
         apt:
           packages:
@@ -40,7 +40,7 @@ matrix:
 
     - os: linux
       compiler: g++-6
-      env: TOOLSET=gcc-6 CXXSTD=03,11,14,1z
+      env: TOOLSET=gcc-6 CXXSTD=11,14,1z
       addons:
         apt:
           packages:
@@ -50,7 +50,7 @@ matrix:
 
     - os: linux
       compiler: g++-7
-      env: TOOLSET=gcc-7 CXXSTD=03,11,14,17
+      env: TOOLSET=gcc-7 CXXSTD=11,14,17
       addons:
         apt:
           packages:
@@ -60,11 +60,11 @@ matrix:
 
     - os: linux
       compiler: clang++
-      env: TOOLSET=clang CXXSTD=03,11,14,1z
+      env: TOOLSET=clang CXXSTD=11,14,1z
 
     - os: osx
       compiler: clang++
-      env: TOOLSET=clang CXXSTD=03,11,14,1z
+      env: TOOLSET=clang CXXSTD=11,14,1z
 
 install:
   - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
