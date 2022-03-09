@@ -41,6 +41,15 @@ TESTWAVE_FILES = test.cfg
     ;
 
 project wave/test
+    : requirements
+      [ requires
+        cxx11_constexpr
+        cxx11_variadic_templates
+        cxx11_rvalue_references
+        cxx11_hdr_thread
+        cxx11_hdr_mutex
+        cxx11_hdr_regex
+      ]
     ;
 
 for local source in $(SOURCES)
