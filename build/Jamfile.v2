@@ -13,6 +13,7 @@ import ../../config/checks/config : requires ;
 project boost/wave
     : requirements
       [ requires
+        cxx11_constexpr
         cxx11_variadic_templates
         cxx11_rvalue_references
         cxx11_hdr_thread

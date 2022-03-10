@@ -3,8 +3,19 @@
 # (See accompanying file LICENSE_1_0.txt
 # or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+import config : requires ;
+
 project 
-    : requirements <hardcode-dll-paths>true
+    : requirements
+      <hardcode-dll-paths>true
+      [ requires
+        cxx11_constexpr
+        cxx11_variadic_templates
+        cxx11_rvalue_references
+        cxx11_hdr_thread
+        cxx11_hdr_mutex
+        cxx11_hdr_regex
+      ]
     ;
 
 build-project advanced_hooks/build ;

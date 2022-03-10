@@ -8,6 +8,7 @@
 # Software License, Version 1.0. (See accompanying file 
 # LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+import config : requires ;
 
 #
 # These are the sources to compile for the testwave application
@@ -41,6 +42,15 @@ TESTWAVE_FILES = test.cfg
     ;
 
 project wave/test
+    : requirements
+      [ requires
+        cxx11_constexpr
+        cxx11_variadic_templates
+        cxx11_rvalue_references
+        cxx11_hdr_thread
+        cxx11_hdr_mutex
+        cxx11_hdr_regex
+      ]
     ;
 
 for local source in $(SOURCES)
