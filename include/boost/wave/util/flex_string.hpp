@@ -544,14 +544,6 @@ class AllocatorStringStorage : public A
             static_cast<const char*>(p));
     }
 
-    void* Realloc(void* p, size_type oldSz, size_type newSz)
-    {
-        void* r = Alloc(newSz);
-        flex_string_details::pod_copy(p, p + Min(oldSz, newSz), r);
-        Free(p, oldSz);
-        return r;
-    }
-
     void Free(void* p, size_type sz)
     {
         boost::allocator_deallocate(static_cast<A&>(*this), static_cast<E*>(p), sz);
