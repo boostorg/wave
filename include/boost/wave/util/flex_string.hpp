@@ -287,6 +287,16 @@ inline bool operator!=(const mallocator<T>&,
   return false;
 }
 
+#if defined(BOOST_GCC) && BOOST_GCC >= 40700
+// gcc 11.2 fails to deduce below that pData_ never points to emptyString_ if capacity() == 0 and emits warnings like these:
+// 'operator delete(void*, unsigned long)' called on unallocated object 'boost::wave::util::SimpleStringStorage<char, std::allocator<char> >::emptyString_' [-Wfree-nonheap-object]
+// Unfortunately, suppressing this warning doesn't work, so we have to use __builtin_unreachable() to assert that this never happens.
+// __builtin_unreachable is supported since gcc 4.6, -Wfree-nonheap-object is supported since 4.7.
+#define BOOST_WAVE_COMPILE_TIME_ASSERT(x) if (!(x)) __builtin_unreachable()
+#else
+#define BOOST_WAVE_COMPILE_TIME_ASSERT(x)
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 // class template SimpleStringStorage
 // Allocates memory with malloc
@@ -384,7 +394,11 @@ public:
     ~SimpleStringStorage()
     {
         BOOST_ASSERT(begin() <= end());
-        if (capacity() > 0) free(pData_);
+        if (capacity() > 0)
+        {
+            BOOST_WAVE_COMPILE_TIME_ASSERT(pData_ != &emptyString_);
+            free(pData_);
+        }
     }
 
     iterator begin()
@@ -622,6 +636,7 @@ public:
     {
         if (capacity())
         {
+            BOOST_WAVE_COMPILE_TIME_ASSERT(pData_ != (&SimpleStringStorage<E, A>::emptyString_));
             Free(pData_,
                 sizeof(Data) + capacity() * sizeof(E));
         }
