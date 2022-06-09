@@ -384,7 +384,7 @@ public:
     ~SimpleStringStorage()
     {
         BOOST_ASSERT(begin() <= end());
-        if (pData_ != &emptyString_) free(pData_);
+        if (capacity() > 0) free(pData_);
     }
 
     iterator begin()
@@ -410,13 +410,14 @@ public:
 
     void reserve(size_type res_arg)
     {
-        if (res_arg <= capacity())
+        size_type cap = capacity();
+        if (res_arg <= cap)
         {
             // @@@ insert shrinkage here if you wish
             return;
         }
 
-        if (pData_ == &emptyString_)
+        if (cap == 0)
         {
             Init(0, res_arg);
         }
@@ -495,7 +496,7 @@ public:
 
     const E* c_str() const
     {
-        if (pData_ != &emptyString_) *pData_->pEnd_ = E();
+        if (capacity() > 0) *pData_->pEnd_ = E();
         return pData_->buffer_;
     }
 
@@ -703,7 +704,7 @@ public:
 
     const E* c_str() const
     {
-        if (pData_ != &SimpleStringStorage<E, A>::emptyString_)
+        if (capacity() > 0)
         {
             *pData_->pEnd_ = E();
         }
