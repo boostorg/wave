@@ -1480,22 +1480,22 @@ testwave_app::preprocess_file(std::string filename, std::string const& instr,
 
         //  initialize the context from the options given on the command line
         if (!initialise_options(ctx, global_vm, single_line))
-            return {false, false};
+            return std::make_tuple(false, false);
 
         //  extract the options from the input data and initialize the context
         boost::program_options::variables_map local_vm;
         if (!extract_options(filename, instr, ctx, single_line, local_vm))
-            return {false, false};
+            return std::make_tuple(false, false);
 
         //  add special predefined macros
         if (!add_predefined_macros(ctx))
-            return {false, false};
+            return std::make_tuple(false, false);
 
         if (!expected_cfg_macro.empty() &&
             !ctx.is_defined_macro(expected_cfg_macro))
         {
             // skip this test as it is for a disabled configuration
-            return {true, true};
+            return std::make_tuple(true, true);
         }
 
         //  preprocess the input, loop over all generated tokens collecting the
@@ -1531,7 +1531,7 @@ testwave_app::preprocess_file(std::string filename, std::string const& instr,
                 // special handling of the whole #line directive is required to
                 // allow correct file name matching
                 if (!handle_line_directive(it, end, result))
-                    return {false, false};   // unexpected eof
+                    return std::make_tuple(false, false);   // unexpected eof
             }
             else {
                 // add the value of the current token
@@ -1549,7 +1549,7 @@ testwave_app::preprocess_file(std::string filename, std::string const& instr,
             << e.description() << std::endl;
 
         error = BOOST_WAVETEST_GETSTRING(strm);
-        return {false, false};
+        return std::make_tuple(false, false);
     }
     catch (boost::wave::cpp_exception const& e) {
         // some preprocessing error
@@ -1560,7 +1560,7 @@ testwave_app::preprocess_file(std::string filename, std::string const& instr,
             << e.description() << std::endl;
 
         error = BOOST_WAVETEST_GETSTRING(strm);
-        return {false, false};
+        return std::make_tuple(false, false);
     }
 
     if (9 == debuglevel) {
@@ -1568,5 +1568,5 @@ testwave_app::preprocess_file(std::string filename, std::string const& instr,
                   << filename << std::endl;
     }
 
-    return {true, false};
+    return std::make_tuple(true, false);
 }
