@@ -19,6 +19,7 @@ TODO (known issues):
 CHANGELOG
 
 Boost V1.80:
+  - Fixed #24: Line numbers wrong after conditional section
   - Fixed #160: one test fails with error C2660 and error C2440 under msvc /permissive- mode
   - Fixed #161: BOOST_WAVE_THROW_NAME_CTX does not result in a context callback and always throws
   - Fixed #162: When Boost headers are included in the preprocessed translation unit, Wave fails in boost/integer.hpp(99)
