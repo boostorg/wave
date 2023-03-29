@@ -18,6 +18,9 @@ TODO (known issues):
 
 CHANGELOG
 
+Boost V1.82:
+  - Fixed #182: cpp_re.hpp has a memmove that passes 0/null as arguments
+
 Boost V1.81:
   - Fixed #174: Non-standard escape sequences in string not supported
   - Fixed #175: Possible buffer overflow issue
