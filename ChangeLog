@@ -18,6 +18,9 @@ TODO (known issues):
 
 CHANGELOG
 
+Boost V1.84:
+  - Fixed #188: Segmentation fault when "#pragma\n" is encountered
+
 Boost V1.82:
   - Fixed #182: cpp_re.hpp has a memmove that passes 0/null as arguments
 
