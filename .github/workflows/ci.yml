@@ -162,7 +162,6 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init tools/boostdep
           cp -r $TRAVIS_BUILD_DIR/* libs/wave
-          echo "compiler is at " `which ${CXX}`
           python tools/boostdep/depinst/depinst.py -I tool -I samples wave
           ./bootstrap.sh
           ./b2 headers
@@ -179,16 +178,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: "TOOLSET=clang CXXSTD=11,14,1z Job 5"
+          - name: "TOOLSET=clang CXXSTD=11,14,17,20 Job 5"
             buildtype: "boost"
             packages: ""
             os: "macos-12"
             cxx: "clang++"
-            toolset: "clang"
             sources: ""
             llvm_os: ""
             llvm_ver: ""
-            xcode_version: 11.7
+            xcode_version: 14.2.0
+            toolset: "clang"
             cxxstd: "11,14,1z"
 
     runs-on: ${{ matrix.os }}
@@ -200,7 +199,7 @@ jobs:
         if: matrix.xcode_version != ''
         run: echo "DEVELOPER_DIR=/Applications/Xcode_${{ matrix.xcode_version }}.app/Contents/Developer" >> $GITHUB_ENV
       - name: Test DEVELOPER_DIR
-        run: ls -l /Applications/Xcode*
+        run: echo $DEVELOPER_DIR
 
       - name: "osx"
         shell: bash
@@ -215,9 +214,6 @@ jobs:
           CXXSTD: ${{ matrix.cxxstd }}
           TRAVIS_BRANCH: ${{ github.base_ref }}
           TRAVIS_OS_NAME: "osx"
-          B2_VERBOSE_OPT: 1
-          B2_DEBUG_OPT: 1
-          B2_GUESS_TOOLSET_OPT: 1
         run: |
           echo '==================================> SETUP'
           set -e
@@ -246,11 +242,6 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init tools/boostdep
           cp -r $TRAVIS_BUILD_DIR/* libs/wave
-          echo "toolset is ${TOOLSET}"
-          echo "clang++ is at " `which clang++`
-          echo "CXX is ${CXX}"
-          echo "testing compiler"
-          ${CXX} check_clib.cpp check_cxx11.cpp
           python tools/boostdep/depinst/depinst.py -I tool -I samples wave
           ./bootstrap.sh
           ./b2 headers
