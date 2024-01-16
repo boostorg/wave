@@ -188,7 +188,7 @@ jobs:
             llvm_ver: ""
             xcode_version: 14.2.0
             toolset: "clang"
-            cxxstd: "11,14,1z"
+            cxxstd: "11,14,17,20"
 
     runs-on: ${{ matrix.os }}
 
