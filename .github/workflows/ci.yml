@@ -200,7 +200,7 @@ jobs:
         if: matrix.xcode_version != ''
         run: echo "DEVELOPER_DIR=/Applications/Xcode_${{ matrix.xcode_version }}.app/Contents/Developer" >> $GITHUB_ENV
       - name: Test DEVELOPER_DIR
-        run: echo $DEVELOPER_DIR
+        run: ls -l $DEVELOPER_DIR
 
       - name: "osx"
         shell: bash
