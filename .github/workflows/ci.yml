@@ -162,6 +162,7 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init tools/boostdep
           cp -r $TRAVIS_BUILD_DIR/* libs/wave
+          echo "compiler is at " `which ${CXX}`
           python tools/boostdep/depinst/depinst.py -I tool -I samples wave
           ./bootstrap.sh
           ./b2 headers
@@ -183,6 +184,7 @@ jobs:
             packages: ""
             os: "macos-12"
             cxx: "clang++"
+            toolset: "clang"
             sources: ""
             llvm_os: ""
             llvm_ver: ""
@@ -241,6 +243,9 @@ jobs:
           git submodule update --init libs/config
           git submodule update --init tools/boostdep
           cp -r $TRAVIS_BUILD_DIR/* libs/wave
+          echo "toolset is ${TOOLSET}"
+          echo "clang++ is at " `which clang++`
+          echo "CXX is ${CXX}"
           python tools/boostdep/depinst/depinst.py -I tool -I samples wave
           ./bootstrap.sh
           ./b2 headers
