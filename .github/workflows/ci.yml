@@ -215,6 +215,9 @@ jobs:
           CXXSTD: ${{ matrix.cxxstd }}
           TRAVIS_BRANCH: ${{ github.base_ref }}
           TRAVIS_OS_NAME: "osx"
+          B2_VERBOSE_OPT=1
+          B2_DEBUG_OPT=1
+          B2_GUESS_TOOLSET_OPT=1
         run: |
           echo '==================================> SETUP'
           set -e
