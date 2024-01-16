@@ -249,6 +249,8 @@ jobs:
           echo "toolset is ${TOOLSET}"
           echo "clang++ is at " `which clang++`
           echo "CXX is ${CXX}"
+          echo "testing compiler"
+          ${CXX} check_clib.cpp check_cxx11.cpp
           python tools/boostdep/depinst/depinst.py -I tool -I samples wave
           ./bootstrap.sh
           ./b2 headers
