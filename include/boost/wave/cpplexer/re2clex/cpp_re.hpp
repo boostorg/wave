@@ -41,7 +41,7 @@
         s->ptr = marker;                                                      \
         cursor = uchar_wrapper(fill(s, cursor), cursor.column);               \
         limit = uchar_wrapper (s->lim);                                       \
-        marker = s->ptr;                                                      \
+        marker = uchar_wrapper(s->ptr);                                       \
     }                                                                         \
     /**/
 
