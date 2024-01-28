@@ -238,7 +238,7 @@ uchar *fill(Scanner<Iterator> *s, uchar *cursor)
         for (p = std::max(s->lim - 3, s->cur); p < s->lim + cnt - 2; ++p)
         {
             int len = 0;
-            if (is_backslash(p, s->lim + cnt, len))
+            if (is_backslash(p, s->lim + cnt, len) && ((p + len) < (s->lim + cnt)))
             {
                 if (*(p+len) == '\n')
                 {
@@ -250,7 +250,7 @@ uchar *fill(Scanner<Iterator> *s, uchar *cursor)
                 }
                 else if (*(p+len) == '\r')
                 {
-                    if (*(p+len+1) == '\n')
+                    if (((p + len + 1) < s->lim + cnt) && (*(p+len+1) == '\n'))
                     {
                         int offset = len + 2;
                         memmove(p, p + offset, s->lim + cnt - p - offset);
