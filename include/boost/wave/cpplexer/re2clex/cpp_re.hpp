@@ -235,7 +235,7 @@ uchar *fill(Scanner<Iterator> *s, uchar *cursor)
         /* backslash-newline erasing time */
 
         /* first scan for backslash-newline and erase them */
-        for (p = s->lim; p < s->lim + cnt - 2; ++p)
+        for (p = std::max(s->lim - 3, s->cur); p < s->lim + cnt - 2; ++p)
         {
             int len = 0;
             if (is_backslash(p, s->lim + cnt, len))
