@@ -32,8 +32,13 @@ int main() {
 
     // construct input with a trigraph in a tricky spot
     constexpr std::size_t space_count = BOOST_WAVE_BSIZE - 18;
-    auto inp_txt = std::string(space_count, ' ') + ";" + std::string("??=") +
-        "                  auto foo = bar;\n";
+    auto inp_txt = std::string(space_count, ' ') + ";";
+    // add in pound trigraph one character at a time
+    // otherwise, the string literal may get translated by the compiler
+    inp_txt.push_back('?');
+    inp_txt.push_back('?');
+    inp_txt.push_back('=');
+    inp_txt += "                  auto foo = bar;\n";
 
     ctx_t ctx( inp_txt.begin(), inp_txt.end(), "longfile.cpp" );
 
