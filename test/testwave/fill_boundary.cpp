@@ -35,7 +35,7 @@ int main() {
     auto inp_txt = std::string(space_count, ' ') + ";" + std::string("??=") +
         "                  auto foo = bar;\n";
 
-    auto ctx =  ctx_t( inp_txt.begin(), inp_txt.end(), "longfile.cpp" );
+    ctx_t ctx( inp_txt.begin(), inp_txt.end(), "longfile.cpp" );
 
     auto it = ctx.begin();
 
