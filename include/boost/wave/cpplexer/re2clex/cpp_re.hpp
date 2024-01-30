@@ -18,6 +18,8 @@
 #include <boost/wave/wave_config.hpp>
 #include <boost/wave/token_ids.hpp>
 #include <boost/wave/cpplexer/cpplexer_exceptions.hpp>
+#include <boost/wave/cpplexer/re2clex/aq.hpp>
+#include <boost/wave/cpplexer/re2clex/scanner.hpp>
 
 // this must occur after all of the includes and before any code appears
 #ifdef BOOST_HAS_ABI_HEADERS
@@ -38,8 +40,10 @@
 #define YYMARKER  marker
 #define YYFILL(n)                                                             \
     {                                                                         \
+        s->ptr = marker;                                                      \
         cursor = uchar_wrapper(fill(s, cursor), cursor.column);               \
         limit = uchar_wrapper (s->lim);                                       \
+        marker = uchar_wrapper(s->ptr);                                       \
     }                                                                         \
     /**/
 
@@ -345,7 +349,6 @@ uchar *fill(Scanner<Iterator> *s, uchar *cursor)
     }
     return cursor;
 }
-#undef BOOST_WAVE_BSIZE
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Special wrapper class holding the current cursor position
