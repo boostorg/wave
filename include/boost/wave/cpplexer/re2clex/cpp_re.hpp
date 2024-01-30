@@ -235,10 +235,13 @@ uchar *fill(Scanner<Iterator> *s, uchar *cursor)
         /* backslash-newline erasing time */
 
         /* first scan for backslash-newline and erase them */
-        for (p = s->lim; p < s->lim + cnt - 2; ++p)
+        /* a backslash-newline combination can be 2 (regular) or 4 (trigraph backslash) chars */
+        /* start checking 3 chars within the old buffer, if possible */
+        for (p = (std::max)(s->lim - 3, s->cur); p < s->lim + cnt - 2; ++p)
         {
             int len = 0;
-            if (is_backslash(p, s->lim + cnt, len))
+            /* is there a backslash, and room afterwards for a newline? */
+            if (is_backslash(p, s->lim + cnt, len) && ((p + len) < (s->lim + cnt)))
             {
                 if (*(p+len) == '\n')
                 {
@@ -250,7 +253,8 @@ uchar *fill(Scanner<Iterator> *s, uchar *cursor)
                 }
                 else if (*(p+len) == '\r')
                 {
-                    if (*(p+len+1) == '\n')
+                    /* is there also room for a newline, and is one present? */
+                    if (((p + len + 1) < s->lim + cnt) && (*(p+len+1) == '\n'))
                     {
                         int offset = len + 2;
                         memmove(p, p + offset, s->lim + cnt - p - offset);
