@@ -258,7 +258,7 @@ public:
                 {
                     if (((std::numeric_limits<int_literal_type>::min)() + as_long(rhs)) > value.i)
                     {
-                        // signed overflow will occur if addition performed
+                        // signed overflow will occur if subtraction performed
                         valid = error_integer_overflow;
                     }
                     else {
@@ -274,7 +274,7 @@ public:
                         ((rhs.value.i > 0) &&
                          (((std::numeric_limits<int_literal_type>::min)() + rhs.value.i) > value.i)))
                     {
-                        // signed overflow will occur if addition performed
+                        // signed overflow will occur if subtraction performed
                         valid = error_integer_overflow;
                     }
                     else {
