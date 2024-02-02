@@ -262,7 +262,7 @@ public:
                         valid = error_integer_overflow;
                     }
                     else {
-                        value.i += as_long(rhs);
+                        value.i -= as_long(rhs);
                     }
                 }
                 break;
