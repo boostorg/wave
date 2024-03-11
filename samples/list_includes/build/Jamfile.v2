@@ -18,14 +18,18 @@ SOURCES =
         ../instantiate_lexertl_lexer 
     ;
 
+project
+    : requirements
+        <source>/boost/wave//boost_wave
+        <source>/boost/program_options//boost_program_options/<link>static
+        <source>/boost/filesystem//boost_filesystem
+        <source>/boost/system//boost_system
+        <source>/boost/thread//boost_thread
+    ;
+
 exe list_includes
     :
         $(SOURCES)
-        /boost/wave//boost_wave
-        /boost/program_options//boost_program_options/<link>static
-        /boost/filesystem//boost_filesystem     
-        /boost/system//boost_system     
-        /boost/thread//boost_thread
     ;
 
 for local source in $(SOURCES)

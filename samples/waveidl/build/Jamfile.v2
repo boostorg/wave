@@ -17,16 +17,20 @@ SOURCES =
         ../instantiate_re2c_lexer
         ../instantiate_re2c_lexer_str
         ../idllexer/idl_re
-	;
-	
+    ;
+
+project
+    : requirements
+        <source>/boost/wave//boost_wave
+        <source>/boost/program_options//boost_program_options/<link>static
+        <source>/boost/system//boost_system
+        <source>/boost/thread//boost_thread
+        <source>/boost/filesystem//boost_filesystem
+    ;
+
 exe waveidl
     :
         $(SOURCES)
-        /boost/wave//boost_wave
-        /boost/program_options//boost_program_options/<link>static
-        /boost/system//boost_system
-        /boost/thread//boost_thread
-        /boost/filesystem//boost_filesystem
     ;
 
 for local source in $(SOURCES)
