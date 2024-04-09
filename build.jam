@@ -31,7 +31,8 @@ project /boost/wave
 
 explicit
     [ alias boost_wave : build//boost_wave ]
-    [ alias all : boost_wave samples test ]
+    [ alias wave : tool/build//wave ]
+    [ alias all : boost_wave wave samples test ]
     ;
 
 call-if : boost-library wave
