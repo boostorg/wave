@@ -4,8 +4,8 @@
 #
 # http://www.boost.org/
 #
-# Copyright (c) 2001-2011 Hartmut Kaiser. Distributed under the Boost 
-# Software License, Version 1.0. (See accompanying file 
+# Copyright (c) 2001-2011 Hartmut Kaiser. Distributed under the Boost
+# Software License, Version 1.0. (See accompanying file
 # LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 require-b2 5.0.1 ;
@@ -27,6 +27,8 @@ project
       <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
       <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
     : source-location ../src
+    : usage-requirements
+        <define>BOOST_ALL_NO_LIB=1
     ;
 
 SOURCES =
