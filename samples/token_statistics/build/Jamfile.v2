@@ -4,12 +4,12 @@
 #
 # http://www.boost.org/
 #
-# Copyright (c) 2001-2010 Hartmut Kaiser. Distributed under the Boost 
-# Software License, Version 1.0. (See accompanying file 
+# Copyright (c) 2001-2010 Hartmut Kaiser. Distributed under the Boost
+# Software License, Version 1.0. (See accompanying file
 # LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
-SOURCES = 
-        ../token_statistics 
+SOURCES =
+        ../token_statistics
         ../instantiate_xlex_lexer
         ../instantiate_cpp_grammar
         ../instantiate_defined_grammar
@@ -18,12 +18,12 @@ SOURCES =
 
 project
     : requirements
-        <source>/boost/wave//boost_wave
-        <source>/boost/program_options//boost_program_options/<link>static
-        <source>/boost/filesystem//boost_filesystem
-        <source>/boost/system//boost_system
-        <source>/boost/thread//boost_thread
-        <source>/boost/xpressive//boost_xpressive
+        <library>/boost/wave//boost_wave
+        <library>/boost/program_options//boost_program_options/<link>static
+        <library>/boost/filesystem//boost_filesystem
+        <library>/boost/system//boost_system
+        <library>/boost/thread//boost_thread
+        <library>/boost/xpressive//boost_xpressive
     ;
 
 exe token_statistics
