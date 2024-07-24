@@ -13,6 +13,7 @@ import-search /boost/config/checks ;
 import config : requires ;
 
 project
+    : common-requirements <library>$(boost_dependencies)
     : requirements
       [ requires
         cxx11_constexpr
