@@ -104,6 +104,10 @@ jobs:
             python3 -m pip --version
             lsb_release -a
             sudo python3 -m pip install cmake
+      - name: Packages for 20.04
+        if: matrix.container == 'ubuntu:20.04'
+        run: |
+            apt-get update && apt-get -y install sudo
 
       - uses: actions/checkout@v3
 
