@@ -100,6 +100,8 @@ jobs:
             sudo apt-add-repository ppa:git-core/ppa
             sudo apt-get -o Acquire::Retries=3 update && apt-get -o Acquire::Retries=3 -y install git
             sudo python3 -m pip install --upgrade pip
+            python3 -m pip --version
+            lsb_release -a
             sudo python3 -m pip install cmake
 
       - uses: actions/checkout@v4
