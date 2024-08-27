@@ -33,7 +33,7 @@ jobs:
             packages: "g++-5"
             packages_to_remove: ""
             os: "ubuntu-latest"
-            container: "ubuntu:18.04"
+            container: ubuntu:bionic-20210615.1
             cxx: "g++-5"
             sources: ""
             llvm_os: ""
@@ -45,7 +45,7 @@ jobs:
             packages: "g++-6"
             packages_to_remove: ""
             os: "ubuntu-latest"
-            container: "ubuntu:18.04"
+            container: ubuntu:bionic-20210615.1
             cxx: "g++-6"
             sources: ""
             llvm_os: ""
@@ -105,7 +105,7 @@ jobs:
             lsb_release -a
             sudo python3 -m pip install cmake
       - name: Packages for 18.04 only
-        if: matrix.container == 'ubuntu:18.04'
+        if: matrix.container == 'ubuntu:bionic-20210615.1'
         run: |
             apt-get update && apt-get -y install libpython-dev libc++-helpers
 
