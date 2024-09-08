@@ -1486,6 +1486,14 @@ macromap<ContextT>::expand_macro(ContainerT &expanded,
                     macro_def.macroparameters.size(), seen_newline);
 
             std::size_t parm_count_required = macro_def.macroparameters.size();
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+            if (boost::wave::need_named_variadics(ctx.get_language())) {
+                if ((parm_count_required >= 2) && 
+                    T_ELLIPSIS == token_id(*(macro_def.macroparameters.end() - 1)) &&
+                    T_IDENTIFIER == token_id(*(macro_def.macroparameters.end() - 2)))
+                    --parm_count_required; 
+            }
+#endif
 #if BOOST_WAVE_SUPPORT_CPP2A
             if (boost::wave::need_cpp2a(ctx.get_language())) {
                 // Starting with C++20, variable arguments may be left out

@@ -354,16 +354,19 @@ struct cpp_grammar :
                 =   confix_p(
                         no_node_d[ch_p(T_LEFTPAREN) >> *ppsp],
                        !list_p(
-                            (   ch_p(T_IDENTIFIER)
-                            |   pattern_p(KeywordTokenType,
+                            (   pattern_p(KeywordTokenType,
                                     TokenTypeMask|PPTokenFlag)
                             |   pattern_p(OperatorTokenType|AltExtTokenType,
                                     ExtTokenTypeMask|PPTokenFlag)   // and, bit_and etc.
                             |   pattern_p(BoolLiteralTokenType,
                                     TokenTypeMask|PPTokenFlag)  // true/false
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+                            |   lexeme_d[ch_p(T_IDENTIFIER) >> ch_p(T_ELLIPSIS)]
+#endif
                             |   ch_p(T_ELLIPSIS)
 #endif
+                            |   ch_p(T_IDENTIFIER) // must be after the named variadic
                             ),
                             no_node_d[*ppsp >> ch_p(T_COMMA) >> *ppsp]
                         ),

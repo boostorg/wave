@@ -81,6 +81,18 @@ struct macro_definition {
         if (!replaced_parameters) {
             typename definition_container_type::iterator end = macrodefinition.end();
             typename definition_container_type::iterator it = macrodefinition.begin();
+            typename ContextT::string_type va_args = "__VA_ARGS__";
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS
+            if (need_named_variadics(ctx.get_language())) {
+                const_parameter_iterator_t cend = macroparameters.end();
+                const_parameter_iterator_t cbegin = macroparameters.begin();
+                if (macroparameters.size() >= 2 && 
+                    T_IDENTIFIER == token_id(*(cend-2)) &&
+                    T_ELLIPSIS == token_id(*(cend-1))) {
+                    va_args = (*(cend-2)).get_value();
+                }
+            }
+#endif
 
             for (/**/; it != end; ++it) {
                 token_id id = *it;
@@ -96,6 +108,15 @@ struct macro_definition {
                     for (typename parameter_container_type::size_type i = 0;
                         cit != cend; ++cit, ++i)
                     {
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS
+                        if (need_named_variadics(ctx.get_language()) &&
+                            T_IDENTIFIER == token_id(*cit) &&
+                            cit == cend - 2 &&
+                            T_ELLIPSIS == token_id(*(cit+1))) {
+                                --i;
+                                continue;
+                        }
+#endif
                         if ((*it).get_value() == (*cit).get_value()) {
                             (*it).set_token_id(token_id(T_PARAMETERBASE+i));
                             break;
@@ -103,7 +124,7 @@ struct macro_definition {
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
                         else if (need_variadics(ctx.get_language()) &&
                             T_ELLIPSIS == token_id(*cit) &&
-                            "__VA_ARGS__" == (*it).get_value())
+                            va_args == (*it).get_value())
                         {
                         // __VA_ARGS__ requires special handling
                             (*it).set_token_id(token_id(T_EXTPARAMETERBASE+i));

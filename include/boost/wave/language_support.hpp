@@ -33,6 +33,9 @@ enum language_support {
     //  support flags for C99
     support_option_variadics = 0x04,
     support_c99 = support_option_variadics | support_option_long_long | 0x08,
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+    support_option_named_variadics = 0x100000,
+#endif
 #endif
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
     //  support flags for C++11
@@ -61,7 +64,7 @@ enum language_support {
 #endif
 #endif
 
-    support_option_mask = 0x1FFC0,
+    support_option_mask = 0xFFC0,
     support_option_emit_contnewlines = 0x0040,
     support_option_insert_whitespace = 0x0080,
     support_option_preserve_comments = 0x0100,
@@ -72,7 +75,6 @@ enum language_support {
     support_option_emit_line_directives = 0x2000,
     support_option_include_guard_detection = 0x4000,
     support_option_emit_pragma_directives = 0x8000,
-    support_option_named_variadics = 0x10000,
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -241,7 +243,9 @@ BOOST_WAVE_OPTION(include_guard_detection)   // support_option_include_guard_det
 #endif
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
 BOOST_WAVE_OPTION(variadics)                 // support_option_variadics
-BOOST_WAVE_OPTION(named_variadics)           // support_option_named_variadic
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+BOOST_WAVE_OPTION(named_variadics)           // support_option_named_variadics
+#endif
 #endif
 #if BOOST_WAVE_SUPPORT_VA_OPT != 0
 BOOST_WAVE_OPTION(va_opt)                    // support_option_va_opt
