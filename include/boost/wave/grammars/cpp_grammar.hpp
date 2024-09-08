@@ -363,6 +363,7 @@ struct cpp_grammar :
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
 #if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
                             |   lexeme_d[ch_p(T_IDENTIFIER) >> ch_p(T_ELLIPSIS)]
+                            |   ch_p(T_IDENTIFIER) >> ch_p(T_ELLIPSIS)
 #endif
                             |   ch_p(T_ELLIPSIS)
 #endif
