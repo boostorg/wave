@@ -111,7 +111,7 @@ struct macro_definition {
                         cit != cend; ++cit, ++i)
                     {
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
-#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
                         if (need_named_variadics(ctx.get_language()) &&
                             T_IDENTIFIER == token_id(*cit) &&
                             cit == cend - 2 &&
