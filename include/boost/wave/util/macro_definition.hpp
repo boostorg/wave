@@ -82,7 +82,8 @@ struct macro_definition {
             typename definition_container_type::iterator end = macrodefinition.end();
             typename definition_container_type::iterator it = macrodefinition.begin();
             typename ContextT::string_type va_args = "__VA_ARGS__";
-#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS
+#if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
             if (need_named_variadics(ctx.get_language())) {
                 const_parameter_iterator_t cend = macroparameters.end();
                 const_parameter_iterator_t cbegin = macroparameters.begin();
@@ -92,6 +93,7 @@ struct macro_definition {
                     va_args = (*(cend-2)).get_value();
                 }
             }
+#endif
 #endif
 
             for (/**/; it != end; ++it) {
@@ -108,6 +110,7 @@ struct macro_definition {
                     for (typename parameter_container_type::size_type i = 0;
                         cit != cend; ++cit, ++i)
                     {
+#if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
 #if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS
                         if (need_named_variadics(ctx.get_language()) &&
                             T_IDENTIFIER == token_id(*cit) &&
@@ -116,6 +119,7 @@ struct macro_definition {
                                 --i;
                                 continue;
                         }
+#endif
 #endif
                         if ((*it).get_value() == (*cit).get_value()) {
                             (*it).set_token_id(token_id(T_PARAMETERBASE+i));
