@@ -267,8 +267,7 @@ public:
             "ill formed #define directive",             // bad_define_statement
             "__VA_ARGS__ can only appear in the "
             "expansion of a C99 variadic macro",        // bad_define_statement_va_args
-            "named variadic like x... is disabled, "
-            "please enable_named_variadics() to enable",  // bad_define_statement_named_va_args
+            "named variadic like x... is disabled",     // bad_define_statement_named_va_args
             "__VA_OPT__ can only appear in the "
             "expansion of a C++20 variadic macro",      // bad_define_statement_va_opt
             "__VA_OPT__ must be followed by a left "
