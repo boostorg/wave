@@ -1489,13 +1489,15 @@ macromap<ContextT>::expand_macro(ContainerT &expanded,
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
 #if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
             if (boost::wave::need_named_variadics(ctx.get_language())) {
+                // named variadics can be completely left out
                 if ((parm_count_required >= 2) && 
                     T_ELLIPSIS == token_id(*(macro_def.macroparameters.end() - 1)) &&
                     T_IDENTIFIER == token_id(*(macro_def.macroparameters.end() - 2)))
-                    --parm_count_required; 
+                    parm_count_required -= 2;
             }
 #endif
 #endif
+
 #if BOOST_WAVE_SUPPORT_CPP2A
             if (boost::wave::need_cpp2a(ctx.get_language())) {
                 // Starting with C++20, variable arguments may be left out
