@@ -1493,7 +1493,11 @@ macromap<ContextT>::expand_macro(ContainerT &expanded,
                 // entirely, so reduce the mandatory argument count by one
                 // if the last parameter is ellipsis:
                 if ((parm_count_required > 0) &&
-                    (T_ELLIPSIS == token_id(macro_def.macroparameters.back()))) {
+                    (T_ELLIPSIS == token_id(macro_def.macroparameters.back()) 
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+                    || T_GNU_NAMED_ELLIPSIS == token_id(macro_def.macroparameters.back())
+#endif
+                     )) {
                     --parm_count_required;
                 }
             }
