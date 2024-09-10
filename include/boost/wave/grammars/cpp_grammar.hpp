@@ -347,7 +347,17 @@ struct cpp_grammar :
                             )
                         )
                 ;
-
+#if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+            typedef typename ScannerT::iterator_t iterator_t;
+            typedef node_val_data<iterator_t, nil_t> node_t;
+            typedef typename node_t::iterator_t container_iterator_t;
+            const auto &named_variadics = [](tree_node<node_t>& node, iterator_t begin, iterator_t end) {
+                container_iterator_t it = node.value.begin();
+                it->set_token_id(T_GNU_NAMED_ELLIPSIS);
+            };
+#endif
+#endif
         // parameter list
         // normal C++ mode
             macro_parameters
@@ -362,8 +372,12 @@ struct cpp_grammar :
                                     TokenTypeMask|PPTokenFlag)  // true/false
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
 #if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
-                            |   lexeme_d[ch_p(T_IDENTIFIER) >> ch_p(T_ELLIPSIS)]
-                            |   ch_p(T_IDENTIFIER) >> ch_p(T_ELLIPSIS)
+                            |   access_node_d[
+                                    token_node_d[
+                                        lexeme_d[ch_p(T_IDENTIFIER) >> ch_p(T_ELLIPSIS)]
+                                    |   (ch_p(T_IDENTIFIER) >> ch_p(T_ELLIPSIS))
+                                ]][named_variadics]
+
 #endif
                             |   ch_p(T_ELLIPSIS)
 #endif

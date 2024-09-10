@@ -1731,6 +1731,19 @@ pp_iterator_functor<ContextT>::on_define (parse_node_type const &node)
                         (*pit).get_position());
                     return;
                 }
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+                if (T_GNU_NAMED_ELLIPSIS == token_id(*pit)) {
+                  if (boost::wave::need_named_variadics(ctx.get_language()))
+                    seen_ellipses = true;
+                  else {
+                    // named variadics are not supported
+                    BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                        bad_define_statement_named_va_args, macroname.get_value().c_str(),
+                        (*pit).get_position());
+                    return;
+                  }
+                }
+#endif
                 if (T_ELLIPSIS == token_id(*pit))
                     seen_ellipses = true;
 

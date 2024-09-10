@@ -85,12 +85,9 @@ struct macro_definition {
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
 #if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
             if (need_named_variadics(ctx.get_language())) {
-                const_parameter_iterator_t cend = macroparameters.end();
-                const_parameter_iterator_t cbegin = macroparameters.begin();
-                if (macroparameters.size() >= 2 && 
-                    T_IDENTIFIER == token_id(*(cend-2)) &&
-                    T_ELLIPSIS == token_id(*(cend-1))) {
-                    va_args = (*(cend-2)).get_value();
+                if (macroparameters.size() > 0 && 
+                    T_GNU_NAMED_ELLIPSIS == token_id(macroparameters.back())) {
+                    va_args = macroparameters.back().get_value();
                 }
             }
 #endif
@@ -110,17 +107,6 @@ struct macro_definition {
                     for (typename parameter_container_type::size_type i = 0;
                         cit != cend; ++cit, ++i)
                     {
-#if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
-#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
-                        if (need_named_variadics(ctx.get_language()) &&
-                            T_IDENTIFIER == token_id(*cit) &&
-                            cit == cend - 2 &&
-                            T_ELLIPSIS == token_id(*(cit+1))) {
-                                --i;
-                                continue;
-                        }
-#endif
-#endif
                         if ((*it).get_value() == (*cit).get_value()) {
                             (*it).set_token_id(token_id(T_PARAMETERBASE+i));
                             break;
@@ -134,6 +120,16 @@ struct macro_definition {
                             (*it).set_token_id(token_id(T_EXTPARAMETERBASE+i));
                             break;
                         }
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+                        else if (need_named_variadics(ctx.get_language()) &&
+                            T_GNU_NAMED_ELLIPSIS == token_id(*cit) &&
+                            va_args == (*it).get_value())
+                        {
+                        // __VA_ARGS__ requires special handling
+                            (*it).set_token_id(token_id(T_EXTPARAMETERBASE+i));
+                            break;
+                        }
+#endif
 #if BOOST_WAVE_SUPPORT_VA_OPT != 0
                         else if (need_va_opt(ctx.get_language()) &&
                             T_ELLIPSIS == token_id(*cit) &&
