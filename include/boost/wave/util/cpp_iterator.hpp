@@ -1722,6 +1722,7 @@ pp_iterator_functor<ContextT>::on_define (parse_node_type const &node)
 #if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
             string_type named_variadic;
             if (boost::wave::need_gnu_named_variadics(ctx.get_language()) &&
+                macroparameters.size() > 0 &&
                 token_id(macroparameters.back()) == T_GNU_NAMED_ELLIPSIS) {
                 named_variadic = macroparameters.back().get_value();
                 named_variadic = named_variadic.substr(0, named_variadic.size()-3);
