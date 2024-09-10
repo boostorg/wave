@@ -88,6 +88,7 @@ struct macro_definition {
                 if (macroparameters.size() > 0 && 
                     T_GNU_NAMED_ELLIPSIS == token_id(macroparameters.back())) {
                     va_args = macroparameters.back().get_value();
+                    va_args = va_args.substr(0, va_args.size()-3);
                 }
             }
 #endif
@@ -152,6 +153,13 @@ struct macro_definition {
             {
                 has_ellipsis = true;
             }
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+            if (macroparameters.size() > 0 && 
+                T_GNU_NAMED_ELLIPSIS == token_id(macroparameters.back())) 
+            {
+                has_ellipsis = true;
+            }
+#endif
 #endif
             replaced_parameters = true;     // do it only once
         }

@@ -1719,6 +1719,15 @@ pp_iterator_functor<ContextT>::on_define (parse_node_type const &node)
             typedef typename std::vector<result_type>::iterator
                 parameter_iterator_t;
 
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+            string_type named_variadic;
+            if (boost::wave::need_named_variadics(ctx.get_language()) &&
+                token_id(macroparameters.back()) == T_GNU_NAMED_ELLIPSIS) {
+                named_variadic = macroparameters.back().get_value();
+                named_variadic = named_variadic.substr(0, named_variadic.size()-3);
+            }
+#endif
+
             bool seen_ellipses = false;
             parameter_iterator_t end = macroparameters.end();
             for (parameter_iterator_t pit = macroparameters.begin();
@@ -1742,6 +1751,14 @@ pp_iterator_functor<ContextT>::on_define (parse_node_type const &node)
                         (*pit).get_position());
                     return;
                   }
+                }
+
+                if (named_variadic == (*pit).get_value()) {
+                    // can't use named_variadic as a argument name
+                    BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                        duplicate_parameter_name,
+                        macroname.get_value().c_str(), (*pit).get_position());
+                    return;
                 }
 #endif
                 if (T_ELLIPSIS == token_id(*pit))

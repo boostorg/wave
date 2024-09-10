@@ -355,6 +355,7 @@ struct cpp_grammar :
             const auto &named_variadics = [](tree_node<node_t>& node, iterator_t begin, iterator_t end) {
                 container_iterator_t it = node.value.begin();
                 it->set_token_id(T_GNU_NAMED_ELLIPSIS);
+                it->set_value(it->get_value() + "...");
             };
 #endif
 #endif
