@@ -373,12 +373,8 @@ struct cpp_grammar :
                                     TokenTypeMask|PPTokenFlag)  // true/false
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
 #if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
-                            |   access_node_d[
-                                    token_node_d[
-                                        lexeme_d[ch_p(T_IDENTIFIER) >> ch_p(T_ELLIPSIS)]
-                                    |   (ch_p(T_IDENTIFIER) >> ch_p(T_ELLIPSIS))
-                                ]][named_variadics]
-
+                            |   access_node_d[token_node_d[(ch_p(T_IDENTIFIER) >> *ppsp >> ch_p(T_ELLIPSIS))]]
+                                [named_variadics]
 #endif
                             |   ch_p(T_ELLIPSIS)
 #endif
