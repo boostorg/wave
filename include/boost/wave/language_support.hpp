@@ -34,7 +34,7 @@ enum language_support {
     support_option_variadics = 0x04,
     support_c99 = support_option_variadics | support_option_long_long | 0x08,
 #if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
-    support_option_named_variadics = 0x100000,
+    support_option_gnu_named_variadics = 0x100000,
 #endif
 #endif
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
@@ -244,7 +244,7 @@ BOOST_WAVE_OPTION(include_guard_detection)   // support_option_include_guard_det
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
 BOOST_WAVE_OPTION(variadics)                 // support_option_variadics
 #if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
-BOOST_WAVE_OPTION(named_variadics)           // support_option_named_variadics
+BOOST_WAVE_OPTION(gnu_named_variadics)           // support_option_named_variadics
 #endif
 #endif
 #if BOOST_WAVE_SUPPORT_VA_OPT != 0

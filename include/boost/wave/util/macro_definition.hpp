@@ -84,7 +84,7 @@ struct macro_definition {
             typename ContextT::string_type va_args = "__VA_ARGS__";
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
 #if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
-            if (need_named_variadics(ctx.get_language())) {
+            if (need_gnu_named_variadics(ctx.get_language())) {
                 if (macroparameters.size() > 0 && 
                     T_GNU_NAMED_ELLIPSIS == token_id(macroparameters.back())) {
                     va_args = macroparameters.back().get_value();
@@ -122,7 +122,7 @@ struct macro_definition {
                             break;
                         }
 #if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
-                        else if (need_named_variadics(ctx.get_language()) &&
+                        else if (need_gnu_named_variadics(ctx.get_language()) &&
                             T_GNU_NAMED_ELLIPSIS == token_id(*cit) &&
                             va_args == (*it).get_value())
                         {
