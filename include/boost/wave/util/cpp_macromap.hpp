@@ -1264,18 +1264,15 @@ macromap<ContextT>::expand_replacement_list(
             {
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
                 if (i >= arguments.size()) {
-                    if (boost::wave::need_cpp2a(ctx.get_language())) {
-                        // no argument supplied; do nothing
-                        adjacent_stringize = false;
-                    } else {
-                        BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
-                        too_few_macroarguments, (*cit).get_value().c_str(),
-                        main_pos);
-                    }
+                    // no argument supplied; do nothing (only c20 should reach here)
+                    BOOST_ASSERT(boost::wave::need_cpp2a(ctx.get_language()));
+                    adjacent_stringize = false;
                 } 
                 else
 #endif
                 {
+                    // shouldn't be oob (w.o. cpp20)
+                    BOOST_ASSERT(i < arguments.size() && !arguments[i].empty());
                     // safe a copy of the first tokens position (not a reference!)
                     position_type pos((*arguments[i].begin()).get_position());
 
