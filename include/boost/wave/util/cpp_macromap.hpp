@@ -1266,6 +1266,9 @@ macromap<ContextT>::expand_replacement_list(
                 if (i >= arguments.size()) {
                     // no argument supplied; do nothing (only c20 should reach here)
                     BOOST_ASSERT(boost::wave::need_cpp2a(ctx.get_language()));
+                    position_type last_valid(arguments.back().back().get_position());
+                    // insert a empty string
+                    expanded.push_back(token_type(T_STRINGLIT, "\"\"", last_valid));
                     adjacent_stringize = false;
                 } 
                 else
