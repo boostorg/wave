@@ -1269,7 +1269,6 @@ macromap<ContextT>::expand_replacement_list(
                     position_type last_valid(arguments.back().back().get_position());
                     // insert a empty string
                     expanded.push_back(token_type(T_STRINGLIT, "\"\"", last_valid));
-                    adjacent_stringize = false;
                 } 
                 else
 #endif
@@ -1293,8 +1292,8 @@ macromap<ContextT>::expand_replacement_list(
                         expanded.push_back(token_type(T_STRINGLIT,
                             impl::as_stringlit(arguments[i], pos), pos));
                     }
-                    adjacent_stringize = false;
                 }
+                adjacent_stringize = false;
             }
             else {
                 // simply copy the original argument (adjacent '##' or '#')
