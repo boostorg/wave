@@ -1,5 +1,6 @@
-#include "t_2_032_004.hpp"
-t_2_032_003
+#if 1
+t_2_032_004
+#endif
 
 /*=============================================================================
     Boost.Wave: A Standard compliant C++ preprocessor library
