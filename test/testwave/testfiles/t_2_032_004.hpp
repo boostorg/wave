@@ -2,6 +2,10 @@
 t_2_032_004
 #endif
 
+// Important: The #if must be the first line of this file to ensure proper testing
+// of line directive emission. Do not move the copyright comment to the
+// beginning of this file.
+
 /*=============================================================================
     Boost.Wave: A Standard compliant C++ preprocessor library
     http://www.boost.org/
