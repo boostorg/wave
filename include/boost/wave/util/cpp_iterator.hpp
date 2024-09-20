@@ -1612,6 +1612,8 @@ pp_iterator_functor<ContextT>::on_include_helper(char const* f, char const* s,
         ctx.get_hooks().opened_include_file(ctx.derived(), dir_path, file_path,
             is_system);
 
+        new_iter_ctx->emitted_lines = (unsigned int)(-1); // force #line directive
+
         // store current file position
         iter_ctx->real_relative_filename = ctx.get_current_relative_filename().c_str();
         iter_ctx->filename = act_pos.get_file();
