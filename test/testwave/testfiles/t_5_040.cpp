@@ -11,7 +11,7 @@
 // with a single #if/#ifdef/#define directive. Addresses github issue #222.
 #include "t_5_040_001.hpp" // #if as first line should emit line directive
 #include "t_5_040_002.hpp" // #define as first line should emit line directive
-#include "t_5_040_003.hpp" // #ensure nested includes emit line directive
+#include "t_5_040_003.hpp" // ensure nested includes emit line directive
 
 t_5_040_a
 #if 1
