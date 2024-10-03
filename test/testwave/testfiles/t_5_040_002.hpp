@@ -1,8 +1,7 @@
-#if 1
-t_2_032_004
-#endif
+#define t_5_040_002_hpp
+t_5_040_002
 
-// Important: The #if must be the first line of this file to ensure proper testing
+// Important: The #define must be the first line of this file to ensure proper testing
 // of line directive emission. Do not move the copyright comment to the
 // beginning of this file.
 
