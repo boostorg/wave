@@ -116,6 +116,7 @@ public:
         ill_formed_operator,
         bad_define_statement,
         bad_define_statement_va_args,
+        bad_define_statement_named_va_args,
         bad_define_statement_va_opt,
         bad_define_statement_va_opt_parens,
         bad_define_statement_va_opt_recurse,
@@ -209,6 +210,7 @@ public:
         case preprocess_exception::unbalanced_if_endif:
         case preprocess_exception::bad_define_statement:
         case preprocess_exception::bad_define_statement_va_args:
+        case preprocess_exception::bad_define_statement_named_va_args:
         case preprocess_exception::bad_define_statement_va_opt:
         case preprocess_exception::bad_define_statement_va_opt_parens:
         case preprocess_exception::bad_define_statement_va_opt_recurse:
@@ -265,6 +267,7 @@ public:
             "ill formed #define directive",             // bad_define_statement
             "__VA_ARGS__ can only appear in the "
             "expansion of a C99 variadic macro",        // bad_define_statement_va_args
+            "named variadic like x... is disabled",     // bad_define_statement_named_va_args
             "__VA_OPT__ can only appear in the "
             "expansion of a C++20 variadic macro",      // bad_define_statement_va_opt
             "__VA_OPT__ must be followed by a left "
@@ -334,6 +337,7 @@ public:
             util::severity_error,              // ill_formed_operator
             util::severity_error,              // bad_define_statement
             util::severity_error,              // bad_define_statement_va_args
+            util::severity_error,              // bad_define_statement_named_va_args
             util::severity_error,              // bad_define_statement_va_opt
             util::severity_error,              // bad_define_statement_va_opt_parens
             util::severity_error,              // bad_define_statement_va_opt_recurse

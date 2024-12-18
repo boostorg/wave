@@ -315,6 +315,9 @@ enum token_id : std::uint32_t {
 // C++20 operators
     T_SPACESHIP    = TOKEN_FROM_ID(441, OperatorTokenType),
 
+// GNU named variadics
+    T_GNU_NAMED_ELLIPSIS = TOKEN_FROM_ID(442, IdentifierTokenType),
+
     T_LAST_TOKEN_ID,
     T_LAST_TOKEN = ID_FROM_TOKEN(T_LAST_TOKEN_ID & ~PPTokenFlag),
 

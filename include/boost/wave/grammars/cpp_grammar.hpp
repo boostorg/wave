@@ -347,23 +347,38 @@ struct cpp_grammar :
                             )
                         )
                 ;
-
+#if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+            typedef typename ScannerT::iterator_t iterator_t;
+            typedef node_val_data<iterator_t, nil_t> node_t;
+            typedef typename node_t::iterator_t container_iterator_t;
+            const auto &named_variadics = [](tree_node<node_t>& node, iterator_t begin, iterator_t end) {
+                container_iterator_t it = node.value.begin();
+                it->set_token_id(T_GNU_NAMED_ELLIPSIS);
+                it->set_value(it->get_value() + "...");
+            };
+#endif
+#endif
         // parameter list
         // normal C++ mode
             macro_parameters
                 =   confix_p(
                         no_node_d[ch_p(T_LEFTPAREN) >> *ppsp],
                        !list_p(
-                            (   ch_p(T_IDENTIFIER)
-                            |   pattern_p(KeywordTokenType,
+                            (   pattern_p(KeywordTokenType,
                                     TokenTypeMask|PPTokenFlag)
                             |   pattern_p(OperatorTokenType|AltExtTokenType,
                                     ExtTokenTypeMask|PPTokenFlag)   // and, bit_and etc.
                             |   pattern_p(BoolLiteralTokenType,
                                     TokenTypeMask|PPTokenFlag)  // true/false
 #if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS != 0
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+                            |   access_node_d[token_node_d[(ch_p(T_IDENTIFIER) >> *ppsp >> ch_p(T_ELLIPSIS))]]
+                                [named_variadics]
+#endif
                             |   ch_p(T_ELLIPSIS)
 #endif
+                            |   ch_p(T_IDENTIFIER) // must be after the named variadic
                             ),
                             no_node_d[*ppsp >> ch_p(T_COMMA) >> *ppsp]
                         ),
