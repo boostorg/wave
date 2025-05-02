@@ -232,6 +232,7 @@ static char const *tok_names[] = {
     /* 439 */   "T_CO_YIELD",
     /* 440 */   "T_REQUIRES",
     /* 441 */   "T_SPACESHIP",
+    /* 442 */   "T_GNU_NAMED_ELLIPSIS",
     };
 
     // make sure, I have not forgotten any commas (as I did more than once)
@@ -444,6 +445,7 @@ static char const *tok_values[] = {
     /* 439 */   "co_yield",
     /* 440 */   "requires",
     /* 441 */   "<=>",
+    /* 442 */   "",   // gnu_named_ellipsis
     };
 
     // make sure, I have not forgotten any commas (as I did more than once)

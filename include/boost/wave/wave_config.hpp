@@ -159,6 +159,23 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
+// Change the following, to enable the support for GNU named variadics:
+// #define(x...) x
+// By default this is disabled.
+#if !defined(BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS)
+#define BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS 0
+#endif
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Warn the user if GNU named variadics are enabled without variadics support
+#if BOOST_WAVE_SUPPORT_GNU_NAMED_VARIADICS_PLACEMARKERS != 0
+#if BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS == 0
+#warning "Boost.Wave: The support for GNU named variadics requires variadics support."
+#endif
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
 //  Allow the message body of the #error and #warning directives to be
 //  preprocessed before the diagnostic is issued.
 //
