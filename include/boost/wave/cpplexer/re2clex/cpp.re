@@ -22,13 +22,15 @@ anyctrl             = [\001-\037];
 OctalDigit          = [0-7];
 Digit               = [0-9];
 HexDigit            = [a-fA-F0-9];
-Integer             = (("0" [xX] HexDigit+) | ("0" OctalDigit*) | ([1-9] Digit*));
+BinaryDigit         = [01];
+Integer             = (("0" [xX] HexDigit (("'" HexDigit) | HexDigit)*) | ("0" [bB] BinaryDigit (("'" BinaryDigit) | BinaryDigit)*) | ("0" OctalDigit ((("'" OctalDigit) | OctalDigit)*)) | ([1-9] ("'" Digit | Digit)*));
 ExponentStart       = [Ee] [+-];
-ExponentPart        = [Ee] [+-]? Digit+;
-FractionalConstant  = (Digit* "." Digit+) | (Digit+ ".");
+ExponentPart        = [Ee] [+-]? Digit (("'" Digit)| Digit)*;
+FractionalConstant  = (Digit? ((Digit "'" Digit)|Digit)* "." Digit (("'" Digit)| Digit)*) | (Digit (("'" Digit)| Digit)* ".");
 FloatingSuffix      = [fF] [lL]? | [lL] [fF]?;
 IntegerSuffix       = [uU] [lL]? | [lL] [uU]?;
 LongIntegerSuffix   = [uU] ("ll" | "LL") | ("ll" | "LL") [uU]?;
+SizeTSuffix         = ([uU]? [zZ]) | ([zZ] [uU]?);
 MSLongIntegerSuffix = "u"? "i64";
 Backslash           = [\\] | "??/";
 EscapeSequence      = Backslash ([abeEfnrtv?'"] | Backslash | "x" HexDigit+ | OctalDigit OctalDigit? OctalDigit?);
@@ -89,6 +91,7 @@ NonDigit            = [a-zA-Z_$] | UniversalChar;
     "inline"        { BOOST_WAVE_RET(T_INLINE); }
     "int"           { BOOST_WAVE_RET(T_INT); }
     "long"          { BOOST_WAVE_RET(T_LONG); }
+    "module"        { BOOST_WAVE_RET(s->act_in_cpp2a_mode ? T_MODULE : T_IDENTIFIER); }
     "mutable"       { BOOST_WAVE_RET(T_MUTABLE); }
     "namespace"     { BOOST_WAVE_RET(T_NAMESPACE); }
     "new"           { BOOST_WAVE_RET(T_NEW); }
@@ -493,6 +496,9 @@ integer_suffix:
         LongIntegerSuffix | MSLongIntegerSuffix
             { BOOST_WAVE_RET(T_LONGINTLIT); }
 
+        SizeTSuffix
+            { BOOST_WAVE_RET(T_SIZETLIT); }
+
         IntegerSuffix?
             { BOOST_WAVE_RET(T_INTLIT); }
     */
@@ -501,6 +507,9 @@ integer_suffix:
     /*!re2c
         LongIntegerSuffix
             { BOOST_WAVE_RET(T_LONGINTLIT); }
+
+        SizeTSuffix
+            { BOOST_WAVE_RET(T_SIZETLIT); }
 
         IntegerSuffix?
             { BOOST_WAVE_RET(T_INTLIT); }
