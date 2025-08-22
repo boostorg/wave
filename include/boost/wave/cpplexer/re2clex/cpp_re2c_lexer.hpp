@@ -234,6 +234,7 @@ lexer<IteratorT, PositionT, TokenT>::get(TokenT& result)
     case T_DECIMALINT:
     case T_HEXAINT:
     case T_INTLIT:
+    case T_SIZETLIT:
     case T_FLOATLIT:
     case T_FIXEDPOINTLIT:
     case T_CCOMMENT:
