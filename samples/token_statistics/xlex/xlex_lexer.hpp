@@ -135,21 +135,24 @@ private:
 #define OCTALDIGIT          "[0-7]"
 #define DIGIT               "[0-9]"
 #define HEXDIGIT            "[0-9a-fA-F]"
+#define BINARYDIGIT         "[01]"
 #define SIGN                "[-+]?"
-#define EXPONENT            "(" "[eE]" SIGN "[0-9]+" ")"
+#define EXPONENT            "(" "[eE]" SIGN DIGIT "('" DIGIT OR DIGIT ")*" ")"
 
 #define INTEGER             "(" \
-                                "(0x|0X)" HEXDIGIT "+" OR \
-                                "0" OCTALDIGIT "*" OR \
-                                "[1-9]" DIGIT "*" \
+                                "(0x|0X)" HEXDIGIT "('" HEXDIGIT OR HEXDIGIT ")*" OR \
+                                "(0b|0B)" BINARYDIGIT "('" BINARYDIGIT OR BINARYDIGIT ")*" OR \
+                                "0" "('" OCTALDIGIT OR OCTALDIGIT ")*" OR \
+                                "[1-9]" "('" DIGIT OR DIGIT ")*" \
                             ")"
-            
+
 #define INTEGER_SUFFIX      "(" "[uU][lL]?|[lL][uU]?" ")"
+#define SIZET_SUFFIX        "(" "[uU]?[zZ]|[zZ][uU]?" ")"
 #if BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
 #define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "ll" OR "LL" ")" OR \
                                 "(" "ll" OR "LL" ")" "[uU]" "?" OR \
                                 "i64" \
-                            ")" 
+                            ")"
 #else
 #define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "ll" OR "LL" ")" OR \
                             "(" "ll" OR "LL" ")" "[uU]" "?" ")"
@@ -353,9 +356,11 @@ lexer<Iterator, Position>::init_data[] =
     TOKEN_DATA(T_PP_UNDEF, POUNDDEF PPSPACE "undef"),
     TOKEN_DATA(T_PP_WARNING, POUNDDEF PPSPACE "warning"),
     TOKEN_DATA(T_FLOATLIT, 
-        "(" DIGIT "*" Q(".") DIGIT "+" OR DIGIT "+" Q(".") ")" 
+        "(" DIGIT "?" "(" DIGIT "'" DIGIT OR DIGIT ")*" Q(".") DIGIT "('" DIGIT OR DIGIT ")*" OR
+            DIGIT "('" DIGIT OR DIGIT ")*" Q(".") ")" 
         EXPONENT "?" FLOAT_SUFFIX "?" OR
         DIGIT "+" EXPONENT FLOAT_SUFFIX "?"),
+    TOKEN_DATA(T_SIZETLIT, INTEGER SIZET_SUFFIX),
     TOKEN_DATA(T_LONGINTLIT, INTEGER LONGINTEGER_SUFFIX),
     TOKEN_DATA(T_INTLIT, INTEGER INTEGER_SUFFIX "?"),
 #if BOOST_WAVE_USE_STRICT_LEXER != 0
@@ -446,6 +451,7 @@ lexer<Iterator, Position>::init_data_cpp2a[] =
     TOKEN_DATA(T_CO_RETURN, "co_return"),
     TOKEN_DATA(T_CO_YIELD, "co_yield"),
     TOKEN_DATA(T_REQUIRES, "requires"),
+    TOKEN_DATA(T_MODULE, "module"),
     TOKEN_DATA(T_SPACESHIP, "<=>"),
     { token_id(0) }       // this should be the last entry
 };
@@ -463,6 +469,7 @@ lexer<Iterator, Position>::init_data_cpp2a[] =
 #undef EXPONENT
 #undef LONGINTEGER_SUFFIX
 #undef INTEGER_SUFFIX
+#undef SIZET_SUFFIX
 #undef INTEGER
 #undef FLOAT_SUFFIX
 #undef CHAR_SPEC

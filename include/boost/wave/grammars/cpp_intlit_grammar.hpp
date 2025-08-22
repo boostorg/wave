@@ -79,6 +79,7 @@ struct intlit_grammar :
         boost::spirit::classic::subrule<1> oct_lit;
         boost::spirit::classic::subrule<2> hex_lit;
         boost::spirit::classic::subrule<3> dec_lit;
+        boost::spirit::classic::subrule<4> bin_lit;
 
         definition(intlit_grammar const &self)
         {
@@ -88,7 +89,7 @@ struct intlit_grammar :
 
             int_lit = (
                     sub_int_lit =
-                        (   ch_p('0')[self.val = 0] >> (hex_lit | oct_lit)
+                        (   ch_p('0')[self.val = 0] >> (hex_lit | oct_lit | bin_lit)
                         |   dec_lit
                         )
                         >> !as_lower_d[
@@ -114,6 +115,14 @@ struct intlit_grammar :
                         ]
                     ,
 
+                    bin_lit =
+                        (ch_p('b') | ch_p('B'))
+                        >> uint_parser<uint_literal_type, 2>()
+                        [
+                            self.val = phx::arg1
+                        ]
+                    ,
+
                     dec_lit =
                         uint_parser<uint_literal_type, 10>()
                         [
@@ -127,6 +136,7 @@ struct intlit_grammar :
             BOOST_SPIRIT_DEBUG_TRACE_RULE(hex_lit, TRACE_INTLIT_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(oct_lit, TRACE_INTLIT_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(dec_lit, TRACE_INTLIT_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(bin_lit, TRACE_INTLIT_GRAMMAR);
         }
 
         // start rule of this grammar
