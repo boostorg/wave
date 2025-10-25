@@ -134,10 +134,10 @@ private:
 #define OCTALDIGIT          "[0-7]"
 #define DIGIT               "[0-9]"
 #define HEXDIGIT            "[0-9a-fA-F]"
+#define OPTSIGN             "[-+]?"
 #define BINARYDIGIT         "[01]"
-#define SIGN             "[-+]?"
 #define EXPSTART            "[eE]" "[-+]"
-#define EXPONENT            "(" "[eE]" SIGN DIGIT "('" DIGIT OR DIGIT ")*" ")"
+#define EXPONENT            "(" "[eE]" OPTSIGN DIGIT "('" DIGIT OR DIGIT ")*" ")"
 #define NONDIGIT            "[a-zA-Z_]"
 #define INTEGER             "(" \
                                 "(0x|0X)" HEXDIGIT "('" HEXDIGIT OR HEXDIGIT ")*" OR \
@@ -509,7 +509,7 @@ lexer<IteratorT, PositionT>::init_data_cpp2a[INIT_DATA_CPP2A_SIZE] =
 #undef OCTALDIGIT
 #undef HEXDIGIT
 #undef NONDIGIT
-#undef SIGN
+#undef OPTSIGN
 #undef EXPSTART
 #undef EXPONENT
 #undef LONGINTEGER_SUFFIX
