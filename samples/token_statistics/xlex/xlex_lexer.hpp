@@ -147,7 +147,7 @@ private:
                             ")"
 
 #define INTEGER_SUFFIX      "(" "[uU][lL]?|[lL][uU]?" ")"
-#define SIZET_SUFFIX        "(" "[uU]?[zZ]|[zZ][uU]?" ")"
+#define SIZET_SUFFIX        "(" "[uU][zZ]|[zZ][uU]?" ")"
 #if BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
 #define LONGINTEGER_SUFFIX  "(" "[uU]" "(" "ll" OR "LL" ")" OR \
                                 "(" "ll" OR "LL" ")" "[uU]" "?" OR \

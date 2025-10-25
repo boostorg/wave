@@ -60,7 +60,7 @@ namespace boost { namespace wave { namespace cpplexer { namespace lexertl
 #define INIT_DATA_PP_NUMBER_SIZE    2
 #define INIT_DATA_CPP0X_SIZE        15
 #define INIT_DATA_CPP2A_SIZE        11
-#define INIT_MACRO_DATA_SIZE        29
+#define INIT_MACRO_DATA_SIZE        30
 #endif // #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
 
 //  this is just a hack to have a unique token id not otherwise used by Wave
@@ -159,13 +159,15 @@ lexertl<Iterator, Position>::init_macro_data[INIT_MACRO_DATA_SIZE] =
     MACRO_DATA("OCTALDIGIT", "[0-7]"),
     MACRO_DATA("DIGIT", "[0-9]"),
     MACRO_DATA("HEXDIGIT", "[0-9a-fA-F]"),
+    MACRO_DATA("BINARYDIGIT", "[0-1]"),
     MACRO_DATA("OPTSIGN", "[-+]?"),
     MACRO_DATA("EXPSTART", "[eE][-+]"),
     MACRO_DATA("EXPONENT", "([eE]{OPTSIGN}{DIGIT}('{DIGIT}|{DIGIT})*)"),
     MACRO_DATA("NONDIGIT", "[a-zA-Z_]"),
     MACRO_DATA("INTEGER", "(" "(0x|0X){HEXDIGIT}('{HEXDIGIT}|{HEXDIGIT})*" 
                OR "0('{OCTALDIGIT}|{OCTALDIGIT})*" 
-               OR "[1-9]('{DIGIT}|{DIGIT})*" ")"),
+               OR "[1-9]('{DIGIT}|{DIGIT})*"
+               OR "(0b|0B){BINARYDIGIT}('{BINARYDIGIT}|{BINARYDIGIT})*" ")"),
     MACRO_DATA("INTEGER_SUFFIX", "(" "[uU][lL]?" OR "[lL][uU]?" ")"),
     MACRO_DATA("SIZET_SUFFIX", "(" "[uU]?[zZ]" OR "[zZ][uU]?" ")"),
 #if BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
