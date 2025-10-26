@@ -524,7 +524,7 @@ std::ifstream dfa_in("wave_lexertl_lexer.dfa", std::ios::in|std::ios::binary);
 
     // if in C++0x mode, add appropriate keywords
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
-        if (wave::need_cpp0x(lang) || wave::need_cpp2a(lang)) {
+        if (wave::need_cpp0x(lang) || wave::need_cpp2a(lang) || wave::need_cpp2b(lang)) {
             for (int j = 0; 0 != init_data_cpp0x[j].tokenid; ++j) {
                 rules.add(init_data_cpp0x[j].tokenregex,
                           init_data_cpp0x[j].tokenid);
@@ -534,7 +534,7 @@ std::ifstream dfa_in("wave_lexertl_lexer.dfa", std::ios::in|std::ios::binary);
 
     // if in C++2a mode, add those keywords
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
-        if (wave::need_cpp2a(lang)) {
+        if (wave::need_cpp2a(lang) || wave::need_cpp2b(lang)) {
             for (int j = 0; 0 != init_data_cpp2a[j].tokenid; ++j) {
                 rules.add(init_data_cpp2a[j].tokenregex,
                           init_data_cpp2a[j].tokenid);

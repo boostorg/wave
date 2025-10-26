@@ -506,7 +506,7 @@ lexer<Iterator, Position>::lexer(Iterator const &first,
     }
 
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
-    if (boost::wave::need_cpp0x(language) || boost::wave::need_cpp2a(language)) {
+    if (boost::wave::need_cpp0x(language) || boost::wave::need_cpp2a(language) || boost::wave::need_cpp2b(language)) {
         for (int j = 0; 0 != init_data_cpp0x[j].tokenid; ++j) {
             xlexer.register_regex(init_data_cpp0x[j].tokenregex,
                 init_data_cpp0x[j].tokenid, init_data_cpp[j].tokencb);
@@ -515,7 +515,7 @@ lexer<Iterator, Position>::lexer(Iterator const &first,
 #endif
 
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
-    if (boost::wave::need_cpp2a(language) || boost::wave::need_cpp2a(language)) {
+    if (boost::wave::need_cpp2a(language) || boost::wave::need_cpp2b(language)) {
         for (int j = 0; 0 != init_data_cpp2a[j].tokenid; ++j) {
             xlexer.register_regex(init_data_cpp2a[j].tokenregex,
                 init_data_cpp2a[j].tokenid, init_data_cpp[j].tokencb);
