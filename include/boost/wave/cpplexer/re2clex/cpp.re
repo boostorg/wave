@@ -492,30 +492,34 @@ pp_number:
 /* this subscanner is called, whenever an Integer was recognized */
 integer_suffix:
 {
-    if (s->enable_ms_extensions) {
+    auto suffix_start = YYCURSOR;
+
     /*!re2c
-        LongIntegerSuffix | MSLongIntegerSuffix
-            { BOOST_WAVE_RET(T_LONGINTLIT); }
+    LongIntegerSuffix
+        { BOOST_WAVE_RET(T_LONGINTLIT); }
 
-        SizeTSuffix
-            { BOOST_WAVE_RET(T_SIZETLIT); }
-
-        IntegerSuffix?
-            { BOOST_WAVE_RET(T_INTLIT); }
-    */
+    MSLongIntegerSuffix {
+        if (s->enable_ms_extensions) {
+            BOOST_WAVE_RET(T_LONGINTLIT);
+        } else {
+            YYCURSOR = suffix_start;
+            BOOST_WAVE_RET(T_INTLIT);
+        }
     }
-    else {
-    /*!re2c
-        LongIntegerSuffix
-            { BOOST_WAVE_RET(T_LONGINTLIT); }
 
-        SizeTSuffix
-            { BOOST_WAVE_RET(T_SIZETLIT); }
-
-        IntegerSuffix?
-            { BOOST_WAVE_RET(T_INTLIT); }
-    */
+    SizeTSuffix {
+        if (s->act_in_cpp2b_mode) {
+            BOOST_WAVE_RET(T_SIZETLIT);
+        } else {
+            YYCURSOR = suffix_start;
+            BOOST_WAVE_RET(T_INTLIT);
+        }
     }
+
+    IntegerSuffix?
+        { BOOST_WAVE_RET(T_INTLIT); }
+
+    */
 
     // re2c will complain about -Wmatch-empty-string above
     // it's OK because we've already matched an integer

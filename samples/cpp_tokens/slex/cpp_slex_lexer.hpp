@@ -568,7 +568,7 @@ lexer<IteratorT, PositionT>::init_dfa(boost::wave::language_support lang)
 
 // if in C++0x mode, add appropriate keywords
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
-    if (boost::wave::need_cpp0x(lang) || boost::wave::need_cpp2a(lang)) {
+    if (boost::wave::need_cpp0x(lang) || boost::wave::need_cpp2a(lang) || boost::wave::need_cpp2b(lang)) {
         for (int j = 0; 0 != init_data_cpp0x[j].tokenid; ++j) {
             this->register_regex(init_data_cpp0x[j].tokenregex,
                 init_data_cpp0x[j].tokenid, init_data_cpp0x[j].tokencb,
@@ -577,14 +577,14 @@ lexer<IteratorT, PositionT>::init_dfa(boost::wave::language_support lang)
     }
 #endif
 
-    // if in C++2a mode, add those keywords
+// if in C++2a mode, add those keywords
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
-        if (wave::need_cpp2a(lang)) {
-            for (int j = 0; 0 != init_data_cpp2a[j].tokenid; ++j) {
-                this->register_regex(init_data_cpp2a[j].tokenregex,
-                                     init_data_cpp2a[j].tokenid,
-                                     init_data_cpp2a[j].tokencb,
-                                     init_data_cpp2a[j].lexerstate);
+    if (wave::need_cpp2a(lang) || wave::need_cpp2b(lang)) {
+        for (int j = 0; 0 != init_data_cpp2a[j].tokenid; ++j) {
+            this->register_regex(init_data_cpp2a[j].tokenregex,
+                                 init_data_cpp2a[j].tokenid,
+                                 init_data_cpp2a[j].tokencb,
+                                 init_data_cpp2a[j].lexerstate);
         }
     }
 #endif
