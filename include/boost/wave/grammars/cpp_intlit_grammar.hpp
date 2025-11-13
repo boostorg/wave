@@ -13,6 +13,8 @@
 
 #include <boost/wave/wave_config.hpp>
 
+#include <boost/iterator/filter_iterator.hpp>
+
 #include <boost/spirit/include/classic_core.hpp>
 #include <boost/spirit/include/classic_closure.hpp>
 #include <boost/spirit/include/classic_assign_actor.hpp>
@@ -171,13 +173,20 @@ intlit_grammar_gen<TokenT>::evaluate(TokenT const &token,
     intlit_grammar g(is_unsigned);
     uint_literal_type result = 0;
     typename TokenT::string_type const &token_val = token.get_value();
+
+    // filter out digit separators
+    auto not_digit_separator = [](char c){ return c != '\''; };
+    auto digits_begin = boost::make_filter_iterator(not_digit_separator, token_val.begin(), token_val.end());
+    auto digits_end = boost::make_filter_iterator(not_digit_separator, token_val.end(), token_val.end());
+    typename TokenT::string_type token_digits(digits_begin, digits_end);
+
     using boost::spirit::classic::parse_info;
     parse_info<typename TokenT::string_type::const_iterator> hit =
-        parse(token_val.begin(), token_val.end(), g[spirit_assign_actor(result)]);
+        parse(token_digits.begin(), token_digits.end(), g[spirit_assign_actor(result)]);
 
     if (!hit.hit) {
         BOOST_WAVE_THROW(preprocess_exception, ill_formed_integer_literal,
-            token_val.c_str(), token.get_position());
+            token_digits.c_str(), token.get_position());
     }
     return result;
 }

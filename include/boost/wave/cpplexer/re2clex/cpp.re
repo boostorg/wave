@@ -468,7 +468,7 @@ pp_number:
 
     if (s->detect_pp_numbers) {
     /*!re2c
-        "."? Digit (Digit | NonDigit | ExponentStart | ".")*
+        "."? Digit (("'"? (Digit | NonDigit | ExponentStart)) | ".")*
             { BOOST_WAVE_RET(T_PP_NUMBER); }
 
         // because we reached this point, then reset the cursor,
