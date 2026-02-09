@@ -414,6 +414,8 @@ testwave_app::testwave_app(po::variables_map const& vm)
         ("noguard,G", "disable include guard detection")
 #endif
         ("skipped_token_hooks", "record skipped_token hook calls")
+        ("object_like_macro_passthrough",
+            "return true from expanding_object_like_macro hook")
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
         ("c++11", "enable C++11 mode (implies --variadics and --long_long)")
 #endif
@@ -971,6 +973,14 @@ testwave_app::initialise_options(Context& ctx, po::variables_map const& vm,
             std::cerr << "initialise_options: option: skipped_token_hooks" << std::endl;
         }
         ctx.get_hooks().set_skipped_token_hooks(true);
+    }
+
+    if (vm.count("object_like_macro_passthrough")) {
+        if (9 == debuglevel) {
+            std::cerr << "initialise_options: option: object_like_macro_passthrough"
+                      << std::endl;
+        }
+        ctx.get_hooks().set_object_like_macro_passthrough(true);
     }
 
 //  initialize the given context from the parsed options
