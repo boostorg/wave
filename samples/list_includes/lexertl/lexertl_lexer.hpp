@@ -52,7 +52,7 @@ namespace boost { namespace wave { namespace cpplexer { namespace lexertl
 //  The following numbers are the array sizes of the token regex's which we
 //  need to specify to make the CW compiler happy (at least up to V9.5).
 #if BOOST_WAVE_SUPPORT_MS_EXTENSIONS != 0
-#define INIT_DATA_SIZE              176
+#define INIT_DATA_SIZE              177
 #else
 #define INIT_DATA_SIZE              160
 #endif
