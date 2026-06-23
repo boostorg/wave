@@ -114,7 +114,7 @@ jobs:
             # Node 20 doesn't work with Ubuntu 16/18  glibc: https://github.com/actions/checkout/issues/1590
             curl -sL https://archives.boost.io/misc/node/node-v20.9.0-linux-x64-glibc-217.tar.xz | tar -xJ --strip-components 1 -C /node20217
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: linux
         shell: bash
@@ -212,7 +212,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set DEVELOPER_DIR
         if: matrix.xcode_version != ''
