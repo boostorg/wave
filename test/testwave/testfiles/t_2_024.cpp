@@ -112,3 +112,51 @@
 //H 08: t_2_024.cpp(99): FOUND_SELF_VIA_SYSTEM_PATH_AND_OBJLIKE=
 //H 10: t_2_024.cpp(100): #else
 
+#if HI("made_up_name_dont_create.hpp")
+#warning this made up file should not exist but has_include thinks otherwise
+#else
+// the good case
+#endif
+
+//H 10: t_2_024.cpp(115): #if
+//H 01: t_2_024.cpp(97): HI
+//H 02: __has_include
+//H 03: __has_include
+//H 11: t_2_024.cpp(115): #if HI("made_up_name_dont_create.hpp"): 0
+//H 10: t_2_024.cpp(119): #endif
+
+// test function-like macro that wraps __has_include
+#define HIF(x) __has_include(x)
+#if HIF(<t_2_024.cpp>)
+#define FOUND_SELF_VIA_SYSTEM_PATH_AND_FUNCLIKE
+#else
+#warning could not find this file via system path when expanded via a function-like macro
+#endif
+
+//H 10: t_2_024.cpp(129): #define
+//H 08: t_2_024.cpp(129): HIF(x)=__has_include(x)
+//H 10: t_2_024.cpp(130): #if
+//H 00: t_2_024.cpp(130): HIF(<t_2_024.cpp>), [t_2_024.cpp(129): HIF(x)=__has_include(x)]
+//H 02: __has_include(<t_2_024.cpp>)
+//H 03: 1
+//H 11: t_2_024.cpp(130): #if HIF(<t_2_024.cpp>): 1
+//H 10: t_2_024.cpp(131): #define
+//H 08: t_2_024.cpp(131): FOUND_SELF_VIA_SYSTEM_PATH_AND_FUNCLIKE=
+//H 10: t_2_024.cpp(132): #else
+
+#define HIF(x) __has_include(x)
+#if HIF("made_up_name_dont_create.hpp")
+#warning found a file that should not exists but has_include thinks otherwise via function-like expansion
+#else
+#define DID_NOT_FIND_SELF_VIA_SYSTEM_PATH_AND_FUNCLIKE
+#endif
+
+//H 10: t_2_024.cpp(147): #define
+//H 10: t_2_024.cpp(148): #if
+//H 00: t_2_024.cpp(148): HIF("made_up_name_dont_create.hpp"), [t_2_024.cpp(129): HIF(x)=__has_include(x)]
+//H 02: __has_include("made_up_name_dont_create.hpp")
+//H 03: 0
+//H 11: t_2_024.cpp(148): #if HIF("made_up_name_dont_create.hpp"): 0
+//H 10: t_2_024.cpp(151): #define
+//H 08: t_2_024.cpp(151): DID_NOT_FIND_SELF_VIA_SYSTEM_PATH_AND_FUNCLIKE=
+//H 10: t_2_024.cpp(152): #endif
