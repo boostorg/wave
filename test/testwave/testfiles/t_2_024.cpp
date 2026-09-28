@@ -93,3 +93,22 @@
 //H 10: t_2_024.cpp(80): #else
 //H 10: t_2_024.cpp(83): #endif
 
+// test object-like macro defined as __has_include
+#define HI __has_include
+#if HI(<t_2_024.cpp>)
+#define FOUND_SELF_VIA_SYSTEM_PATH_AND_OBJLIKE
+#else
+#warning could not find this file via system path when expanded via an object-like macro
+#endif
+
+//H 10: t_2_024.cpp(97): #define
+//H 08: t_2_024.cpp(97): HI=__has_include
+//H 10: t_2_024.cpp(98): #if
+//H 01: t_2_024.cpp(97): HI
+//H 02: __has_include
+//H 03: __has_include
+//H 11: t_2_024.cpp(98): #if HI(<t_2_024.cpp>): 1
+//H 10: t_2_024.cpp(99): #define
+//H 08: t_2_024.cpp(99): FOUND_SELF_VIA_SYSTEM_PATH_AND_OBJLIKE=
+//H 10: t_2_024.cpp(100): #else
+
