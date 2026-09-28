@@ -43,4 +43,5 @@ jobs:
     with:
       enable_reflection: true
       enable_windows: false
-      b2_targets: test tool/build samples
+      b2_targets: libs/wave/test libs/wave/tool/build libs/wave/samples
+      enable_cmake: false
