@@ -742,6 +742,12 @@ macromap<ContextT>::expand_tokensequence_worker(
         {
         // try to replace this identifier as a macro
             if (expand_operator_defined && (*first).get_value() == "defined") {
+                if (T_EOI == impl::next_token<unput_queue_iterator<IteratorT, token_type, ContainerT>>::peek(first, last)) {
+                    // no further tokens are available - likely because someone defined an object-like macro that expands to "defined"
+                    // do what expand_macro would do in this situation:
+                    act_token = *first++;
+                    return act_token;
+                }
             // resolve operator defined()
                 return resolve_defined(first, last, pending);
             }
@@ -749,6 +755,11 @@ macromap<ContextT>::expand_tokensequence_worker(
             else if (boost::wave::need_has_include(ctx.get_language()) &&
                      expand_operator_has_include &&
                      (*first).get_value() == "__has_include") {
+                if (T_LEFTPAREN != impl::next_token<unput_queue_iterator<IteratorT, token_type, ContainerT>>::peek(first, last)) {
+                    // may be an object-like macro that expands to "__has_include"
+                    act_token = *first++;
+                    return act_token;
+                }
                 // resolve operator __has_include()
                 return resolve_has_include(first, last, pending);
             }
