@@ -2223,6 +2223,17 @@ macromap<ContextT>::init_predefined_macros(char const *fname,
         }
         else
 #endif
+    #if BOOST_WAVE_SUPPORT_CPP1Z != 0
+        if (boost::wave::need_cpp1z(ctx.get_language())) {
+            // define C++17 specifics
+            for (int i = 0; 0 != predef.static_data_cpp1z(i).name; ++i) {
+            predefined_macros::static_macros const& m = predef.static_data_cpp1z(i);
+            predefine_macro(current_scope, m.name,
+                token_type(m.token_id, m.value, pos));
+            }
+        }
+        else
+    #endif
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
             if (boost::wave::need_cpp2a(ctx.get_language())) {
             // define C++20 specifics
@@ -2234,6 +2245,17 @@ macromap<ContextT>::init_predefined_macros(char const *fname,
         }
         else
 #endif
+    #if BOOST_WAVE_SUPPORT_CPP2B != 0
+        if (boost::wave::need_cpp2b(ctx.get_language())) {
+            // define C++23 specifics
+            for (int i = 0; 0 != predef.static_data_cpp2b(i).name; ++i) {
+            predefined_macros::static_macros const& m = predef.static_data_cpp2b(i);
+            predefine_macro(current_scope, m.name,
+                token_type(m.token_id, m.value, pos));
+            }
+        }
+        else
+    #endif
         {
             // define C++ specifics
             for (int i = 0; 0 != predef.static_data_cpp(i).name; ++i) {
