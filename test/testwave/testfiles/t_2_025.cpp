@@ -74,3 +74,25 @@
 //H 10: t_2_025.cpp(60): #define
 //H 08: t_2_025.cpp(60): FOUND_ABRACKET=
 //H 10: t_2_025.cpp(61): #else
+
+// try an object-like macro that expands to __has_include
+#define HI __has_include
+#if HI(FOO(BAR))
+#define FOUND_DQUOTE_WITH_OBJLIKE
+#else
+#warning has_include could not find this file using quotes from object-like macro
+#endif
+
+//H 10: t_2_025.cpp(79): #define
+//H 08: t_2_025.cpp(79): HI=__has_include
+//H 10: t_2_025.cpp(80): #if
+//H 01: t_2_025.cpp(79): HI
+//H 02: __has_include
+//H 03: __has_include
+//H 00: t_2_025.cpp(80): FOO(BAR), [t_2_025.cpp(35): FOO(X)="t_2_025.cpp"]
+//H 02: "t_2_025.cpp"
+//H 03: "t_2_025.cpp"
+//H 11: t_2_025.cpp(80): #if HI(FOO(BAR)): 1
+//H 10: t_2_025.cpp(81): #define
+//H 08: t_2_025.cpp(81): FOUND_DQUOTE_WITH_OBJLIKE=
+//H 10: t_2_025.cpp(82): #else
