@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <fstream>
 #include <string>
+#include <type_traits>
 
 ///////////////////////////////////////////////////////////////////////////////
 //  Include Wave itself
@@ -42,15 +43,17 @@ operator<< (std::ostream &stream,
         << left << boost::wave::get_token_name(id) << " ("
         << "#" << setw(3) << BASEID_FROM_TOKEN(id);
 
-    if (ExtTokenTypeMask & id) {
-    // this is an extended token id
-        if (AltTokenType == (id & ExtTokenOnlyMask)) {
+    using tokid_t = std::underlying_type<token_id>::type;
+    if (static_cast<tokid_t>(ExtTokenTypeMask) & static_cast<tokid_t>(id)) {
+        // this is an extended token id
+        tokid_t ext_id = static_cast<tokid_t>(id) & static_cast<tokid_t>(ExtTokenOnlyMask);
+        if (AltTokenType == ext_id) {
             stream << ", AltTokenType";
         }
-        else if (TriGraphTokenType == (id & ExtTokenOnlyMask)) {
+        else if (TriGraphTokenType == ext_id) {
             stream << ", TriGraphTokenType";
         }
-        else if (AltExtTokenType == (id & ExtTokenOnlyMask)){
+        else if (AltExtTokenType == ext_id) {
             stream << ", AltExtTokenType";
         }
     }
