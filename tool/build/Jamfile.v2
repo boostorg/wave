@@ -29,19 +29,20 @@ project
     : requirements
       <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
       <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
+      <library>/boost/wave//boost_wave
+      <library>/boost/program_options//boost_program_options/<link>static
+      <library>/boost/filesystem//boost_filesystem
+      <library>/boost/serialization//boost_serialization
+      <library>/boost/system//boost_system
+      <library>/boost/thread//boost_thread
+      <library>/boost/timer//boost_timer/<link>static
+      <library>/boost/foreach//boost_foreach
     ;
 
 exe wave
     :
     ../cpp.cpp 
-    /boost/wave//boost_wave
-    /boost/program_options//boost_program_options
-    /boost/filesystem//boost_filesystem
-    /boost/serialization//boost_serialization
-    /boost/system//boost_system
-    /boost/thread//boost_thread
-    /boost/timer//boost_timer/<link>static
-    /boost/foreach//boost_foreach
+
     :
     <threading>multi
 #   <debug-symbols>on
