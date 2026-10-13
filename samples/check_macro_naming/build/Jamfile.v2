@@ -9,12 +9,15 @@
 # Software License, Version 1.0. (See accompanying file
 # LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+project
+    : requirements
+        <library>/boost/wave//boost_wave
+        <library>/boost/filesystem//boost_filesystem
+        <library>/boost/thread//boost_thread
+        <library>/boost/regex//boost_regex
+        <library>/boost/program_options//boost_program_options/<link>static
+    ;
 exe check_macro_naming
     :   ../check_macro_naming.cpp
-        /boost/wave//boost_wave
-        /boost/filesystem//boost_filesystem
-        /boost/thread//boost_thread
-        /boost/regex//boost_regex
-        /boost/program_options//boost_program_options
     ;
 
