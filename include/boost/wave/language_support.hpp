@@ -123,6 +123,31 @@ need_cpp0x(language_support language)
 
 ///////////////////////////////////////////////////////////////////////////////
 //
+//  need_cpp1z
+//
+//      Extract if the language to support is C++17
+//
+///////////////////////////////////////////////////////////////////////////////
+#if BOOST_WAVE_SUPPORT_CPP1Z != 0
+
+inline bool
+need_cpp1z(language_support language)
+{
+    return (language & ~support_option_mask) == support_cpp1z;
+}
+
+#else
+
+inline bool
+need_cpp1z(language_support language)
+{
+    return false;
+}
+
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+//
 //  need_cpp2a
 //
 //      Extract if the language to support is C++20
