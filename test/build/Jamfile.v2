@@ -109,7 +109,7 @@ test-suite wave
             :
             # requirements
                 <threading>multi
-                <variant>debug
+                <variant>release
                 <link>shared:<define>BOOST_ALL_DYN_LINK=1
                 <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
                 <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
@@ -137,7 +137,7 @@ test-suite wave
             : 
             # requirements
                 <threading>multi
-                <variant>debug
+                <variant>release
                 <link>static     # Linking to DLL tested by testwave_dll
                 <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
                 <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
@@ -165,7 +165,7 @@ test-suite wave
             :
             # requirements
                 <threading>multi
-                <variant>debug
+                <variant>release
                 <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
                 <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
             :
@@ -189,7 +189,7 @@ test-suite wave
             :
             # requirements
                 <threading>multi
-                <variant>debug
+                <variant>release
                 <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
                 <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
             :
@@ -214,7 +214,7 @@ test-suite wave
             :
             # requirements
                 <threading>multi
-                <variant>debug
+                <variant>release
                 <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
                 <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
                 # to generate wave_lexertl_tables_next_token.hpp:
@@ -244,7 +244,7 @@ test-suite wave
             :
             # requirements
                 <threading>multi
-                <variant>debug
+                <variant>release
                 <toolset>msvc:<define>_SCL_SECURE_NO_DEPRECATE
                 <toolset>msvc:<define>_CRT_SECURE_NO_DEPRECATE
             :
