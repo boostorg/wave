@@ -41,6 +41,7 @@ jobs:
     with:
       enable_reflection: true
       b2_targets: libs/wave/test libs/wave/tool/build libs/wave/samples
+      b2_variant: release
       enable_cmake: false
       depinst_args: --include tool --include samples                       # fetch tool and sample dependencies
       enable_mingw: false                                                  # fails on non-ASCII test filename
