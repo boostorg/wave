@@ -419,6 +419,9 @@ testwave_app::testwave_app(po::variables_map const& vm)
 #if BOOST_WAVE_SUPPORT_CPP0X != 0
         ("c++11", "enable C++11 mode (implies --variadics and --long_long)")
 #endif
+#if BOOST_WAVE_SUPPORT_CPP14 != 0
+        ("c++14", "enable C++14 mode (implies --variadics and --long_long)")
+#endif
 #if BOOST_WAVE_SUPPORT_CPP1Z != 0
         ("c++17", "enable C++17 mode (implies --variadics and --long_long, adds __has_include)")
 #endif
@@ -1031,6 +1034,29 @@ testwave_app::initialise_options(Context& ctx, po::variables_map const& vm,
     } else {
         if (9 == debuglevel) {
             std::cerr << "initialise_options: option: c++11" << std::endl;
+        }
+    }
+#endif
+
+#if BOOST_WAVE_SUPPORT_CPP14
+    if (vm.count("c++14")) {
+        ctx.set_language(
+            boost::wave::language_support(
+                 boost::wave::support_cpp14
+              |  boost::wave::support_option_convert_trigraphs
+              |  boost::wave::support_option_long_long
+              |  boost::wave::support_option_emit_line_directives
+#if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
+              |  boost::wave::support_option_include_guard_detection
+#endif
+#if BOOST_WAVE_EMIT_PRAGMA_DIRECTIVES != 0
+              |  boost::wave::support_option_emit_pragma_directives
+#endif
+              |  boost::wave::support_option_insert_whitespace
+            ));
+    } else {
+        if (9 == debuglevel) {
+            std::cerr << "initialise_options: option: c++14" << std::endl;
         }
     }
 #endif
