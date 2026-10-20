@@ -221,6 +221,7 @@ lexem const lexems[] =
     { "co_await", boost::wave::T_CO_AWAIT },
     { "co_return", boost::wave::T_CO_RETURN },
     { "co_yield", boost::wave::T_CO_YIELD },
+    { "module", boost::wave::T_MODULE},
     { "requires", boost::wave::T_REQUIRES },
     { "<=>", boost::wave::T_SPACESHIP },
 #endif
@@ -270,10 +271,11 @@ lexem const lexems[] =
     { "0x12'ab78", boost::wave::T_INTLIT },
     { "013'77", boost::wave::T_INTLIT },
     { "0b10'00101", boost::wave::T_INTLIT },
+#if BOOST_WAVE_SUPPORT_CPP2B != 0
     { "1234z", boost::wave::T_SIZETLIT},
     { "1234zU", boost::wave::T_SIZETLIT},
     { "1234UZ", boost::wave::T_SIZETLIT},
-    { "module", boost::wave::T_MODULE},
+#endif
     { "1234", boost::wave::T_INTLIT },
     { " ", boost::wave::T_SPACE },
     { "\t", boost::wave::T_SPACE },

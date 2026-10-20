@@ -238,6 +238,23 @@ namespace util {
         }
 #endif
 
+#if BOOST_WAVE_SUPPORT_CPP14 != 0
+        // C++14 mode
+        static_macros const& static_data_cpp14(std::size_t i) const
+        {
+        static static_macros data[] = {
+                { "__STDC__", T_INTLIT, "1" },
+                { "__cplusplus", T_INTLIT, "201402L" },
+                { "__STDC_VERSION__", T_INTLIT, "199901L" },
+                { "__STDC_HOSTED__", T_INTLIT, "0" },
+                { "__WAVE_HAS_VARIADICS__", T_INTLIT, "1" },
+                { 0, T_EOF, 0 }
+            };
+            BOOST_ASSERT(i < sizeof(data)/sizeof(data[0]));
+            return data[i];
+        }
+#endif
+
 #if BOOST_WAVE_SUPPORT_CPP1Z != 0
     // C++17 mode
     static_macros const& static_data_cpp1z(std::size_t i) const

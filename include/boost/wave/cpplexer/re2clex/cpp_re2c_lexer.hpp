@@ -153,8 +153,14 @@ lexer<IteratorT, PositionT, TokenT>::lexer(IteratorT const &first,
     scanner.act_in_cpp0x_mode = false;
 #endif
 
+#if BOOST_WAVE_SUPPORT_CPP14 != 0
+    scanner.act_in_cpp0x_mode = boost::wave::need_cpp14(language_)
+        || boost::wave::need_cpp0x(language_);
+#endif
+
 #if BOOST_WAVE_SUPPORT_CPP1Z != 0
     scanner.act_in_cpp0x_mode = boost::wave::need_cpp1z(language_)
+        || boost::wave::need_cpp14(language_)
         || boost::wave::need_cpp0x(language_);
 #endif
 
@@ -162,6 +168,7 @@ lexer<IteratorT, PositionT, TokenT>::lexer(IteratorT const &first,
     scanner.act_in_cpp2a_mode = boost::wave::need_cpp2a(language_);
     scanner.act_in_cpp0x_mode = boost::wave::need_cpp2a(language_)
         || boost::wave::need_cpp1z(language_)
+        || boost::wave::need_cpp14(language_)
         || boost::wave::need_cpp0x(language_);
 #else
     scanner.act_in_cpp2a_mode = false;
@@ -174,6 +181,7 @@ lexer<IteratorT, PositionT, TokenT>::lexer(IteratorT const &first,
     scanner.act_in_cpp0x_mode = boost::wave::need_cpp2b(language_)
         || boost::wave::need_cpp2a(language_)
         || boost::wave::need_cpp1z(language_)
+        || boost::wave::need_cpp14(language_)
         || boost::wave::need_cpp0x(language_);
 #else
     scanner.act_in_cpp2b_mode = false;
