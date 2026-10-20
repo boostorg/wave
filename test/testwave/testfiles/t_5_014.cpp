@@ -16,7 +16,7 @@
 // Tests integer preprocessing number token and type of #if expression.
 
 //O --long_long
-//O --c++17
+//O --c++14
 
 // 12.1:
 //R #line 27 "t_5_014.cpp"

@@ -2223,6 +2223,17 @@ macromap<ContextT>::init_predefined_macros(char const *fname,
         }
         else
 #endif
+#if BOOST_WAVE_SUPPORT_CPP14 != 0
+        if (boost::wave::need_cpp14(ctx.get_language())) {
+            // define C++14 specifics
+            for (int i = 0; 0 != predef.static_data_cpp14(i).name; ++i) {
+                predefined_macros::static_macros const& m = predef.static_data_cpp14(i);
+                predefine_macro(current_scope, m.name,
+                    token_type(m.token_id, m.value, pos));
+            }
+        }
+        else
+#endif
 #if BOOST_WAVE_SUPPORT_CPP1Z != 0
         if (boost::wave::need_cpp1z(ctx.get_language())) {
             // define C++17 specifics

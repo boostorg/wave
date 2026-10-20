@@ -104,10 +104,23 @@
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
+//  Decide whether to support C++14
+//
+#if !defined(BOOST_WAVE_SUPPORT_CPP14)
+#  define BOOST_WAVE_SUPPORT_CPP14 1
+#  undef BOOST_WAVE_SUPPORT_CPP0X
+#  define BOOST_WAVE_SUPPORT_CPP0X 1
+#  undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
+#  define BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS 1
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
 //  Decide whether to support C++17
 //
 #if !defined(BOOST_WAVE_SUPPORT_CPP1Z)
 #  define BOOST_WAVE_SUPPORT_CPP1Z 1
+#  undef BOOST_WAVE_SUPPORT_CPP14
+#  define BOOST_WAVE_SUPPORT_CPP14 1
 #  undef BOOST_WAVE_SUPPORT_CPP0X
 #  define BOOST_WAVE_SUPPORT_CPP0X 1
 #  undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
@@ -125,6 +138,8 @@
 //
 #if !defined(BOOST_WAVE_SUPPORT_CPP2A)
 #  define BOOST_WAVE_SUPPORT_CPP2A 1
+#  undef BOOST_WAVE_SUPPORT_CPP14
+#  define BOOST_WAVE_SUPPORT_CPP14 1
 #  undef BOOST_WAVE_SUPPORT_CPP0X
 #  define BOOST_WAVE_SUPPORT_CPP0X 1
 #  undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS
@@ -149,6 +164,8 @@
 #  define BOOST_WAVE_SUPPORT_CPP2B 1
 #  undef BOOST_WAVE_SUPPORT_CPP2A
 #  define BOOST_WAVE_SUPPORT_CPP2A 1
+#  undef BOOST_WAVE_SUPPORT_CPP14
+#  define BOOST_WAVE_SUPPORT_CPP14 1
 #  undef BOOST_WAVE_SUPPORT_CPP0X
 #  define BOOST_WAVE_SUPPORT_CPP0X 1
 #  undef BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS

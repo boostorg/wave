@@ -41,6 +41,10 @@ enum language_support {
     support_cpp0x = support_option_variadics | support_option_long_long |
         support_option_no_newline_at_end_of_file | 0x10,
     support_cpp11 = support_cpp0x,
+#if BOOST_WAVE_SUPPORT_CPP14 != 0
+    //  support flags for C++14
+    support_cpp14 = support_option_variadics | support_option_long_long |
+        support_option_no_newline_at_end_of_file | 0x400000,
 #if BOOST_WAVE_SUPPORT_CPP1Z != 0
     // support flags for C++17
     support_option_has_include = 0x10000,
@@ -66,6 +70,7 @@ enum language_support {
         support_option_no_newline_at_end_of_file | support_option_has_include |
         support_option_va_opt | support_option_sizet_lit | 0x200000,
     support_cpp23 = support_cpp2b,
+#endif
 #endif
 #endif
 #endif
@@ -115,6 +120,31 @@ need_cpp0x(language_support language)
 
 inline bool
 need_cpp0x(language_support language)
+{
+    return false;
+}
+
+#endif
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  need_cpp14
+//
+//      Extract, if the language to support is C++14
+//
+///////////////////////////////////////////////////////////////////////////////
+#if BOOST_WAVE_SUPPORT_CPP14 != 0
+
+inline bool
+need_cpp14(language_support language)
+{
+    return (language & ~support_option_mask) == support_cpp14;
+}
+
+#else
+
+inline bool
+need_cpp14(language_support language)
 {
     return false;
 }
