@@ -89,9 +89,13 @@
     <td class="table_cells"><p>If defined, then the preprocessor library supports 
         C++0x keywords and C++0x specific features, such as variadics, placemarkers, extended character and string literals. This implies the definitions of the <code>BOOST_WAVE_SUPPORT_VARIADICS_PLACEMARKERS</code> constant.</p></td>
   </tr>  <tr>
+    <td class="table_cells"><code>BOOST_WAVE_SUPPORT_CPP14</code></td>
+    <td class="table_cells"><p>If defined, then the preprocessor library supports
+        C++14 mode. It implies <code>BOOST_WAVE_SUPPORT_CPP0X</code>.</p></td>
+  </tr>  <tr>
     <td class="table_cells"><code>BOOST_WAVE_SUPPORT_CPP1Z</code></td>
     <td class="table_cells"><p>If defined, then the preprocessor library supports
-        C++17 keywords - currently just <code>__has_include</code>. It implies <code>BOOST_WAVE_SUPPORT_CPP0X</code>.</p></td>
+        C++17 keywords - currently just <code>__has_include</code>. It implies <code>BOOST_WAVE_SUPPORT_CPP14</code>.</p></td>
   </tr>
   </tr>  <tr>
     <td class="table_cells"><code>BOOST_WAVE_SUPPORT_CPP2A</code></td>
