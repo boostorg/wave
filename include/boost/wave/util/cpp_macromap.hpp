@@ -1277,6 +1277,7 @@ macromap<ContextT>::expand_replacement_list(
                 if (i >= arguments.size()) {
                     // no argument supplied; only C++20 and later should reach here
                     BOOST_ASSERT(boost::wave::need_cpp2a(ctx.get_language()) ||
+                        boost::wave::need_cpp2b(ctx.get_language()) ||
                         boost::wave::need_cpp26(ctx.get_language()));
                     position_type last_valid(arguments.back().back().get_position());
                     // insert a empty string
@@ -1324,6 +1325,7 @@ macromap<ContextT>::expand_replacement_list(
                     }
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
                     else if (boost::wave::need_cpp2a(ctx.get_language()) ||
+                        boost::wave::need_cpp2b(ctx.get_language()) ||
                         boost::wave::need_cpp26(ctx.get_language())) {
                         BOOST_ASSERT(i == arguments.size());
                         // no argument supplied; insert placemarker
@@ -1512,6 +1514,7 @@ macromap<ContextT>::expand_macro(ContainerT &expanded,
             std::size_t parm_count_required = macro_def.macroparameters.size();
 #if BOOST_WAVE_SUPPORT_CPP2A
             if (boost::wave::need_cpp2a(ctx.get_language()) ||
+                boost::wave::need_cpp2b(ctx.get_language()) ||
                 boost::wave::need_cpp26(ctx.get_language())) {
                 // Starting with C++20, variable arguments may be left out
                 // entirely, so reduce the mandatory argument count by one
