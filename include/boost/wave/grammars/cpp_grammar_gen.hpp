@@ -63,6 +63,8 @@ namespace grammars {
 #define BOOST_WAVE_PPQUALIFIEDNAME_ID    21
 #define BOOST_WAVE_REGION_ID             22
 #define BOOST_WAVE_ENDREGION_ID          23
+#define BOOST_WAVE_ELIFDEF_ID            24
+#define BOOST_WAVE_ELIFNDEF_ID           25
 
 ///////////////////////////////////////////////////////////////////////////////
 //

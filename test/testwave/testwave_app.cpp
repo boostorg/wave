@@ -429,7 +429,7 @@ testwave_app::testwave_app(po::variables_map const& vm)
         ("c++20", "enable C++20 mode (implies --variadics and --long_long, adds __has_include and __VA_OPT__)")
 #endif
 #if BOOST_WAVE_SUPPORT_CPP2B != 0
-        ("c++23", "enable C++23 mode (all C++20 features, plus size_t literals)")
+        ("c++23", "enable C++23 mode (all C++20 features, plus size_t literals and #elifdef/#elifndef)")
 #endif
 #if BOOST_WAVE_SUPPORT_CPP26 != 0
         ("c++26", "enable C++26 mode (all C++23 features)")

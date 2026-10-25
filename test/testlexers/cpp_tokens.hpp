@@ -275,6 +275,8 @@ lexem const lexems[] =
     { "1234z", boost::wave::T_SIZETLIT},
     { "1234zU", boost::wave::T_SIZETLIT},
     { "1234UZ", boost::wave::T_SIZETLIT},
+    { "#elifdef", boost::wave::T_PP_ELIFDEF },
+    { "#elifndef", boost::wave::T_PP_ELIFNDEF },
 #endif
     { "1234", boost::wave::T_INTLIT },
     { " ", boost::wave::T_SPACE },

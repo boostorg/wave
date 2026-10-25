@@ -76,6 +76,7 @@ struct Scanner {
     bool act_in_cpp0x_mode;      /* lexer works in C++11 mode */
     bool act_in_cpp2a_mode;      /* lexer works in C++20 mode */
     bool act_in_cpp2b_mode;      /* lexer works in C++23 mode */
+    bool act_in_elifdef_mode;    /* lexer recognizes #elifdef and #elifndef */
 };
 
 ///////////////////////////////////////////////////////////////////////////////

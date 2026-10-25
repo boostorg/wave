@@ -102,7 +102,7 @@
 <pre>    <span class="keyword">template</span> &lt;<span class="keyword">typename</span> ContextT, <span class="keyword">typename</span> TokenT&gt;<br>    <span class="keyword">bool</span> found_directive(ContextT <span class="keyword">const</span>&amp; ctx, TokenT <span class="keyword">const </span>&amp;directive);
 </pre>
 <blockquote>
-  <p>The function <tt>found_directive</tt> is called, whenever the preprocessor has detected one of the preprocessing directives (<span class="preprocessor">#define</span>, <span class="preprocessor">#undef</span>, <span class="preprocessor">#if</span>, <span class="preprocessor">#idef</span>, <span class="preprocessor">#ifndef</span>, <span class="preprocessor">#elif</span>, <span class="preprocessor">#endif</span>, <span class="preprocessor">#error</span>, <span class="preprocessor">#include</span>, <span class="preprocessor">#pragma</span> or <span class="preprocessor">#warning</span>) .</p>
+  <p>The function <tt>found_directive</tt> is called, whenever the preprocessor has detected one of the preprocessing directives (<span class="preprocessor">#define</span>, <span class="preprocessor">#undef</span>, <span class="preprocessor">#if</span>, <span class="preprocessor">#idef</span>, <span class="preprocessor">#ifndef</span>, <span class="preprocessor">#elif</span>, <span class="preprocessor">#elifdef</span>, <span class="preprocessor">#elifndef</span>, <span class="preprocessor">#endif</span>, <span class="preprocessor">#error</span>, <span class="preprocessor">#include</span>, <span class="preprocessor">#pragma</span> or <span class="preprocessor">#warning</span>) .</p>
   <p>The <tt>ctx</tt> parameter provides a reference to the <tt>context_type</tt> used during instantiation of the preprocessing iterators by the user.</p>
   <p>The parameter <tt>directive</tt> refers to the token containing the detected preprocessing directive. </p>
   <p>If the return value is <tt>true</tt>, the directive will be
@@ -151,7 +151,7 @@
 <span class="keyword">    bool</span> evaluated_conditional_expression(ContextT <span class="keyword">const</span>&amp; ctx, <br>        TokenT <span class="keyword">const</span>&amp; directive, ContainerT <span class="keyword">const</span>&amp; expression, <span class="keyword"><br>        bool</span> expression_value);
 </pre>
 <blockquote>
-  <p>The function <tt>evaluated_conditional_expression</tt> is called, whenever the preprocessor has encountered a <span class="preprocessor">#if</span>, <span class="preprocessor">#elif</span>, <span class="preprocessor">#ifdef</span> or <span class="preprocessor">#ifndef</span> directive. This hook gets passed the non-expanded conditional
+  <p>The function <tt>evaluated_conditional_expression</tt> is called, whenever the preprocessor has encountered a <span class="preprocessor">#if</span>, <span class="preprocessor">#elif</span>, <span class="preprocessor">#elifdef</span>, <span class="preprocessor">#elifndef</span>, <span class="preprocessor">#ifdef</span> or <span class="preprocessor">#ifndef</span> directive. This hook gets passed the non-expanded conditional
     expression (as it was given in the analysed source file) and the result
     of the evaluation of this expression in the current preprocessing
     context.</p>

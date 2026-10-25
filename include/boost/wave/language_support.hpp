@@ -65,17 +65,20 @@ enum language_support {
 #if BOOST_WAVE_SUPPORT_CPP2B != 0
     //  support flags for C++23
     support_option_sizet_lit = 0x100000,
+    support_option_elifdef = 0x1000000,
 
     support_cpp2b = support_option_variadics | support_option_long_long |
         support_option_no_newline_at_end_of_file | support_option_has_include |
-        support_option_va_opt | support_option_sizet_lit | 0x200000,
+        support_option_va_opt | support_option_sizet_lit |
+        support_option_elifdef | 0x200000,
     support_cpp23 = support_cpp2b,
 #endif
 #if BOOST_WAVE_SUPPORT_CPP26 != 0
     //  support flags for C++26
     support_cpp26 = support_option_variadics | support_option_long_long |
         support_option_no_newline_at_end_of_file | support_option_has_include |
-        support_option_va_opt | support_option_sizet_lit | 0x800000,
+        support_option_va_opt | support_option_sizet_lit |
+        support_option_elifdef | 0x800000,
 #endif
 #endif
 #endif
@@ -374,6 +377,9 @@ BOOST_WAVE_OPTION(no_newline_at_end_of_file) // support_no_newline_at_end_of_fil
 #endif
 #if BOOST_WAVE_SUPPORT_HAS_INCLUDE != 0
 BOOST_WAVE_OPTION(has_include)               // support_option_has_include
+#endif
+#if BOOST_WAVE_SUPPORT_CPP2B != 0
+BOOST_WAVE_OPTION(elifdef)                   // support_option_elifdef
 #endif
 
 #undef BOOST_WAVE_NEED_OPTION

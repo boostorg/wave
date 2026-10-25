@@ -345,6 +345,16 @@ protected:
     void on_elif(result_type const& found_directive,
         typename parse_tree_type::const_iterator const &begin,
         typename parse_tree_type::const_iterator const &end);
+    void on_elifdef(result_type const& found_directive,
+        typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end);
+    void on_elifndef(result_type const& found_directive,
+        typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end);
+    void on_elif_defined(result_type const& found_directive,
+        typename parse_tree_type::const_iterator const &begin,
+        typename parse_tree_type::const_iterator const &end,
+        bool enter_if_defined);
     void on_error(typename parse_tree_type::const_iterator const &begin,
         typename parse_tree_type::const_iterator const &end);
 #if BOOST_WAVE_SUPPORT_WARNING_DIRECTIVE != 0
@@ -1127,11 +1137,14 @@ pp_iterator_functor<ContextT>::handle_pp_directive(IteratorT &it)
                 break;
 
             case T_PP_ELIF:         // #elif
+            case T_PP_ELIFDEF:      // #elifdef
+            case T_PP_ELIFNDEF:     // #elifndef
                 if (!ctx.get_enclosing_if_block_status()) {
                     if (!ctx.enter_elif_block(false)) {
                         // #else without matching #if
                         BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
-                            missing_matching_if, "#elif", act_pos);
+                            missing_matching_if,
+                            boost::wave::get_token_value(id), act_pos);
                         return true;  // do not analyze this directive any further
                     }
                 }
@@ -1468,6 +1481,14 @@ pp_iterator_functor<ContextT>::dispatch_directive(
 
     case T_PP_ELIF:         // #elif
         on_elif(found_directive, begin_child_it, end_child_it);
+        break;
+
+    case T_PP_ELIFDEF:      // #elifdef
+        on_elifdef(found_directive, begin_child_it, end_child_it);
+        break;
+
+    case T_PP_ELIFNDEF:     // #elifndef
+        on_elifndef(found_directive, begin_child_it, end_child_it);
         break;
 
 //     case T_PP_ELSE:         // #else
@@ -1895,6 +1916,72 @@ pp_iterator_functor<ContextT>::on_ifndef(
     } while (ctx.get_hooks().evaluated_conditional_expression(ctx.derived(),
              found_directive, toexpand, is_defined));
     ctx.enter_if_block(!is_defined);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//  on_elifdef(): handle #elifdef directives
+//  on_elifndef(): handle #elifndef directives
+//
+///////////////////////////////////////////////////////////////////////////////
+template <typename ContextT>
+inline void
+pp_iterator_functor<ContextT>::on_elifdef(
+    result_type const& found_directive,
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end)
+{
+    on_elif_defined(found_directive, begin, end, true);
+}
+
+template <typename ContextT>
+inline void
+pp_iterator_functor<ContextT>::on_elifndef(
+    result_type const& found_directive,
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end)
+{
+    on_elif_defined(found_directive, begin, end, false);
+}
+
+template <typename ContextT>
+inline void
+pp_iterator_functor<ContextT>::on_elif_defined(
+    result_type const& found_directive,
+    typename parse_tree_type::const_iterator const &begin,
+    typename parse_tree_type::const_iterator const &end,
+    bool enter_if_defined)
+{
+    char const* directive = enter_if_defined ? "#elifdef" : "#elifndef";
+
+    // one of the previous #if/#elif/#elifdef/#elifndef was true, so skip this
+    // directive without evaluating its argument
+    if (ctx.get_if_block_some_part_status()) {
+        if (!ctx.enter_elif_block(false)) {
+            BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+                missing_matching_if, directive, act_pos);
+        }
+        return;
+    }
+
+    get_token_value<result_type, parse_node_type> get_value;
+    token_sequence_type toexpand;
+
+    std::copy(make_ref_transform_iterator((*begin).children.begin(), get_value),
+              make_ref_transform_iterator((*begin).children.end(), get_value),
+              std::inserter(toexpand, toexpand.end()));
+
+    bool is_defined = false;
+
+    do {
+        is_defined = ctx.is_defined_macro(toexpand.begin(), toexpand.end());
+    } while (ctx.get_hooks().evaluated_conditional_expression(ctx.derived(),
+             found_directive, toexpand, is_defined));
+
+    if (!ctx.enter_elif_block(enter_if_defined ? is_defined : !is_defined)) {
+        BOOST_WAVE_THROW_CTX(ctx, preprocess_exception,
+            missing_matching_if, directive, act_pos);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
