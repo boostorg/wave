@@ -1275,8 +1275,10 @@ macromap<ContextT>::expand_replacement_list(
             {
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
                 if (i >= arguments.size()) {
-                    // no argument supplied; do nothing (only c20 should reach here)
-                    BOOST_ASSERT(boost::wave::need_cpp2a(ctx.get_language()));
+                    // no argument supplied; only C++20 and later should reach here
+                    BOOST_ASSERT(boost::wave::need_cpp2a(ctx.get_language()) ||
+                        boost::wave::need_cpp2b(ctx.get_language()) ||
+                        boost::wave::need_cpp26(ctx.get_language()));
                     position_type last_valid(arguments.back().back().get_position());
                     // insert a empty string
                     expanded.push_back(token_type(T_STRINGLIT, "\"\"", last_valid));
@@ -1284,7 +1286,7 @@ macromap<ContextT>::expand_replacement_list(
                 else
 #endif
                 {
-                    // shouldn't be oob (w.o. cpp20)
+                    // shouldn't be oob without C++20 or later
                     BOOST_ASSERT(i < arguments.size() && !arguments[i].empty());
                     // safe a copy of the first tokens position (not a reference!)
                     position_type pos((*arguments[i].begin()).get_position());
@@ -1322,7 +1324,9 @@ macromap<ContextT>::expand_replacement_list(
                         impl::replace_ellipsis(arguments, i, expanded, pos);
                     }
 #if BOOST_WAVE_SUPPORT_CPP2A != 0
-                    else if (boost::wave::need_cpp2a(ctx.get_language())) {
+                    else if (boost::wave::need_cpp2a(ctx.get_language()) ||
+                        boost::wave::need_cpp2b(ctx.get_language()) ||
+                        boost::wave::need_cpp26(ctx.get_language())) {
                         BOOST_ASSERT(i == arguments.size());
                         // no argument supplied; insert placemarker
                         expanded.push_back(
@@ -1509,7 +1513,9 @@ macromap<ContextT>::expand_macro(ContainerT &expanded,
 
             std::size_t parm_count_required = macro_def.macroparameters.size();
 #if BOOST_WAVE_SUPPORT_CPP2A
-            if (boost::wave::need_cpp2a(ctx.get_language())) {
+            if (boost::wave::need_cpp2a(ctx.get_language()) ||
+                boost::wave::need_cpp2b(ctx.get_language()) ||
+                boost::wave::need_cpp26(ctx.get_language())) {
                 // Starting with C++20, variable arguments may be left out
                 // entirely, so reduce the mandatory argument count by one
                 // if the last parameter is ellipsis:
@@ -2263,6 +2269,17 @@ macromap<ContextT>::init_predefined_macros(char const *fname,
             predefined_macros::static_macros const& m = predef.static_data_cpp2b(i);
             predefine_macro(current_scope, m.name,
                 token_type(m.token_id, m.value, pos));
+            }
+        }
+        else
+#endif
+#if BOOST_WAVE_SUPPORT_CPP26 != 0
+        if (boost::wave::need_cpp26(ctx.get_language())) {
+            // define C++26 specifics
+            for (int i = 0; 0 != predef.static_data_cpp26(i).name; ++i) {
+                predefined_macros::static_macros const& m = predef.static_data_cpp26(i);
+                predefine_macro(current_scope, m.name,
+                    token_type(m.token_id, m.value, pos));
             }
         }
         else
