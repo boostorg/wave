@@ -24,7 +24,7 @@ constant boost_dependencies :
     /boost/spirit//boost_spirit
     /boost/throw_exception//boost_throw_exception
     /boost/type_traits//boost_type_traits
-    /boost/xpressive//boost_xpressive ;
+    ;
 
 project /boost/wave
     : common-requirements
