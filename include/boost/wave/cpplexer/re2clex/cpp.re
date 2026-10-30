@@ -332,6 +332,24 @@ NonDigit            = [a-zA-Z_$] | UniversalChar;
     Pound PPSpace "ifndef"    { BOOST_WAVE_RET(T_PP_IFNDEF); }
     Pound PPSpace "else"      { BOOST_WAVE_RET(T_PP_ELSE); }
     Pound PPSpace "elif"      { BOOST_WAVE_RET(T_PP_ELIF); }
+    Pound PPSpace "elifdef"   {
+        if (s->act_in_elifdef_mode) {
+            BOOST_WAVE_RET(T_PP_ELIFDEF);
+        } else {
+            // lex as #elif followed by the identifier 'def'
+            --YYCURSOR; --YYCURSOR; --YYCURSOR;
+            BOOST_WAVE_RET(T_PP_ELIF);
+        }
+    }
+    Pound PPSpace "elifndef"  {
+        if (s->act_in_elifdef_mode) {
+            BOOST_WAVE_RET(T_PP_ELIFNDEF);
+        } else {
+            // lex as #elif followed by the identifier 'ndef'
+            --YYCURSOR; --YYCURSOR; --YYCURSOR; --YYCURSOR;
+            BOOST_WAVE_RET(T_PP_ELIF);
+        }
+    }
     Pound PPSpace "endif"     { BOOST_WAVE_RET(T_PP_ENDIF); }
     Pound PPSpace "define"    { BOOST_WAVE_RET(T_PP_DEFINE); }
     Pound PPSpace "undef"     { BOOST_WAVE_RET(T_PP_UNDEF); }

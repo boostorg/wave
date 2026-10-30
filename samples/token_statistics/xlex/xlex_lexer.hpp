@@ -106,6 +106,7 @@ private:
     static lexer_data const init_data_cpp[];    // C++ only patterns
     static lexer_data const init_data_cpp0x[];  // C++11 only patterns
     static lexer_data const init_data_cpp2a[];  // C++20 only patterns
+    static lexer_data const init_data_cpp2b[];  // C++23 only patterns
 
 #if BOOST_WAVE_SUPPORT_PRAGMA_ONCE != 0
     boost::wave::cpplexer::include_guards<token_type> guards;
@@ -457,6 +458,18 @@ lexer<Iterator, Position>::init_data_cpp2a[] =
 };
 
 ///////////////////////////////////////////////////////////////////////////////
+// C++23 only token definitions
+
+template <typename Iterator, typename Position>
+typename lexer<Iterator, Position>::lexer_data const
+lexer<Iterator, Position>::init_data_cpp2b[] =
+{
+    TOKEN_DATA(T_PP_ELIFDEF, POUNDDEF PPSPACE "elifdef"),
+    TOKEN_DATA(T_PP_ELIFNDEF, POUNDDEF PPSPACE "elifndef"),
+    { token_id(0) }       // this should be the last entry
+};
+
+///////////////////////////////////////////////////////////////////////////////
 //  undefine macros, required for regular expression definitions
 #undef INCLUDEDEF
 #undef POUNDDEF
@@ -519,6 +532,15 @@ lexer<Iterator, Position>::lexer(Iterator const &first,
         for (int j = 0; 0 != init_data_cpp2a[j].tokenid; ++j) {
             xlexer.register_regex(init_data_cpp2a[j].tokenregex,
                 init_data_cpp2a[j].tokenid, init_data_cpp[j].tokencb);
+        }
+    }
+#endif
+
+#if BOOST_WAVE_SUPPORT_CPP2B != 0
+    if (boost::wave::need_elifdef(language)) {
+        for (int j = 0; 0 != init_data_cpp2b[j].tokenid; ++j) {
+            xlexer.register_regex(init_data_cpp2b[j].tokenregex,
+                init_data_cpp2b[j].tokenid, init_data_cpp2b[j].tokencb);
         }
     }
 #endif

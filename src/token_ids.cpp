@@ -233,7 +233,9 @@ static char const *tok_names[] = {
     /* 440 */   "T_REQUIRES",
     /* 441 */   "T_MODULE",
     /* 442 */   "T_SPACESHIP",
-    /* 443 */   "T_SIZETLIT",
+    /* 443 */   "T_PP_ELIFDEF",
+    /* 444 */   "T_PP_ELIFNDEF",
+    /* 445 */   "T_SIZETLIT",
     };
 
     // make sure, I have not forgotten any commas (as I did more than once)
@@ -447,7 +449,9 @@ static char const *tok_values[] = {
     /* 440 */   "requires",
     /* 441 */   "module",
     /* 442 */   "<=>",
-    /* 443 */   "",   // sizetlit
+    /* 443 */   "#elifdef",
+    /* 444 */   "#elifndef",
+    /* 445 */   "",   // sizetlit
     };
 
     // make sure, I have not forgotten any commas (as I did more than once)

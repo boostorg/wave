@@ -59,6 +59,7 @@ namespace lexer {
 #define INIT_DATA_PP_NUMBER_SIZE    2
 #define INIT_DATA_CPP0X_SIZE        15
 #define INIT_DATA_CPP2A_SIZE        11
+#define INIT_DATA_CPP2B_SIZE        3
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -116,6 +117,7 @@ private:
     static typename base_type::lexer_data const init_data_pp_number[INIT_DATA_PP_NUMBER_SIZE];  // pp-number only patterns
     static typename base_type::lexer_data const init_data_cpp0x[INIT_DATA_CPP0X_SIZE];  // C++0X only patterns
     static typename base_type::lexer_data const init_data_cpp2a[INIT_DATA_CPP2A_SIZE];  // C++2A only patterns
+    static typename base_type::lexer_data const init_data_cpp2b[INIT_DATA_CPP2B_SIZE];  // C++2B only patterns
 };
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -498,6 +500,19 @@ lexer<IteratorT, PositionT>::init_data_cpp2a[INIT_DATA_CPP2A_SIZE] =
     { token_id(0) }       // this should be the last entry
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// C++23 only token definitions
+
+template <typename IteratorT, typename PositionT>
+typename lexer_base<IteratorT, PositionT>::lexer_data const
+lexer<IteratorT, PositionT>::init_data_cpp2b[INIT_DATA_CPP2B_SIZE] =
+{
+    TOKEN_DATA(PP_ELIFDEF, POUNDDEF PPSPACE "elifdef"),
+    TOKEN_DATA(PP_ELIFNDEF, POUNDDEF PPSPACE "elifndef"),
+
+    { token_id(0) }       // this should be the last entry
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 //  undefine macros, required for regular expression definitions
@@ -585,6 +600,18 @@ lexer<IteratorT, PositionT>::init_dfa(boost::wave::language_support lang)
                                  init_data_cpp2a[j].tokenid,
                                  init_data_cpp2a[j].tokencb,
                                  init_data_cpp2a[j].lexerstate);
+        }
+    }
+#endif
+
+// if the #elifdef option is enabled, add the directives
+#if BOOST_WAVE_SUPPORT_CPP2B != 0
+    if (boost::wave::need_elifdef(lang)) {
+        for (int j = 0; 0 != init_data_cpp2b[j].tokenid; ++j) {
+            this->register_regex(init_data_cpp2b[j].tokenregex,
+                                 init_data_cpp2b[j].tokenid,
+                                 init_data_cpp2b[j].tokencb,
+                                 init_data_cpp2b[j].lexerstate);
         }
     }
 #endif

@@ -190,7 +190,7 @@ struct cpp_grammar :
 //         rule_type include_file, system_include_file;
         rule_type plain_define, macro_definition, macro_parameters;
         rule_type undefine;
-        rule_type ppifdef, ppifndef, ppif, ppelif;
+        rule_type ppifdef, ppifndef, ppif, ppelif, ppelifdef, ppelifndef;
 //         rule_type ppelse, ppendif;
         rule_type ppline;
         rule_type pperror;
@@ -225,6 +225,8 @@ struct cpp_grammar :
             ppifndef.set_id(BOOST_WAVE_IFNDEF_ID);
             ppif.set_id(BOOST_WAVE_IF_ID);
             ppelif.set_id(BOOST_WAVE_ELIF_ID);
+            ppelifdef.set_id(BOOST_WAVE_ELIFDEF_ID);
+            ppelifndef.set_id(BOOST_WAVE_ELIFNDEF_ID);
 //             ppelse.set_id(BOOST_WAVE_ELSE_ID);
 //             ppendif.set_id(BOOST_WAVE_ENDIF_ID);
             ppline.set_id(BOOST_WAVE_LINE_ID);
@@ -259,6 +261,8 @@ struct cpp_grammar :
 //                     |   system_include_file
                     |   ppif
                     |   ppelif
+                    |   ppelifdef
+                    |   ppelifndef
                     |   ppifndef
                     |   ppifdef
                     |   undefine
@@ -430,6 +434,26 @@ struct cpp_grammar :
                         )
                 ;
 
+            ppelifdef
+                =   no_node_d
+                    [
+                        ch_p(T_PP_ELIFDEF)
+                        [ store_found_directive_type(self.found_directive) ]
+                        >> +ppsp
+                    ]
+                    >>  ppqualifiedname
+                ;
+
+            ppelifndef
+                =   no_node_d
+                    [
+                        ch_p(T_PP_ELIFNDEF)
+                        [ store_found_directive_type(self.found_directive) ]
+                        >> +ppsp
+                    ]
+                    >>  ppqualifiedname
+                ;
+
 //             ppelse
 //                 =   no_node_d
 //                     [
@@ -594,6 +618,8 @@ struct cpp_grammar :
             BOOST_SPIRIT_DEBUG_TRACE_RULE(ppif, TRACE_CPP_GRAMMAR);
 //             BOOST_SPIRIT_DEBUG_TRACE_RULE(ppelse, TRACE_CPP_GRAMMAR);
              BOOST_SPIRIT_DEBUG_TRACE_RULE(ppelif, TRACE_CPP_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(ppelifdef, TRACE_CPP_GRAMMAR);
+            BOOST_SPIRIT_DEBUG_TRACE_RULE(ppelifndef, TRACE_CPP_GRAMMAR);
 //            BOOST_SPIRIT_DEBUG_TRACE_RULE(ppendif, TRACE_CPP_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(ppline, TRACE_CPP_GRAMMAR);
             BOOST_SPIRIT_DEBUG_TRACE_RULE(pperror, TRACE_CPP_GRAMMAR);
@@ -652,6 +678,8 @@ struct cpp_grammar :
                 { BOOST_WAVE_IFNDEF_ID, "ppifndef" },
                 { BOOST_WAVE_IF_ID, "ppif" },
                 { BOOST_WAVE_ELIF_ID, "ppelif" },
+                { BOOST_WAVE_ELIFDEF_ID, "ppelifdef" },
+                { BOOST_WAVE_ELIFNDEF_ID, "ppelifndef" },
 //                 { BOOST_WAVE_ELSE_ID, "ppelse" },
 //                 { BOOST_WAVE_ENDIF_ID, "ppendif" },
                 { BOOST_WAVE_LINE_ID, "ppline" },

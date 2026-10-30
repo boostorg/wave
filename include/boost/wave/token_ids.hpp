@@ -317,7 +317,9 @@ enum token_id : std::uint32_t {
     T_SPACESHIP    = TOKEN_FROM_ID(442, OperatorTokenType),
 
 // c++23 features
-    T_SIZETLIT     = TOKEN_FROM_ID(443, IntegerLiteralTokenType),
+    T_PP_ELIFDEF   = TOKEN_FROM_ID(443, PPConditionalTokenType),
+    T_PP_ELIFNDEF  = TOKEN_FROM_ID(444, PPConditionalTokenType),
+    T_SIZETLIT     = TOKEN_FROM_ID(445, IntegerLiteralTokenType),
 
     T_LAST_TOKEN_ID,
     T_LAST_TOKEN = ID_FROM_TOKEN(T_LAST_TOKEN_ID & ~PPTokenFlag),

@@ -62,6 +62,8 @@ public:
         case T_PP_IFNDEF:
         case T_PP_IF:
         case T_PP_ELIF:
+        case T_PP_ELIFDEF:
+        case T_PP_ELIFNDEF:
             std::cout << "// " << directive.get_value() << " ";
             need_comment = false;
             break;

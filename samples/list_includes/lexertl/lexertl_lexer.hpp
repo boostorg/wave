@@ -60,6 +60,7 @@ namespace boost { namespace wave { namespace cpplexer { namespace lexertl
 #define INIT_DATA_PP_NUMBER_SIZE    2
 #define INIT_DATA_CPP0X_SIZE        15
 #define INIT_DATA_CPP2A_SIZE        11
+#define INIT_DATA_CPP2B_SIZE        3
 #define INIT_MACRO_DATA_SIZE        30
 #endif // #if BOOST_WAVE_LEXERTL_USE_STATIC_TABLES == 0
 
@@ -122,6 +123,7 @@ private:
     static lexer_data const init_data_pp_number[INIT_DATA_PP_NUMBER_SIZE];  // pp-number only patterns
     static lexer_data const init_data_cpp0x[INIT_DATA_CPP0X_SIZE];  // C++0X only patterns
     static lexer_data const init_data_cpp2a[INIT_DATA_CPP2A_SIZE];  // C++2A only patterns
+    static lexer_data const init_data_cpp2b[INIT_DATA_CPP2B_SIZE];  // C++2B only patterns
 
 // helper for calculation of the time of last compilation
     static boost::wave::util::time_conversion_helper compilation_time;
@@ -476,6 +478,18 @@ lexertl<Iterator, Position>::init_data_cpp2a[INIT_DATA_CPP2A_SIZE] =
     { token_id(0) }       // this should be the last entry
 };
 
+///////////////////////////////////////////////////////////////////////////////
+// C++23 specific token definitions
+
+template <typename Iterator, typename Position>
+typename lexertl<Iterator, Position>::lexer_data const
+lexertl<Iterator, Position>::init_data_cpp2b[INIT_DATA_CPP2B_SIZE] =
+{
+    TOKEN_DATA(T_PP_ELIFDEF, "{POUNDDEF}{PPSPACE}elifdef"),
+    TOKEN_DATA(T_PP_ELIFNDEF, "{POUNDDEF}{PPSPACE}elifndef"),
+    { token_id(0) }       // this should be the last entry
+};
+
 #undef MACRO_DATA
 #undef TOKEN_DATA
 #undef OR
@@ -538,6 +552,16 @@ std::ifstream dfa_in("wave_lexertl_lexer.dfa", std::ios::in|std::ios::binary);
             for (int j = 0; 0 != init_data_cpp2a[j].tokenid; ++j) {
                 rules.add(init_data_cpp2a[j].tokenregex,
                           init_data_cpp2a[j].tokenid);
+        }
+    }
+#endif
+
+    // if the #elifdef option is enabled, add the directives
+#if BOOST_WAVE_SUPPORT_CPP2B != 0
+        if (wave::need_elifdef(lang)) {
+            for (int j = 0; 0 != init_data_cpp2b[j].tokenid; ++j) {
+                rules.add(init_data_cpp2b[j].tokenregex,
+                          init_data_cpp2b[j].tokenid);
         }
     }
 #endif
